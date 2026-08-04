@@ -1,0 +1,6 @@
+# Verbatim-migrated app code: contains 10,898-char single-line data tables and
+# hoisting-order-dependent duplicate function declarations. Formatting it breaks
+# the byte-level migration verification (MIGRATION_VERIFICATION.md risk #4).
+index.html
+public/app.js
+src/pages/index.astro
