@@ -11,8 +11,10 @@ import { ROOT, parseTopLevelConsts } from './phase2-extract-data.mjs';
 const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'verify', 'data-manifest.json'), 'utf-8'));
 
 // original literals: same parser over the script region of index.html
+// (region located by marker lines, same shape contract as phase1-extract.py)
 const orig = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf-8');
-const region = orig.split('\n').slice(428, 7293).join('\n');
+const origLines = orig.split('\n');
+const region = origLines.slice(origLines.indexOf('<script>') + 1, origLines.indexOf('</script>')).join('\n');
 const origConsts = new Map(parseTopLevelConsts(region).map(c => [c.name, c.init]));
 
 // load the shipped data files into one sandbox (window === global, classic-script style)

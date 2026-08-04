@@ -14,10 +14,10 @@ GUZEN_DATA.C_MEASUREMENT_VALUES = [
     '頭が完全に出ている'
   ];
 
-// index.html:2321
+// index.html:2642
 GUZEN_DATA.SPORTS = ['野球','サッカー','バスケットボール','バレーボール','ラグビー','柔道','剣道','陸上短距離','陸上長距離','水泳','テニス','卓球','ボクシング','ゴルフ','自転車ロード','体操'];
 
-// index.html:2322
+// index.html:2643
 GUZEN_DATA.SPORT_BODY = {
     'ラグビー':[['ラグビー選手体型',6],['がっしり体型',2]], '水泳':[['水泳選手体型',6]], '柔道':[['柔道家体型',6],['がっしり体型',2]],
     'バスケットボール':[['バスケットボール選手体型',6],['高身長モデル体型',2]], 'サッカー':[['サッカー選手体型',6]],
@@ -35,13 +35,13 @@ GUZEN_DATA.SPORT_BODY = {
     'ゴルフ':[['標準体型',3],['引き締まったスポーツ体型',2]]
   };
 
-// index.html:2460
+// index.html:2781
 GUZEN_DATA.SPORT_EXP_POOL = ['野球','サッカー','バスケットボール','バレーボール','卓球','テニス','ソフトテニス','バドミントン','陸上（短距離）','陸上（長距離）','水泳','柔道','剣道','空手','相撲','ラグビー','ハンドボール','体操','ボクシング','レスリング','スキー','スケート','自転車競技','ボート','アメリカンフットボール','ダンス','クライミング'];
 
-// index.html:2489
+// index.html:2810
 GUZEN_DATA.SPORT_EXP_WEIGHTS = [['野球',22],['サッカー',17],['バスケットボール',9],['水泳',6.5],['ソフトテニス',3.6],['テニス',3.4],['卓球',4.5],['バドミントン',4],['陸上（短距離）',3],['陸上（長距離）',2.5],['剣道',2],['柔道',1.8],['バレーボール',3],['ラグビー',1.2],['ハンドボール',1],['空手',0.8],['体操',0.8],['ボクシング',0.5],['スキー',0.5],['ダンス',0.5],['アメリカンフットボール',0.4],['自転車競技',0.4],['レスリング',0.3],['スケート',0.3],['ボート',0.3],['クライミング',0.3],['相撲',0.15]];
 
-// index.html:2542
+// index.html:2863
 GUZEN_DATA.SPORT_MUSCLE = {
     '野球':['前腕と体幹の回旋筋、粘りのある下半身','forearms, rotational core, and a grounded lower body','体幹まわり'],
     'サッカー':['大腿とふくらはぎ、切り返しに強い下半身','thighs and calves built for quick cuts','脚まわり'],
@@ -72,7 +72,7 @@ GUZEN_DATA.SPORT_MUSCLE = {
     'クライミング':['前腕と背中の引く筋肉、指の付け根の厚み','climbing forearms, pulling back muscles, and thick finger bases','前腕と背中']
   };
 
-// index.html:2571
+// index.html:2892
 GUZEN_DATA.SPORT_SKELETON = {
     '水泳':['肩甲帯と鎖骨まわりが横に広く発達した骨格','a skeleton with a broadened shoulder girdle and clavicles'],
     '柔道':['首から肩にかけての骨格が太く、手足の骨もがっしりした造り','a thick neck-to-shoulder frame with sturdy limb bones'],
@@ -88,7 +88,7 @@ GUZEN_DATA.SPORT_SKELETON = {
     '自転車競技':['骨盤と大腿骨のしっかりした下半身骨格','a solid pelvis-and-femur lower structure']
   };
 
-// index.html:2638
+// index.html:2959
 GUZEN_DATA.TRAINING_LEVELS = [
     ['なし', 38], ['昔は鍛えていた（今は中断）', 6], ['自宅で軽く（自重・腕立て腹筋）', 12],
     ['週1〜2のジム習慣（健康維持）', 14], ['しっかり鍛えている（中級）', 10], ['細マッチョ仕上げ（絞り重視）', 8],
@@ -96,7 +96,7 @@ GUZEN_DATA.TRAINING_LEVELS = [
     ['パワー系（厚み重視の剛力体型）', 3], ['ボディビル級（過剰な筋肥大）', 2]
   ];
 
-// index.html:2644
+// index.html:2965
 GUZEN_DATA.TRAINING_DESC = {
     '昔は鍛えていた（今は中断）':['かつて鍛えた名残の厚みが胸と肩に残っている','traces of past training remain as thickness in his chest and shoulders'],
     '自宅で軽く（自重・腕立て腹筋）':['腹まわりが締まっている程度の、軽い運動習慣がうかがえる体','a lightly kept body — a trim waist that hints at simple home workouts'],
@@ -109,7 +109,7 @@ GUZEN_DATA.TRAINING_DESC = {
     'ボディビル級（過剰な筋肥大）':['全身の筋肉が服のシルエットを変えるほど肥大し、腕は袖を張らせ、首から肩が盛り上がっている。血管の浮きや筋腹の丸みも自然な範囲で描いてよい','bodybuilder-level hypertrophy — muscles that reshape his clothing silhouette, sleeves stretched by his arms, neck-to-shoulder mass. Natural vascularity and full muscle bellies are welcome']
   };
 
-// index.html:2675
+// index.html:2996
 GUZEN_DATA.TRAINING_BODY = {
     'しっかり鍛えている（中級）':[['筋肉質',3],['引き締まったスポーツ体型',3]],
     '細マッチョ仕上げ（絞り重視）':[['細マッチョ',5],['痩せマッチョ',3]],
@@ -119,7 +119,7 @@ GUZEN_DATA.TRAINING_BODY = {
     'ボディビル級（過剰な筋肥大）':[['筋肉質',5],['逆三角形体型',3],['がっしり体型',2]]
   };
 
-// index.html:2683
+// index.html:3004
 GUZEN_DATA.TRAINING_EXCL = {
     'フィジーク級（大会レベルの絞りと逆三角形）':['やせ型','華奢な体型','ぽっちゃり','腹だけぽっちゃり','ビール腹'],
     'ボディビル級（過剰な筋肥大）':['やせ型','華奢な体型','細身','ぽっちゃり','腹だけぽっちゃり','ビール腹'],
@@ -128,19 +128,19 @@ GUZEN_DATA.TRAINING_EXCL = {
     '細マッチョ仕上げ（絞り重視）':['ぽっちゃり','腹だけぽっちゃり','ビール腹']
   };
 
-// index.html:2697
+// index.html:3018
 GUZEN_DATA.BODY_ASYMS = [['なし',60],['右肩がごくわずかに下がっている',6],['左肩がごくわずかに下がっている',6],['軽いなで肩',7],['利き腕側の肩がわずかに前に出る',5],['骨盤がごくわずかに傾き、重心が片脚寄り',5],['首がわずかに利き手側へ傾く癖',4]];
 
-// index.html:2698
+// index.html:3019
 GUZEN_DATA.POSTURES = [['自然な立ち姿',52],['背筋の伸びた立ち姿',12],['やや猫背気味',10],['軽く胸を張った立ち姿',8],['リラックスして重心を片脚に預けた立ち方',9],['肩の力が抜けた立ち姿',9]];
 
-// index.html:2699
+// index.html:3020
 GUZEN_DATA.BODY_ASYM_EN = {'右肩がごくわずかに下がっている':'his right shoulder sits a touch lower','左肩がごくわずかに下がっている':'his left shoulder sits a touch lower','軽いなで肩':'gently sloped shoulders','利き腕側の肩がわずかに前に出る':'his dominant-side shoulder rolls slightly forward','骨盤がごくわずかに傾き、重心が片脚寄り':'a barely-tilted pelvis with weight favoring one leg','首がわずかに利き手側へ傾く癖':'a habit of tilting his head slightly toward his dominant side'};
 
-// index.html:2700
+// index.html:3021
 GUZEN_DATA.POSTURE_EN = {'自然な立ち姿':'a natural stance','背筋の伸びた立ち姿':'an upright, straight-backed stance','やや猫背気味':'slightly rounded, hunched posture','軽く胸を張った立ち姿':'a lightly chest-out stance','リラックスして重心を片脚に預けた立ち方':'a relaxed stance with weight on one leg','肩の力が抜けた立ち姿':'a loose-shouldered, easy stance'};
 
-// index.html:2758
+// index.html:3079
 GUZEN_DATA.SPORT_MEM = {
     '野球':{sc:['夏の球場の匂い','朝5時のグラウンドの白線','雨で流れた決勝の日','ロジンの白い粉'],ro:['エースで4番','ブルペンで一番声を出す係','スコアブック係の補欠','背番号のない最後の夏','代打の切り札','守備固め専門','声だけ甲子園レベル']},
     'サッカー':{sc:['雨の土のグラウンド','ナイター練習の帰り道','すり減ったスパイクの底'],ro:['背番号10','ゴールを守り続けたキーパー','ベンチから誰より声を出す係','PK戦で外した夜','壁パスの職人','走行距離だけはエース級']},
@@ -172,7 +172,7 @@ GUZEN_DATA.SPORT_MEM = {
     'ゴルフ':{sc:['朝露の打ちっぱなし','グリーンの読み合い'],ro:['ドライバー自慢','小技で稼ぐ職人']}
   };
 
-// index.html:2788
+// index.html:3109
 GUZEN_DATA.CULT_MEM = {
     '吹奏楽':['コンクール前日の音楽室の残響','リードを削り続けた放課後','金賞の瞬間の静寂'],
     '軽音':['文化祭の3分間のために半年かけた','部室のアンプの匂い','初ライブの手の震え'],

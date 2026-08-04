@@ -5,21 +5,22 @@
   const {
     C_MEASUREMENT_VALUES, C_MEASUREMENT_EN, pools, slotDefs, slotLabelMap, fixedFieldLabelMap, uiText, valueTranslations,
     sceneTranslations, captionFieldLabelMap, cardFieldLabelMap, uiCardTitles, NAMES_BY_YEAR, NATION_NAMES, OCC_SCENES, OCC_CAT_SCENES,
-    VIBE_AGE_MAX, OCCUPATIONS, OCC_CAT_LABELS, OCC_CAT_ORDER, OCC_MBTI_CAT, ATHLETIC_OCC, UNIFORM_WORKWEAR, UNIFORM_VARIANTS,
-    SPORTS, SPORT_BODY, VIBE_OCC, ETHNIC_HAIR_WEIGHTS, STRICT_HAIR_OCC, FREE_HAIR_OCC, SPORT_EXP_POOL, SPORT_EXP_WEIGHTS,
-    SPORT_MUSCLE, SPORT_SKELETON, TRAINING_LEVELS, TRAINING_DESC, TRAINING_BODY, TRAINING_EXCL, BODY_ASYMS, POSTURES,
-    BODY_ASYM_EN, POSTURE_EN, SPORT_MEM, CULT_MEM, MBTI_INTRO, OCC_HOOK, OCC_CAT_HOOK, ERA_HOOK,
-    BRIDGE_HOOK, TRAIN_HOOK, EYE_MIGRATION, BRAND_SINCE, UNDERWEAR_COLOR_EN, FOOT_CFG_AXES, FOOT_SCENES, FOOT_COZY,
-    FOOT_POSTURES, FOOT_SHOE_STATES, FOOT_FABRICS, FOOT_SOCK_STATES, FOOT_ANGLES, FOOT_OCC_SCENES, FOOT_SCENE_MIGRATION, FOOT_OCC_CAT_SCENES,
-    FOOT_PROPS, POSTER_FOOT, FOOT_WIDTHS, FOOT_FEATURES, SOLE_TYPES, SOLE_WRINKLES, TOE_LINES, TOE_CURLS,
-    FACE_EXTRA_DEFAULTS, INNER_DISPLAY_KEYS, INNER_DREAMS, INNER_DREAM_CAT, INNER_DESIRES, INNER_WEAK_MIND, INNER_WEAK_BODY, INNER_TALENTS,
-    INNER_UPBRINGINGS, INNER_TRAUMAS, INNER_PRONOUNS_BASE, INNER_LOVE_BASE, INNER_LOVE_NOTES, INNER_ORIGINS, INNER_COMPLEX_GENERIC, INNER_BLOOD_DIST,
-    INNER_INCOME_TABLE, INNER_HOBBY_GENERIC, INNER_HOBBY_BY_VIBE, INNER_MYBOOM_MODERN, INNER_MYBOOM_COMMON, INNER_MYBOOM_RETRO, INNER_FOOD_LIKE, INNER_FOOD_HATE,
-    INNER_HEALTH_BASE, INNER_HEALTH_MID, INNER_LIVING_SINGLE, INNER_LIVING_MARRIED, INNER_FRIEND_MEET, INNER_FRIEND_NAMES, INNER_FRIEND_FREQ, INNER_LOVER_NONE,
-    INNER_LOVER_YES, INNER_MEMORY_BASE, INNER_JP_PREFS, INNER_NATION_CITIES, INNER_DIALECTS, INNER_SPEECH_REGISTER, INNER_SPEECH_VOICE, INNER_SPEECH_HABITS,
-    INNER_DEPS, INNER_CATS, INNER_PRINCIPLES, INNER_UNFORGIVABLES, INNER_LOVE_NOTE_ANY, INNER_LOVE_NOTE_F, INNER_LOVE_NOTE_M, INNER_LOVE_NOTE_BI,
-    INNER_KANA2KANJI, INNER_FIELD_GEN, DICE_GROUPS, FRIEND_RELATIONS, FRIEND_HIER_DELTA, FRIEND_REL_EN, FRIEND_HIER_EN, IKEMEN_DELTAS,
-    IKEMEN_AXIS_LABELS, BODYHAIR_KEYS, UNIFORM_NAME_MIGRATION, PROMPT_PANES,
+    FVOCAB, FASHION_CASUAL_TAGS, ACC_NO_PIERCE, ACC_HI_PIERCE, ACC_WORK_OFF, VIBE_AGE_MAX, OCCUPATIONS, OCC_CAT_LABELS,
+    OCC_CAT_ORDER, OCC_MBTI_CAT, ATHLETIC_OCC, UNIFORM_WORKWEAR, UNIFORM_VARIANTS, SPORTS, SPORT_BODY, VIBE_OCC,
+    ETHNIC_HAIR_WEIGHTS, STRICT_HAIR_OCC, FREE_HAIR_OCC, SPORT_EXP_POOL, SPORT_EXP_WEIGHTS, SPORT_MUSCLE, SPORT_SKELETON, TRAINING_LEVELS,
+    TRAINING_DESC, TRAINING_BODY, TRAINING_EXCL, BODY_ASYMS, POSTURES, BODY_ASYM_EN, POSTURE_EN, SPORT_MEM,
+    CULT_MEM, MBTI_INTRO, OCC_HOOK, OCC_CAT_HOOK, ERA_HOOK, BRIDGE_HOOK, TRAIN_HOOK, EYE_MIGRATION,
+    BRAND_SINCE, UNDERWEAR_COLOR_EN, FOOT_CFG_AXES, FOOT_SCENES, FOOT_COZY, FOOT_POSTURES, FOOT_SHOE_STATES, FOOT_FABRICS,
+    FOOT_SOCK_STATES, FOOT_ANGLES, FOOT_OCC_SCENES, FOOT_SCENE_MIGRATION, FOOT_OCC_CAT_SCENES, FOOT_PROPS, POSTER_FOOT, FOOT_WIDTHS,
+    FOOT_FEATURES, SOLE_TYPES, SOLE_WRINKLES, TOE_LINES, TOE_CURLS, FACE_EXTRA_DEFAULTS, INNER_DISPLAY_KEYS, INNER_DREAMS,
+    INNER_DREAM_CAT, INNER_DESIRES, INNER_WEAK_MIND, INNER_WEAK_BODY, INNER_TALENTS, INNER_UPBRINGINGS, INNER_TRAUMAS, INNER_PRONOUNS_BASE,
+    INNER_LOVE_BASE, INNER_LOVE_NOTES, INNER_ORIGINS, INNER_COMPLEX_GENERIC, INNER_BLOOD_DIST, INNER_INCOME_TABLE, INNER_HOBBY_GENERIC, INNER_HOBBY_BY_VIBE,
+    INNER_MYBOOM_MODERN, INNER_MYBOOM_COMMON, INNER_MYBOOM_RETRO, INNER_FOOD_LIKE, INNER_FOOD_HATE, INNER_HEALTH_BASE, INNER_HEALTH_MID, INNER_LIVING_SINGLE,
+    INNER_LIVING_MARRIED, INNER_FRIEND_MEET, INNER_FRIEND_NAMES, INNER_FRIEND_FREQ, INNER_LOVER_NONE, INNER_LOVER_YES, INNER_MEMORY_BASE, INNER_JP_PREFS,
+    INNER_NATION_CITIES, INNER_DIALECTS, INNER_SPEECH_REGISTER, INNER_SPEECH_VOICE, INNER_SPEECH_HABITS, INNER_DEPS, INNER_CATS, INNER_PRINCIPLES,
+    INNER_UNFORGIVABLES, INNER_FASHION_SENSE, INNER_LOVE_NOTE_ANY, INNER_LOVE_NOTE_F, INNER_LOVE_NOTE_M, INNER_LOVE_NOTE_BI, INNER_KANA2KANJI, INNER_FIELD_GEN,
+    HIGH_TRAIN, DICE_GROUPS, FRIEND_RELATIONS, FRIEND_HIER_DELTA, FRIEND_REL_EN, FRIEND_HIER_EN, IKEMEN_DELTAS, IKEMEN_AXIS_LABELS,
+    BODYHAIR_KEYS, UNIFORM_NAME_MIGRATION, PROMPT_PANES,
   } = window.GUZEN_DATA;
   const STORAGE_KEY = 'guzen-ikemen-maker-v1.results';
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
@@ -112,13 +113,15 @@
     measurementDeckState[indexKey]=(measurementDeckState[indexKey]+1)%deck.length;
     return value;
   };
+  const deriveMeasurementB = a => { const A=Number(a)||7; return Math.round((A*1.57 + Math.random()*1)*10)/10; }; // B = A×1.57＋0〜1の誤差
   const ensureProfileMeasurements = c => {
     if(!c) return;
     const invalidA=!Number.isFinite(Number(c.measurementA)) || Number(c.measurementA)<5 || Number(c.measurementA)>10.5;
-    const invalidB=!Number.isFinite(Number(c.measurementB)) || Number(c.measurementB)<9 || Number(c.measurementB)>19;
+    const A0 = Number(c.measurementA);
+    const invalidB=!Number.isFinite(Number(c.measurementB)) || Number(c.measurementB) < A0*1.57 - 0.05 || Number(c.measurementB) > A0*1.57 + 1.05;
     const invalidC=!C_MEASUREMENT_VALUES.includes(c.measurementC);
     if(invalidA) c.measurementA=drawProfileMeasurement('A');
-    if(invalidB) c.measurementB=drawProfileMeasurement('B');
+    if(invalidB) c.measurementB=deriveMeasurementB(c.measurementA);
     if(invalidC) c.measurementC=drawProfileMeasurement('C');
   };
   const profileMeasurementCLabel = (value, english=false) => english ? (C_MEASUREMENT_EN[value] || value) : value;
@@ -391,8 +394,8 @@
   }
   function applyUiLanguage(){
     document.documentElement.lang = uiLang==='ja' ? 'ja' : 'en';
-    document.querySelector('.badge').textContent = 'GUZEN SLOT SYSTEM / V3.0.0';
-    document.querySelector('.title').textContent = 'Guzen Ikemen Maker V3.0.0';
+    document.querySelector('.badge').textContent = 'GUZEN SLOT SYSTEM / V3.2.0';
+    document.querySelector('.title').textContent = 'Guzen Ikemen Maker V3.2.0';
     document.querySelector('.subtitle').textContent = T('subtitle');
     const heroNotice = document.getElementById('heroNotice'); if(heroNotice) heroNotice.textContent = T('heroNotice');
     const tabMap = {slot:'tab_slot', result:'tab_result', history:'tab_history', settings:'tab_settings'};
@@ -595,7 +598,7 @@
     renderSelectOptions(trSel, 'trainingLevel', ['ランダム'].concat(TRAINING_LEVELS.map(x=>x[0])), trSel?.value || 'ランダム', false);
     const ssSel = document.getElementById('initialSeason');
     renderSelectOptions(ssSel, 'season', pools.seasons, ssSel?.value || 'ランダム', false);
-    if(ssSel) ssSel.onchange = () => { if(current){ current.season = ssSel.value !== 'ランダム' ? ssSel.value : current.season; renderAll(); } };
+    if(ssSel) ssSel.onchange = () => { if(current){ current.season = ssSel.value !== 'ランダム' ? ssSel.value : current.season; refreshSeasonOutfits(current); renderAll(); } };
     if(dmSel) dmSel.onchange = () => { if(current){ current.derivedMode = dmSel.value; renderAll(); } };
     if(groupPMSel) groupPMSel.onchange = () => { if(currentGroup){ currentGroup.promptMode = groupPMSel.value; renderAll(); } };
     renderSelectOptions(count, 'count', pools.counts, selected.count, false);
@@ -641,6 +644,7 @@
       catchphraseMode: document.getElementById('initialCatchphrase')?.value || '結果画面のみ表示',
       derivedMode: document.getElementById('initialDerivedMode')?.value || '参照画像前提（簡潔版）',
       season: document.getElementById('initialSeason')?.value || 'ランダム',
+      facePresetOut: document.getElementById('initialFacePresetOut')?.value || '含める',
       heightBase: document.getElementById('initialHeightBase')?.value || '平均身長ベース',
       ikemenIndexMode: document.getElementById('initialIkemenIndex')?.value || '表示しない',
       bodyHairMode: document.getElementById('initialBodyHairMode')?.value || '詳細指定',
@@ -980,7 +984,268 @@
     return sc;
   }
 
-  function generateCoordinatedOutfit(outfitType, age, rareMode, nationality='', vibe='ランダム', eraYear='2026'){
+  /* ===== V3.2.0 時代別ファッション語彙エンジン（年タグ＋近接年代ウィンドウ） ===== */
+  // 項目: [名称, from, peak, to, tags]  tags: c=カジュアル s=ストリート k=きれいめ f=古着 o=オフィス可 p=スポーツ / アウターのみ W=冬 L=春秋 S=夏羽織
+  // --- 台形近接ウィンドウ：from-3で立ち上がり、peakで最大、to+8まで残存（15%へ減衰） ---
+  function eraItemW(it, y){
+    const f = it[1], pk = it[2], t = it[3];
+    if(y < f-3 || y > t+8) return 0;
+    if(y < f) return 0.5 * (y-(f-3))/3;
+    if(y <= t){ const span = Math.max(1, Math.max(pk-f, t-pk)); return 1 + 0.7*(1 - Math.abs(y-pk)/span); }
+    return Math.max(0.15, 1 - ((y-t)/8)*0.85);
+  }
+  // 年齢ラグ：40歳超は55%で「若い頃の年」を参照（最大12年）
+  function eraRefYear(y, age){
+    const a = Number(age)||25;
+    if(a > 40 && Math.random() < 0.55) return y - Math.min(12, Math.round((a-32)*0.45));
+    return y;
+  }
+  function pickEraItem(list, y, tagRe, boostOld){
+    const cand = [];
+    for(const it of list){
+      let w = eraItemW(it, y);
+      if(!w) continue;
+      if(tagRe && !tagRe.test(it[4]||'')) continue;
+      if(boostOld && y > it[3]) w *= 3;
+      cand.push([it[0], w]);
+    }
+    return cand.length ? weighted(cand) : null;
+  }
+  function eraSilhouetteNote(y){
+    if(y < 1975) return '細身〜フレアの70年代前夜シルエット';
+    if(y < 1985) return 'アイビー〜プレッピーの端正なシルエット';
+    if(y < 1990) return '肩幅にゆとりのある80年代後半シルエット';
+    if(y < 1995) return '渋カジ〜キレカジのきれいめカジュアル感';
+    if(y < 2000) return '全体にルーズな90年代後半シルエット';
+    if(y < 2005) return 'ゆるさの残る2000年代前半シルエット';
+    if(y < 2010) return 'Yライン細身の2000年代後半シルエット';
+    if(y < 2015) return '細身基調の2010年代前半シルエット';
+    if(y < 2020) return 'ノームコア寄りのすっきりした細身シルエット';
+    if(y < 2023) return '全体にオーバーサイズの2020年代シルエット';
+    return 'オーバーサイズ×Y2Kが混ざる2020年代なかばのシルエット';
+  }
+  function mbtiStyleNote(mbti){
+    const m = String(mbti||'');
+    if(!m || m.length < 4) return '';
+    const cands = [];
+    if(/J$/.test(m)) cands.push('ベーシックな配色で、アイロンの効いた清潔感のある着こなし');
+    if(/P$/.test(m)) cands.push('柄物や差し色をその日の気分で取り入れる着こなし');
+    if(m[2]==='T') cands.push('モノトーン中心・機能優先の合理的な着こなし');
+    if(m[2]==='F') cands.push('柔らかい色味と肌ざわり重視の親しみやすい着こなし');
+    return cands.length ? pick(cands) : '';
+  }
+  const FV_INDEX = (()=>{ const m={}; for(const k of ['top','bottom','shoes','outer']) for(const it of FVOCAB[k]){ if(!m[it[0]]) m[it[0]]=[]; m[it[0]].push(it); } return m; })();
+  function fvInWindow(name, y){ const its = FV_INDEX[name]; if(!its) return true; return its.some(it=>eraItemW(it, y) > 0); }
+  const FV_SUIT_TYPES = ['紺スーツ','黒スーツ','グレースーツ','三つ揃いスーツ'];
+  function applyEraFashionLayer(res, outfitType, eraYear, opts){
+    opts = opts || {};
+    const y0 = Number(eraYear) || 2026;
+    const age = Number(opts.age)||25, season = opts.season || '', vibe = opts.vibe || '';
+    const mute = !!opts.mute; // ファッション無頓着：残存期（型落ち）を3倍で引く
+    if(FV_SUIT_TYPES.includes(outfitType)){
+      res.silhouette = pickEraItem(FVOCAB.suitSil, y0) || '';
+      if(Math.random() < 0.65){ const s = pickEraItem(FVOCAB.suitShirt, y0); if(s) res.top = s; }
+      if(Math.random() < 0.6){ const s = pickEraItem(FVOCAB.bizShoes, y0); if(s) res.shoes = s; }
+      if(season === '夏'){
+        if(y0 >= 2005 && Math.random() < 0.45){ res.jacket = '上着なし（クールビズ）'; res.tie = 'ノータイ'; }
+        else { res.tie = Math.random() < 0.7 ? (pickEraItem(FVOCAB.suitTie, y0) || '無地ネクタイ') : 'ノータイ'; res.jacket += '（盛夏用の薄手生地）'; }
+      } else {
+        res.tie = Math.random() < 0.8 ? (pickEraItem(FVOCAB.suitTie, y0) || '無地ネクタイ') : 'ノータイ';
+        if(season === '冬') res.coat = pickEraItem(FVOCAB.bizCoat, y0) || 'ステンカラーコート';
+        else if(season && Math.random() < 0.35) res.coat = pickEraItem(FVOCAB.bizCoat, y0, /l/) || '';
+      }
+      return res;
+    }
+    const tagRe = FASHION_CASUAL_TAGS[outfitType];
+    if(!tagRe){
+      if(outfitType === 'スポーツ練習着' && Math.random() < 0.5){ const s = pickEraItem(FVOCAB.shoes, y0, /p/); if(s) res.shoes = s; }
+      return res;
+    }
+    const y = eraRefYear(y0, age);
+    const oldEra = y0 < 1992; // 現代ベース値の混入を防ぐため旧年代はほぼ全置換
+    const forceAll = oldEra || outfitType==='きれいめカジュアル' || outfitType==='古着系'; // 新形式はベースが種値なので常に全置換
+    if(Math.random() < (forceAll?1:0.75)){ const t = pickEraItem(FVOCAB.top, y, tagRe, mute) || (forceAll ? pickEraItem(FVOCAB.top, y, null, mute) : null); if(t) res.top = t; }
+    if(Math.random() < (forceAll?1:0.75)){ const b = pickEraItem(FVOCAB.bottom, y, tagRe, mute) || (forceAll ? pickEraItem(FVOCAB.bottom, y, null, mute) : null); if(b) res.bottom = b; }
+    if(Math.random() < (forceAll?1:0.60)){ const s = pickEraItem(FVOCAB.shoes, y, tagRe, mute) || (forceAll ? pickEraItem(FVOCAB.shoes, y, null, mute) : null); if(s) res.shoes = s; }
+    // 置換されなかったベース値の年窓検証（範囲外なら強制差し替え）
+    for(const [k, lst] of [['top',FVOCAB.top],['bottom',FVOCAB.bottom],['shoes',FVOCAB.shoes]]){
+      if(res[k] && !fvInWindow(res[k], y0)){
+        const alt = pickEraItem(lst, y, tagRe, mute) || pickEraItem(lst, y, null, mute);
+        if(alt) res[k] = alt;
+      }
+    }
+    // 上着：季節連動
+    if(season === '夏'){
+      res.jacket = Math.random() < 0.8 ? '指定なし' : (pickEraItem(FVOCAB.outer, y, /S/) || '薄手の羽織りシャツ');
+    } else if(season === '冬'){
+      const w = pickEraItem(FVOCAB.outer, y, tagRe.source==='k' ? /k.*W|W.*k|[ck]?.*W/ : /W/, mute);
+      res.jacket = w || '防寒用の上着';
+      if(/サンダル/.test(res.shoes)) res.shoes = pickEraItem(FVOCAB.shoes, y, tagRe, mute) || 'スニーカー';
+    } else if(season){
+      res.jacket = Math.random() < 0.55 ? (pickEraItem(FVOCAB.outer, y, /L/, mute) || res.jacket) : '指定なし';
+    } else if(Math.random() < 0.7){
+      const l = pickEraItem(FVOCAB.outer, y, /[LW]/, mute); if(l) res.jacket = l;
+    }
+    res.eraNote = eraSilhouetteNote(y);
+    return res;
+  }
+  // --- 部位別ブランド ---
+  function assignPartBrands(res, outfitType, profile, eraYear, vibe){
+    const same = Math.random() < 0.30;
+    const denimBrands = eraBrandList(["Levi's",'EDWIN','BIG JOHN','UNIQLO','GU','無印良品','GLOBAL WORK','WEGO','ZARA','無地ノーブランド'], eraYear);
+    const sneakerBrands = eraBrandList(['NIKE','adidas','New Balance','PUMA','ASICS','MIZUNO','CONVERSE','VANS','無地ノーブランド'], eraYear);
+    const leatherBrands = ['REGAL','HARUTA','無地ノーブランド'];
+    if(FV_SUIT_TYPES.includes(outfitType)){
+      res.topBrand = pick(profile.formal);
+      res.bottomBrand = res.outfitBrand;
+      res.shoesBrand = pick(leatherBrands);
+      res.outerBrand = res.coat ? pick(profile.formal) : '';
+      return res;
+    }
+    const basePool = outfitType==='ストリート系' ? profile.street : (outfitType==='ジャケットスタイル'||outfitType==='きれいめカジュアル') ? (profile.preppy||profile.casual) : outfitType==='スポーツ練習着' ? profile.sports : profile.casual;
+    res.topBrand = same ? res.outfitBrand : pick(basePool);
+    res.bottomBrand = same ? res.outfitBrand : (/(デニム|パンツ|チノ|スラックス|カーゴ)/.test(res.bottom) && Math.random()<0.6 ? pick(denimBrands) : pick(basePool));
+    res.shoesBrand = same ? res.outfitBrand : (/(スニーカー|シューズ|サンダル|ブーツ)/.test(res.shoes) ? pick(sneakerBrands) : /(ローファー|革靴|チップ|モンク|モカシン)/.test(res.shoes) ? pick(leatherBrands) : pick(basePool));
+    res.outerBrand = (res.jacket && res.jacket !== '指定なし' && res.jacket !== 'なし') ? (same ? res.outfitBrand : pick(basePool)) : '';
+    return res;
+  }
+
+
+  // ===== V3.2.0 コーデ部位ヘルパー・アクセサリー・季節連動 =====
+  const COORD_TYPE_TAG = FASHION_CASUAL_TAGS;
+  function eraOptionsFor(kind, c, holiday){
+    const y = Number(c.eraYear)||2026;
+    const type = holiday ? (c.holidayOutfitType||c.outfitType) : c.outfitType;
+    const isSuit = FV_SUIT_TYPES.includes(type);
+    const season = c.season||'';
+    const tagRe = COORD_TYPE_TAG[type] || null;
+    const seen = new Set(); const out=[];
+    const push=v=>{ if(v && !seen.has(v)){ seen.add(v); out.push(v); } };
+    if(kind==='jacket'){
+      push('指定なし');
+      if(isSuit){ push('テーラードジャケット'); if(season==='夏' && y>=2005) push('上着なし（クールビズ）'); FVOCAB.bizCoat.forEach(it=>{ if(eraItemW(it,y)>0) push(it[0]); }); }
+      const sre = season==='夏' ? /S/ : season==='冬' ? /W/ : /[LWS]/;
+      FVOCAB.outer.forEach(it=>{ if(eraItemW(it,y)>0 && sre.test(it[4]||'')) push(it[0]); });
+      return out;
+    }
+    if(kind==='top'){ (isSuit?FVOCAB.suitShirt:FVOCAB.top).forEach(it=>{ if(eraItemW(it,y)>0 && (isSuit || !tagRe || tagRe.test(it[4]||''))) push(it[0]); }); if(!isSuit && tagRe) FVOCAB.top.forEach(it=>{ if(eraItemW(it,y)>0) push(it[0]); }); return out; }
+    if(kind==='bottom'){ FVOCAB.bottom.forEach(it=>{ if(eraItemW(it,y)>0 && (!tagRe || tagRe.test(it[4]||''))) push(it[0]); }); FVOCAB.bottom.forEach(it=>{ if(eraItemW(it,y)>0) push(it[0]); }); return out; }
+    if(kind==='shoes'){ (isSuit?FVOCAB.bizShoes:FVOCAB.shoes).forEach(it=>{ if(eraItemW(it,y)>0 && (isSuit || !tagRe || tagRe.test(it[4]||''))) push(it[0]); }); if(!isSuit) FVOCAB.shoes.forEach(it=>{ if(eraItemW(it,y)>0) push(it[0]); }); return out; }
+    if(kind==='tie'){ push('ノータイ'); FVOCAB.suitTie.forEach(it=>{ if(eraItemW(it,y)>0) push(it[0]); }); return out; }
+    if(kind==='sil'){ FVOCAB.suitSil.forEach(it=>{ if(eraItemW(it,y)>0) push(it[0]); }); return out; }
+    return out;
+  }
+  function partBrandRedraw(c, kind, holiday){
+    const y = c.eraYear; const type = holiday ? (c.holidayOutfitType||c.outfitType) : c.outfitType;
+    const isSuit = FV_SUIT_TYPES.includes(type);
+    const denim = eraBrandList(["Levi's",'EDWIN','BIG JOHN','UNIQLO','GU','無印良品','GLOBAL WORK','WEGO','ZARA','無地ノーブランド'], y);
+    const snk = eraBrandList(['NIKE','adidas','New Balance','PUMA','ASICS','MIZUNO','CONVERSE','VANS','無地ノーブランド'], y);
+    const lth = ['REGAL','HARUTA','無地ノーブランド'];
+    const cas = eraBrandList(['UNIQLO','GU','無印良品','BEAMS','UNITED ARROWS','SHIPS','GLOBAL WORK','URBAN RESEARCH','JOURNAL STANDARD','WEGO','coen','無地ノーブランド'], y);
+    const fml = eraBrandList(['AOKI','ORIHICA','SUIT SELECT','THE SUIT COMPANY','洋服の青山','はるやま','無地ノーブランド'], y);
+    const P = k => holiday ? 'holiday'+k[0].toUpperCase()+k.slice(1) : k;
+    if(kind==='top') c[P('topBrand')] = isSuit ? pick(fml) : pick(cas);
+    if(kind==='bottom') c[P('bottomBrand')] = isSuit ? (holiday?c.holidayOutfitBrand:c.outfitBrand) : (/(デニム|カーゴ|チノ)/.test(holiday?c.holidayBottom:c.bottom)?pick(denim):pick(cas));
+    if(kind==='shoes') c[P('shoesBrand')] = /(スニーカー|シューズ|サンダル|ブーツ)/.test(holiday?c.holidayShoes:c.shoes) ? pick(snk) : pick(lth);
+    if(kind==='jacket'){ const j = holiday?c.holidayJacket:c.jacket; c[holiday?'holidayOuterBrand':'outerBrand'] = (j && j!=='指定なし' && j!=='なし' && !/クールビズ/.test(j)) ? pick(cas) : ''; }
+  }
+  function rerollCoordPart(c, kind, holiday){
+    const y = Number(c.eraYear)||2026; const yy = eraRefYear(y, c.age);
+    const type = holiday ? (c.holidayOutfitType||c.outfitType) : c.outfitType;
+    const isSuit = FV_SUIT_TYPES.includes(type);
+    const tagRe = COORD_TYPE_TAG[type] || null;
+    const P = k => holiday ? 'holiday'+k[0].toUpperCase()+k.slice(1) : k;
+    if(kind==='jacket'){
+      const season=c.season||'';
+      let v;
+      if(isSuit){ if(season==='夏' && y>=2005 && Math.random()<0.45){ v='上着なし（クールビズ）'; if(!holiday) c.tie='ノータイ'; } else v='テーラードジャケット'; if(season==='冬' && !holiday) c.coat = pickEraItem(FVOCAB.bizCoat,y)||'ステンカラーコート'; }
+      else if(season==='夏') v = Math.random()<0.8?'指定なし':(pickEraItem(FVOCAB.outer,yy,/S/)||'薄手の羽織りシャツ');
+      else if(season==='冬') v = pickEraItem(FVOCAB.outer,yy,/W/)||'防寒用の上着';
+      else v = Math.random()<0.55?(pickEraItem(FVOCAB.outer,yy,/L/)||'指定なし'):'指定なし';
+      c[holiday?'holidayJacket':'jacket']=v;
+    }
+    if(kind==='top') c[holiday?'holidayTop':'top'] = (isSuit?pickEraItem(FVOCAB.suitShirt,y):pickEraItem(FVOCAB.top,yy,tagRe)) || (holiday?c.holidayTop:c.top);
+    if(kind==='bottom') c[holiday?'holidayBottom':'bottom'] = (isSuit?(holiday?c.holidayBottom:c.bottom):pickEraItem(FVOCAB.bottom,yy,tagRe)) || (holiday?c.holidayBottom:c.bottom);
+    if(kind==='shoes') c[holiday?'holidayShoes':'shoes'] = (isSuit?pickEraItem(FVOCAB.bizShoes,y):pickEraItem(FVOCAB.shoes,yy,tagRe)) || (holiday?c.holidayShoes:c.shoes);
+    if(kind==='tie') c.tie = Math.random()<0.8?(pickEraItem(FVOCAB.suitTie,y)||'無地ネクタイ'):'ノータイ';
+    if(kind==='sil') c.suitSilhouette = pickEraItem(FVOCAB.suitSil,y)||c.suitSilhouette;
+    partBrandRedraw(c, kind, holiday);
+  }
+  function generateAccessories(c, holiday){
+    const y = Number(c.eraYear)||2026, age = Number(c.age)||25;
+    const role = String(c.role||''), vibe = String(c.vibe||'');
+    const type = holiday ? (c.holidayOutfitType||'') : (c.outfitType||'');
+    const isSuit = FV_SUIT_TYPES.includes(type);
+    const list = [];
+    // 時計
+    if(age>=25 && Math.random()<0.55){
+      const inc = Number((String(c.incomeText||'').match(/約(\d+)万円/)||[])[1])||0;
+      if(inc>=700 && Math.random()<0.5) list.push('機械式の高級腕時計');
+      else if(y>=2016 && /IT|エンジニア|Web|プログラ/.test(role) && Math.random()<0.6) list.push('スマートウォッチ');
+      else if(/現場|職人|整備|工場|大工|鳶|農|漁|建設|自衛官|消防/.test(role)) list.push('タフネス系デジタル腕時計');
+      else if(/営業|銀行|商社|コンサル|公務員/.test(role)||isSuit) list.push('ビジネス腕時計');
+      else list.push(pick(['シンプルな腕時計','革ベルトの腕時計']));
+    }
+    // ネックレス（スーツ平日は除外）
+    if(!(isSuit && !holiday)){
+      if(['ストリート系','ホスト系','ギャル男系','やりらふぃー系','ヤンキー系'].includes(vibe) && Math.random()<0.45) list.push(pick(['シルバーチェーンネックレス','喜平ネックレス']));
+      else if(vibe==='韓国風' && Math.random()<0.35) list.push('華奢なシルバーネックレス');
+      else if(Math.random()<0.08) list.push('シンプルなネックレス');
+    }
+    // ピアス（1995年以降）
+    if(y>=1995 && !ACC_NO_PIERCE.some(r=>role.includes(r))){
+      const p = ACC_HI_PIERCE.some(r=>role.includes(r)) ? 0.5 : (['ストリート系','ギャル男系','ホスト系','バンドマン系','やりらふぃー系'].includes(vibe)?0.35:0.08);
+      if(Math.random()<p) list.push(pick(['片耳のシルバーピアス','両耳の小ぶりなピアス']));
+    }
+    // 夏小物
+    if(c.season==='夏' && holiday){
+      const sporty = (c.sportsHistory||[]).length>0;
+      if(sporty && age<=25 && Math.random()<0.3) list.push('ミサンガ');
+      else if(/サンダル|ショートパンツ/.test((c.holidayShoes||'')+(c.holidayBottom||'')) && Math.random()<0.18) list.push('アンクレット');
+    }
+    return list;
+  }
+  function accWorkNote(c){ return ACC_WORK_OFF.some(r=>String(c.role||'').includes(r)) ? '（勤務中は外す）' : ''; }
+  function syncMarriageRing(c){
+    if(!c) return;
+    const married = /既婚|再婚/.test(String(c.maritalText||''));
+    const strip = a => (a||[]).filter(x=>!/結婚指輪/.test(x));
+    c.accessories = strip(c.accessories); c.holidayAccessories = strip(c.holidayAccessories);
+    if(married && Math.random()<0.92){ (c.accessories=c.accessories||[]).push('左薬指に結婚指輪'); (c.holidayAccessories=c.holidayAccessories||[]).push('左薬指に結婚指輪'); }
+  }
+  function accText(c, holiday, english){
+    const l = (holiday?c.holidayAccessories:c.accessories)||[];
+    const note = !holiday ? accWorkNote(c) : '';
+    if(english) return ` Accessories: ${l.length?l.join(', '):'none'}${note?' (removed while on duty)':''}.`;
+    return `アクセサリーは${l.length?l.join('・'):'なし'}${note}。`;
+  }
+  function applyCoordToCharacter(c, holiday){
+    const co = generateCoordinatedOutfit(holiday?(c.holidayOutfitType||c.outfitType):c.outfitType, c.age, false, c.nationality, c.vibe, c.eraYear, c.season, c.mbti);
+    if(holiday){
+      c.holidayOutfitBrand=co.outfitBrand; c.holidayJacket=co.jacket; c.holidayTop=co.top; c.holidayBottom=co.bottom; c.holidayShoes=co.shoes;
+      c.holidaySockBrand=co.sockBrand; c.holidaySockType=co.sockType; c.holidaySockColor=co.sockColor; c.holidaySockUse=co.sockUse;
+      c.holidayTopBrand=co.topBrand||''; c.holidayBottomBrand=co.bottomBrand||''; c.holidayShoesBrand=co.shoesBrand||''; c.holidayOuterBrand=co.outerBrand||'';
+      c.holidayEraFashionNote=co.eraNote||''; c.holidayStyleNote=co.styleNote||c.holidayStyleNote||'';
+    } else {
+      c.outfitBrand=co.outfitBrand; c.jacket=co.jacket; c.top=co.top; c.bottom=co.bottom; c.shoes=co.shoes;
+      c.sockBrand=co.sockBrand; c.sockType=co.sockType; c.sockShape=co.sockShape; c.sockMaterial=co.sockMaterial; c.sockColor=co.sockColor; c.sockUse=co.sockUse;
+      c.topBrand=co.topBrand||''; c.bottomBrand=co.bottomBrand||''; c.shoesBrand=co.shoesBrand||''; c.outerBrand=co.outerBrand||'';
+      c.tie=co.tie||''; c.coat=co.coat||''; c.suitSilhouette=co.silhouette||''; c.eraFashionNote=co.eraNote||''; c.styleNote=co.styleNote||c.styleNote||'';
+    }
+  }
+  function refreshSeasonOutfits(c){
+    if(!c) return;
+    if(!c.workUniform) applyCoordToCharacter(c, false);
+    applyCoordToCharacter(c, true);
+    applyMuscleFashion(c);
+    if(typeof applyFashionSenseFx==='function') applyFashionSenseFx(c);
+    const ring = (c.accessories||[]).some(x=>/結婚指輪/.test(x));
+    c.accessories = generateAccessories(c, false);
+    c.holidayAccessories = generateAccessories(c, true);
+    if(ring){ c.accessories.push('左薬指に結婚指輪'); c.holidayAccessories.push('左薬指に結婚指輪'); }
+  }
+
+  function generateCoordinatedOutfit(outfitType, age, rareMode, nationality='', vibe='ランダム', eraYear='2026', season='', mbti=''){
     const baseFormalBrands = ['AOKI','ORIHICA','SUIT SELECT','THE SUIT COMPANY','P.S.FA','UNITED ARROWS','SHIPS','nano・universe','KONAKA','五大陸','UNITED TOKYO'];
     const baseCasualBrands = ['UNIQLO','GU','無印良品','BEAMS','UNITED ARROWS','SHIPS','GLOBAL WORK','nano・universe','URBAN RESEARCH','JOURNAL STANDARD','ZARA','H&M','Calvin Klein','POLO RALPH LAUREN','TOMMY HILFIGER','LACOSTE','Champion','THE NORTH FACE','WEGO','niko and...','coen',"FREAK'S STORE",'green label relaxing','RAGEBLUE','HARE',"Lui's",'SENSE OF PLACE','BEAUTY&YOUTH','UNITED TOKYO','COMOLI','AURALEE','mont-bell','Patagonia','GRAMICCI','EDWIN',"Levi's",'BIG JOHN'];
     const baseSportsBrands = ['NIKE','adidas','MIZUNO','ASICS','PUMA','New Balance','UNDER ARMOUR','Champion','DESCENTE','le coq sportif'];
@@ -1153,10 +1418,35 @@
       res.sockShape = weighted([['クルー丈',5],['ミドル丈',2]]);
       res.sockMaterial = weighted([['綿混',3],['パイル編み',2],['リブ編みコットン',2]]);
       res.sockColor = res.sockType.includes('ライン') ? 'ライン入り白' : weighted([['白',4],['黒',4],['グレー',2]]);
+    } else if(outfitType==='きれいめカジュアル'){
+      res.outfitBrand = pick(profile.preppy || profile.casual);
+      res.jacket = weighted([['指定なし',3],['テーラードジャケット',3],['カーディガン',2],['ノーカラージャケット',1]]);
+      res.top = weighted([['白シャツ',3],['ニット',3],['バンドカラーシャツ',2],['無地カットソー',2],['ポロシャツ',1]]);
+      res.bottom = weighted([['黒スラックス',3],['ワイドスラックス',2],['テーパードパンツ',3],['白パンツ（マリン）',1],['チノパン',2]]);
+      res.shoes = weighted([['ローファー',4],['白レザースニーカー（スタンスミス風）',3],['サイドゴアブーツ',2],['茶革靴',1]]);
+      res.sockBrand = pick(profile.socksBusiness || ['Tabio','靴下屋','無地ノーブランド']);
+      res.sockType = weighted([['クルー丈ソックス',3],['ビジネスソックス',3],['インビジブルソックス',2]]);
+      res.sockShape = res.sockType==='インビジブルソックス' ? 'インビジブル丈' : 'クルー丈';
+      res.sockMaterial = weighted([['綿混',3],['綿＋ナイロン',3],['リブ編みコットン',2]]);
+      res.sockColor = weighted([['黒',4],['白',3],['グレー',2],['ベージュ',1]]);
+    } else if(outfitType==='古着系'){
+      res.outfitBrand = pick(eraBrandList(['古着（ブランド不詳）','WEGO',"FREAK'S STORE",'無地ノーブランド'], eraYear, '古着（ブランド不詳）'));
+      res.jacket = weighted([['指定なし',3],['デニムジャケット',2],['コーデュロイジャケット',2],['スウィングトップ',1],['ミリタリーM-65',1]]);
+      res.top = weighted([['バンドTシャツ',3],['チェックのネルシャツ',3],['カレッジロゴスウェット',2],['アメカジ無地ポケT',2],['ダンガリーシャツ',1]]);
+      res.bottom = weighted([['ダメージリペアの古着リーバイス風',3],['太畝コーデュロイ（古着）',2],['ミリタリーチノ（M-41風）',2],['ストレートデニム',2]]);
+      res.shoes = weighted([['キャンバススニーカー',3],['ワークブーツ（赤茶）',2],['レトロランニングシューズ',2],['コインローファー（HARUTA風）',1]]);
+      res.sockBrand = pick(eraBrandList(['無地ノーブランド','UNIQLO','Tabio','Champion'], eraYear));
+      res.sockType = weighted([['クルー丈ソックス',4],['ライン入りソックス',2],['ワンポイントソックス',2]]);
+      res.sockShape = 'クルー丈';
+      res.sockMaterial = weighted([['綿混',4],['リブ編みコットン',3]]);
+      res.sockColor = weighted([['白',3],['生成り',2],['黒',2],['グレー',2]]);
+      res.sockUse = '味の出た使用感';
     }
 
     res.sockUse = weighted([['新品に近い',1],['自然な使用感',4],['少し履き込まれている',4],['毛羽立ちが少しある',2],['スポーツ後の自然な使用感', outfitType==='スポーツ練習着'?4:1],['清潔だが生活感あり',3]].filter(x=>x[1]>0));
-    applyEraFashionTwist(res, outfitType, eraYear);
+    applyEraFashionLayer(res, outfitType, eraYear, {age, season, vibe});
+    assignPartBrands(res, outfitType, profile, eraYear, vibe);
+    res.styleNote = Math.random() < 0.5 ? mbtiStyleNote(mbti) : '';
     return res;
   }
 
@@ -2046,6 +2336,11 @@
     });
     return e;
   }
+  function facePresetPhrase(c, english=false, lead=true){
+    if(!c || c.facePresetOut === '含めない') return '';
+    if(english) return `Overall face impression: ${c.facePreset} (but for eyes, nose, mouth and other details, the part-level specs below take priority). `;
+    return `顔立ちの全体印象は${c.facePreset}（ただし目・鼻・口など細部は後述のパーツ指定を優先する）。`;
+  }
   function eraStyleNote(c, english=false){
     const y = Number(c.eraYear) || 2026;
     const era = eraProfile(y);
@@ -2488,12 +2783,18 @@
       if(english) return `Work outfit contents: ${c.workUniformEn} — top: ${c.top}${uniformJacketPhrase(c, true)}, bottom: ${c.bottom}, shoes: ${c.shoes}${uniformHatPhrase(c, true)}, socks: ${c.sockBrand} ${c.sockType} (${c.sockColor}, ${c.sockUse}). Do not reproduce real organizations' insignia or logos. `;
       return `職業服装の内容：${c.workUniform}。トップスは${c.top}${uniformJacketPhrase(c, false)}、ボトムスは${c.bottom}、靴は${c.shoes}${uniformHatPhrase(c, false)}、靴下は${c.sockBrand}の${c.sockType}（${c.sockColor}、${c.sockUse}）。実在組織の記章・ロゴは正確に再現しない。`;
     }
-    if(english) return `Work outfit contents: ${c.outfitBrand} ${c.outfitType} — outerwear: ${c.jacket}, top: ${c.top}, bottom: ${c.bottom}, shoes: ${c.shoes}, socks: ${c.sockBrand} ${c.sockType} (${c.sockColor}, ${c.sockUse}). `;
-    return `職業服装の内容：${c.outfitBrand}の${c.outfitType}。上着は${c.jacket}、トップスは${c.top}、ボトムスは${c.bottom}、靴は${c.shoes}、靴下は${c.sockBrand}の${c.sockType}（${c.sockColor}、${c.sockUse}）。`;
+    if(english) return `Work outfit contents: ${c.outfitBrand} ${c.outfitType} — outerwear: ${c.jacket}, top: ${c.topBrand?`${c.topBrand} `:''}${c.top}, bottom: ${c.bottomBrand?`${c.bottomBrand} `:''}${c.bottom}, shoes: ${c.shoesBrand?`${c.shoesBrand} `:''}${c.shoes}, socks: ${c.sockBrand} ${c.sockType} (${c.sockColor}, ${c.sockUse}).${c.tie?` Tie: ${c.tie}.`:''}${c.coat?` Coat: ${c.coat}.`:''}${c.suitSilhouette?` Suit silhouette: ${c.suitSilhouette}.`:''}${c.workFitNote?` ${c.workFitNote}.`:''}${accText(c,false,true)} `;
+    return `職業服装の内容：${c.outfitBrand}の${c.outfitType}。上着は${c.jacket}、トップスは${c.topBrand?`${c.topBrand}の`:''}${c.top}、ボトムスは${c.bottomBrand?`${c.bottomBrand}の`:''}${c.bottom}、靴は${c.shoesBrand?`${c.shoesBrand}の`:''}${c.shoes}、靴下は${c.sockBrand}の${c.sockType}（${c.sockColor}、${c.sockUse}）。${c.tie?`ネクタイは${c.tie}。`:''}${c.coat?`コートは${c.outerBrand?`${c.outerBrand}の`:''}${c.coat}。`:''}${c.suitSilhouette?`スーツのシルエットは「${c.suitSilhouette}」。`:''}${c.workFitNote?`${c.workFitNote}。`:''}${accText(c,false,false)}`;
+  }
+  function innerCasualNotes(c, english=false){
+    const notes = [c.holidayGapSuit ? (english?'He wears a suit even on his day off — to him, this IS casual':'休日なのにスーツ。本人は私服のつもり') : '', c.holidayStyleNote || c.styleNote, c.muscleFashionNote, c.senseFashionNote].filter(Boolean);
+    const senseLn = c.fashionSenseText ? (english ? ` His styling policy: "${c.fashionSenseText}".` : `本人のコーデ基準：「${c.fashionSenseText}」。`) : '';
+    if(!notes.length) return senseLn;
+    return (english ? ` Styling notes: ${notes.join('; ')}.` : `着こなしメモ：${notes.join('。')}。`) + senseLn;
   }
   function casualOutfitSpec(c, english=false){
-    if(english) return `Casual outfit contents: ${c.holidayOutfitBrand || c.outfitBrand} ${c.holidayOutfitType || c.outfitType} — outerwear: ${c.holidayJacket || 'none'}, top: ${c.holidayTop || c.top}, bottom: ${c.holidayBottom || c.bottom}, shoes: ${c.holidayShoes || c.shoes}, socks: ${c.holidaySockBrand || c.sockBrand} ${c.holidaySockType || c.sockType} (${c.holidaySockColor || c.sockColor}). `;
-    return `私服コーデの内容：${c.holidayOutfitBrand || c.outfitBrand}の${c.holidayOutfitType || c.outfitType}。上着は${c.holidayJacket || 'なし'}、トップスは${c.holidayTop || c.top}、ボトムスは${c.holidayBottom || c.bottom}、靴は${c.holidayShoes || c.shoes}、靴下は${c.holidaySockBrand || c.sockBrand}の${c.holidaySockType || c.sockType}（${c.holidaySockColor || c.sockColor}）。`;
+    if(english) return `Casual outfit contents: ${c.holidayOutfitBrand || c.outfitBrand} ${c.holidayOutfitType || c.outfitType} — outerwear: ${c.holidayJacket || 'none'}, top: ${c.holidayTopBrand?`${c.holidayTopBrand} `:''}${c.holidayTop || c.top}, bottom: ${c.holidayBottomBrand?`${c.holidayBottomBrand} `:''}${c.holidayBottom || c.bottom}, shoes: ${c.holidayShoesBrand?`${c.holidayShoesBrand} `:''}${c.holidayShoes || c.shoes}, socks: ${c.holidaySockBrand || c.sockBrand} ${c.holidaySockType || c.sockType} (${c.holidaySockColor || c.sockColor}).${c.holidayEraFashionNote?` Overall: ${c.holidayEraFashionNote}.`:''}${accText(c,true,true)}${innerCasualNotes(c, true)} `;
+    return `私服コーデの内容：${c.holidayOutfitBrand || c.outfitBrand}の${c.holidayOutfitType || c.outfitType}。上着は${c.holidayJacket && c.holidayJacket!=='指定なし' && c.holidayOuterBrand ? `${c.holidayOuterBrand}の` : ''}${c.holidayJacket || 'なし'}、トップスは${c.holidayTopBrand?`${c.holidayTopBrand}の`:''}${c.holidayTop || c.top}、ボトムスは${c.holidayBottomBrand?`${c.holidayBottomBrand}の`:''}${c.holidayBottom || c.bottom}、靴は${c.holidayShoesBrand?`${c.holidayShoesBrand}の`:''}${c.holidayShoes || c.shoes}、靴下は${c.holidaySockBrand || c.sockBrand}の${c.holidaySockType || c.sockType}（${c.holidaySockColor || c.sockColor}）。${c.holidayEraFashionNote?`全体は${c.holidayEraFashionNote}。`:''}${accText(c,true,false)}${innerCasualNotes(c)}`;
   }
   function occupationBackdrop(occ, english=false){
     const sp = {
@@ -2683,9 +2984,9 @@
       if(S.basic) catLines.push(`【基本】生年月日：${c.birthdateText}／出身地：${String(c.birthplaceText||'').replace('：','')}／血液型：${c.bloodType}／一人称：${c.pronoun}／口調：${c.speechText}／あだ名：${c.nicknameText}`);
       if(S.life) catLines.push(`【暮らし・家族】${c.maritalText}・恋人：${c.loverText}／家族構成：${c.familyText}／${c.livingText}・住居：${c.residenceText}／出自：${c.originText}／学歴：${c.educationText}／収入：${c.incomeText}／資産：${c.assetText}`);
       if(S.daily) catLines.push(`【日常・嗜好】健康：${c.healthText}／趣味：${c.hobbyText}／マイブーム：${c.myBoomText}／好物：${c.foodLikeText}・苦手：${c.foodHateText}`);
-      if(S.mind) catLines.push(`【内面】行動原理：${c.principleText}／夢：${c.innerDream}／本音の欲望：${c.innerDesire}／弱点：${c.weaknessMind}・${c.weaknessBody}／才能：${c.innerTalent}／コンプレックス：${c.complexText}／許せないこと：${c.unforgivableText}`);
+      if(S.mind) catLines.push(`【内面】行動原理：${c.principleText}／夢：${c.innerDream}／本音の欲望：${c.innerDesire}／弱点：${c.weaknessMind}・${c.weaknessBody}／才能：${c.innerTalent}／コンプレックス：${c.complexText}／許せないこと：${c.unforgivableText}／コーデ基準：${c.fashionSenseText}`);
       if(S.past) catLines.push(`【過去・人間関係】${c.pastUpbringing}／${c.pastTrauma}／思い出：${c.memoryText}／親友：${String(c.friendText||'').replace(/〔.*?〕/,'')}／恋愛対象：${c.loveTarget}／恋愛経験：${c.loveCountText}`);
-      if(S.adult) catLines.push(`【オトナの事情（小さく・婉曲表現で）】飲酒：${c.drinkText}／喫煙：${c.smokeText}／ギャンブル歴：${c.gambleText}／風俗経験：${c.fuzokuText}／初めての体験：${c.firstExpText}／週頻度：${c.weekFreqText}`);
+      if(S.adult) catLines.push(`【オトナの事情（小さく・婉曲表現で）】飲酒：${c.drinkText}／喫煙：${c.smokeText}／ギャンブル歴：${c.gambleText}／風俗経験：${c.fuzokuText}／初めての体験：${c.firstExpText}／週頻度：相手あり ${c.weekFreqText}・セルフ ${c.selfFreqText}`);
       const linesJa = catLines.join('。 ');
       if(english){
         const blocks = [
@@ -2939,6 +3240,11 @@
     } else {
       list = [['大卒（私立文系）',8],['大卒（地方国立大）',6],['大卒（私立理系）',5],['大卒（有名私大）',3],['高卒（就職組）',5],['専門学校卒',4],['大学院卒（修士）',1.5,'r'],['大卒（東大）',0.3,'r'],['大卒（京大）',0.3,'r'],['海外大卒',0.4,'r'],['大学中退',1,'r'],['通信制大学卒（働きながら）',0.7,'r'],['夜間大学卒',0.5,'r'],['大卒（1年留年して5年で卒業）',1.5],['高専卒',1]];
     }
+    if(/銀行員|商社勤務|コンサルタント|企画職/.test(role)){
+      list = list.filter(x=>!/高卒|高専卒|専門学校卒|中退|夜間高校/.test(x[0]));
+      if(/コンサルタント|商社勤務/.test(role)) list = list.map(x=>/有名私大|東大|京大|海外大|大学院/.test(x[0])?[x[0],x[1]*4,x[2]]:x);
+    }
+    if(age<23) list = list.filter(x=>!/留年して5年|大学院卒/.test(x[0]));
     if(age<21) list = list.filter(x=>!/大卒|大学院|海外大/.test(x[0]));
     if(!list.length) list = [['高卒',1]];
     const it = innerWeighted(list);
@@ -3346,6 +3652,7 @@
     if(has('education')){ const r = chooseInnerEducation(c); c.educationText = r[0]; M.education = r[1]; }
     if(has('origin')){ const r = chooseInnerOrigin(c); c.originText = r[0]; M.origin = r[1]; }
     if(has('marital')){ const r = chooseInnerMarital(c); c.maritalText = r[0]; M.marital = r[1]; }
+    if(has('marital') && typeof syncMarriageRing==='function') syncMarriageRing(c);
     if(has('living')){ const r = chooseInnerLiving(c); c.livingText = r[0]; M.living = r[1]; }
     if(has('birthplace')){ const r = chooseInnerBirthplace(c); c.birthplaceText = r[0]; M.birthplace = r[1]; }
     if(has('family')){ const r = chooseInnerFamily(c); c.familyText = r[0]; M.family = M.family==='gap'||r[1]==='gap' ? 'gap' : r[1]; }
@@ -3353,6 +3660,7 @@
     if(has('birthdate')){ const r = chooseInnerBirthdate(c); c.birthdateText = r[0]; M.birthdate = r[1]; }
     if(has('pronoun')){ const r = chooseInnerPronoun(c); c.pronoun = r[0]; M.pronoun = r[1]; }
     if(has('principle')){ const r = chooseInnerPrinciple(c); c.principleText = r[0]; M.principle = r[1]; }
+    if(has('fashionsense')){ const r = chooseInnerFashionSense(c); c.fashionSenseText = r[0]; M.fashionsense = r[1]; applyFashionSenseFx(c); }
     if(has('dream')){ const r = chooseInnerDream(c); c.innerDream = r[0]; M.dream = r[1]; }
     if(has('desire')){ const r = chooseInnerDesire(c, c.innerDream); c.innerDesire = r[0]; M.desire = r[1]; }
     if(has('weakness')){ const r = chooseInnerWeakness(c); c.weaknessMind = r[0]; c.weaknessBody = r[1]; M.weakness = r[2]; }
@@ -3376,6 +3684,7 @@
     if(has('firstexp')){ const r = chooseInnerFirstExp(c); c.firstExpText = r[0]; M.firstexp = r[1]; }
     if(has('lovecount')){ const r = chooseInnerLoveCount(c); c.loveCountText = r[0]; M.lovecount = r[1]; }
     if(has('weekfreq')){ const r = chooseInnerWeekFreq(c); c.weekFreqText = r[0]; M.weekfreq = r[1]; }
+    if(has('selffreq')){ const r = chooseInnerSelfFreq(c); c.selfFreqText = r[0]; M.selffreq = r[1]; }
     if(has('drink')){ const r = chooseInnerDrink(c); c.drinkText = r[0]; M.drink = r[1]; }
     if(has('smoke')){ const r = chooseInnerSmoke(c); c.smokeText = r[0]; M.smoke = r[1]; }
     if(has('friend')){ const r = chooseInnerFriend(c); c.friendText = r[0]; M.friend = r[1]; }
@@ -3419,6 +3728,7 @@
       ],
       mind: [
         [en?'Guiding Principle':'行動原理', V(c.principleText,'principle'), 'principleText','icv-mind'],
+        [en?'Fashion Policy':'コーデ基準', V(c.fashionSenseText,'fashionsense'), 'fashionSenseText','icv-mind'],
         [en?'Public Dream':'表向きの夢', V(c.innerDream,'dream'), 'innerDream','icv-mind'],
         [en?'Hidden Desire':'欲望（本音）', V(c.innerDesire,'desire'), 'innerDesire','icv-mind'],
         [en?'Weakness (Mind / Body)':'弱点（性格 / 身体）', V(`${c.weaknessMind||'—'}／${c.weaknessBody||'—'}`,'weakness'), 'weaknessMind,weaknessBody','icv-mind'],
@@ -3439,7 +3749,8 @@
         [en?'Gambling History':'ギャンブル歴', V(c.gambleText,'gamble'), 'gambleText','icv-adult'],
         [en?'Adult-Venue Experience':'風俗経験', V(c.fuzokuText,'fuzoku'), 'fuzokuText','icv-adult'],
         [en?'First Experience':'初めての体験', V(c.firstExpText,'firstexp'), 'firstExpText','icv-adult'],
-        [en?'Weekly Pace':'週頻度', V(c.weekFreqText,'weekfreq'), 'weekFreqText','icv-adult']
+        [en?'Weekly Pace (Partner)':'週頻度（相手あり）', V(c.weekFreqText,'weekfreq'), 'weekFreqText','icv-adult'],
+        [en?'Weekly Pace (Solo)':'週頻度（セルフ）', V(c.selfFreqText,'selffreq'), 'selfFreqText','icv-adult']
       ]
     };
     const allOn = INNER_CATS.every(([k])=>innerCatShow[k]);
@@ -3483,11 +3794,13 @@
       speechText: (()=>{ const arr=[]; for(let i=0;i<14;i++){ arr.push(chooseInnerSpeech(c)[0]); } return [...new Set(arr)]; })(),
       memoryText: [...new Set(INNER_MEMORY_BASE.map(x=>x[0]).concat(['結婚式で友人代表が号泣したこと','子どもが初めて歩いた日']))],
       principleText: INNER_PRINCIPLES.map(x=>x[0]),
+      fashionSenseText: INNER_FASHION_SENSE.map(x=>x[0]),
       unforgivableText: INNER_UNFORGIVABLES.map(x=>x[0]),
       fuzokuText: ['なし','なし（機会がない）','なし（興味がない）','なし（お金がもったいない）','なし（対象外）','誘われて断った','付き合いで1回だけ','若い頃に数回','たまに行く','行きつけがある','卒業した（昔は通った）','ノーコメント（察してほしい）'],
       gambleText: ['なし（興味なし）','宝くじを年末だけ','競馬をレジャー程度','パチンコ経験あり（今はしない）','学生時代に雀荘へ通った','パチスロに熱かった時期がある','現役でパチンコ通い','競艇・競輪もたしなむ','株・FXで手痛い授業料を払った','借金を作って足を洗った','麻雀は打てるが賭けない主義','ソシャゲのガチャが実質ギャンブルだと気づいている'],
       firstExpText: ['二十歳前後','大学時代','社会人1年目','20代半ば','20代後半','成人してすぐ','30代（遅咲き）','まだない','まだない（興味もない）','ノーコメント（言わぬが花）','忘れたことにしている','秘密（大人になってから話すやつ）'],
-      weekFreqText: ['夫婦円満ペース（月数回）','週1をキープ','最近はご無沙汰気味','レス気味だが仲は良い','もっぱらセルフ（家庭円満のコツらしい）','月数回＋セルフで補完（内緒）','アプリを覗くだけ覗いている','週1〜2（会える日次第）','週末集中型','遠距離につき月イチ','セルフも併用（会えない週用）','アプリは消した（恋人に誓って）','セルフ週2〜3（本人談）','セルフ週1','ほぼ毎日（若さ）','月数回（省エネ）','賢者モード長期継続中','ノーカウント主義','アプリで週末ごとに相手を探す','マッチング疲れで休止中','気の置けない友人がいる（察してほしい）','もう数えていない（安らか）','聞くな（察してほしい）','ノーコメント'],
+      weekFreqText: ['夫婦円満ペース（月数回）','週1をキープ','最近はご無沙汰気味','レス気味だが仲は良い','記念日限定','聞くな（察してほしい）','週1〜2（会える日次第）','週末集中型','遠距離につき月イチ','まだそういう関係ではない','なし（相手がいない）','ゼロ更新中（記録継続）','たまに（アプリで会う人と）','気の置けない友人がいる（察してほしい）','ご縁があれば（現在は素振りのみ）','なし（そもそも求めていない）','もう数えていない（安らか）','ノーコメント'],
+      selfFreqText: ['週2〜3（本人談）','週1','ほぼ毎日（若さ）','月数回（省エネ）','賢者モード長期継続中','ノーカウント主義','週1（内緒）','月数回（こっそり）','ほぼ卒業した','会えない週の補完程度','恋人に誓って控えめ','ほぼなし（性欲も控えめ）','月数回（健康維持）','もう数えていない（安らか）'],
       drinkText: ['飲まない（下戸）','飲まない（あえて）','付き合い程度','週末だけ','晩酌が日課（ビール1本）','晩酌が日課（ハイボール派）','ザル（記憶は残るタイプ）','ザル（記憶が飛ぶタイプ）','休肝日を週2で死守','禁酒中（今週から）','家では飲まない主義','クラフトビール沼','日本酒をゆっくり派','ノンアル愛好家'],
       smokeText: ['吸わない','吸わない（匂いも苦手）','元喫煙者（禁煙5年目）','元喫煙者（禁煙成功・今は匂いに敏感）','加熱式タバコ','紙巻き1日数本','紙巻き1日一箱','たまにもらいタバコ','飲んだ時だけ吸う','減煙中（1日数本まで来た）','葉巻をごくたまに（気取り）'],
       loveCountText: ['0人','0人（そもそも求めていない）','1人','1人（妻ひと筋）','1人（手をつないで終わった清い交際）','2人','3人','片手で足りる','5〜6人','10人前後','二桁（途中で数えるのをやめた）','ノーカウント主義'],
@@ -3531,7 +3844,7 @@
         if(S.past){ col.push(`upbringing (${c.pastUpbringing||''})`); }
         const sub = [];
         if(S.mind) sub.push(`his hidden desire (${c.innerDesire||''})`);
-        if(S.adult) sub.push(`adult-venue history (${c.fuzokuText||'none'}), first experience (${c.firstExpText||''}), weekly pace (${c.weekFreqText||''}), drinking (${c.drinkText||''}), smoking (${c.smokeText||''}) and gambling history (${c.gambleText||'none'})`);
+        if(S.adult) sub.push(`adult-venue history (${c.fuzokuText||'none'}), first experience (${c.firstExpText||''}), weekly pace with partner (${c.weekFreqText||''}), solo pace (${c.selfFreqText||''}), drinking (${c.drinkText||''}), smoking (${c.smokeText||''}) and gambling history (${c.gambleText||'none'})`);
         if(S.past && c.pastTrauma && c.pastTrauma!=='トラウマ：なし') sub.push(`past (${c.pastTrauma})`);
         parts.push(` Add a small self-deprecating column touching lightly on ${col.join(', ')}${sub.length ? ` and — only as subtle subtext, never explicit — ${sub.join(', ')}` : ''}.`);
       }
@@ -3548,7 +3861,7 @@
     if(S.daily || S.mind){
       const pd = [];
       if(S.daily){ pd.push(`趣味「${c.hobbyText||''}」`, `マイブーム「${c.myBoomText||''}」`, `好物「${c.foodLikeText||''}」`, `苦手「${c.foodHateText||''}」`, `健康状態「${c.healthText||''}」`); }
-      if(S.mind){ pd.push(`将来の夢「${c.innerDream||''}」`, `秀でた特技「${c.innerTalent||''}」`); }
+      if(S.mind){ pd.push(`将来の夢「${c.innerDream||''}」`, `秀でた特技「${c.innerTalent||''}」`, `コーデ基準「${c.fashionSenseText||''}」`); }
       parts.push(`パーソナルデータ欄も設ける：${pd.join('、')}。`);
     }
     if(S.basic || S.past || S.life){
@@ -3565,7 +3878,7 @@
       if(S.past){ col.push(`生い立ち（${c.pastUpbringing||''}）`); }
       const sub = [];
       if(S.mind) sub.push(`本音の欲望（${c.innerDesire||''}）`);
-      if(S.adult) sub.push(`夜の顔（飲酒：${c.drinkText||''}／喫煙：${c.smokeText||''}／ギャンブル歴：${c.gambleText||'なし'}／風俗経験：${c.fuzokuText||'なし'}／初めての体験：${c.firstExpText||''}／週頻度：${c.weekFreqText||''}）`);
+      if(S.adult) sub.push(`夜の顔（飲酒：${c.drinkText||''}／喫煙：${c.smokeText||''}／ギャンブル歴：${c.gambleText||'なし'}／風俗経験：${c.fuzokuText||'なし'}／初めての体験：${c.firstExpText||''}／週頻度：相手あり ${c.weekFreqText||''}・セルフ ${c.selfFreqText||''}）`);
       if(S.past && c.pastTrauma && c.pastTrauma!=='トラウマ：なし') sub.push(`過去（${c.pastTrauma}）`);
       parts.push(`自虐まじりの小コラムでは${col.join('、')}に軽く触れ${sub.length ? `、${sub.join('や')}は誌面に直接書かず行間の匂わせ程度にとどめる` : 'る'}。`);
     }
@@ -3617,21 +3930,84 @@
     if(/興味がない/.test(String(c.loveTarget||''))) list = married ? [['ノーコメント（家庭の事情）',5],['二十歳前後',2]] : [['まだない（興味もない）',6],['ノーコメント',2]];
     else if(!married){ const still = age>=25 ? [['まだない',age>=30?1.2:2,'r']] : [['まだない',4]]; list = list.concat(still); }
     const it = innerWeighted(list);
-    const badge = it[2]==='r' ? 'rare' : (it[2]==='d'&&Math.random()<.5 ? 'rare' : null);
-    return [it[0], badge];
+    let badge = it[2]==='r' ? 'rare' : (it[2]==='d'&&Math.random()<.5 ? 'rare' : null);
+    let v = it[0];
+    if(!/まだない|ノーコメント|忘れた/.test(v)){
+      const lt2 = String(c.loveTarget||'');
+      let partners = ['当時の恋人','同い年の恋人','年上の人','お互い初めて同士'];
+      if(/^女性|どちらも/.test(lt2)) partners = partners.concat(['当時の彼女','初カノ','バイト先で出会った年上の彼女']);
+      if(/^男性/.test(lt2)) partners = ['当時の恋人','年上の人','学生時代からの恋人','お互い初めて同士'];
+      if(/社会人|20代半ば|20代後半|30代/.test(v)){
+        partners.push('職場で出会った人','合コンで知り合った人');
+        if((Number(c.eraYear)||2026)>=2016) partners.push('マッチングアプリで出会った人');
+      }
+      if(married && /二十歳前後|大学時代|社会人1年目|成人してすぐ/.test(v) && Math.random()<0.35) partners = ['のちに妻になる人'];
+      let places = ['相手の部屋','自分の部屋','旅行先の宿'];
+      if(/大学時代/.test(v)) places = ['相手の下宿','自分のワンルーム','ゼミ旅行先の宿'];
+      if(/二十歳前後|成人してすぐ/.test(v)) places.push('実家（家族の留守中）');
+      if(/社会人|20代|30代/.test(v)) places.push('ホテル');
+      let place = pick(places);
+      if(Math.random()<0.05){ place = pick(['車の中','漫画喫茶の個室']); if(!badge) badge='rare'; }
+      v = `${v}（相手は${pick(partners)}・場所は${place}）`;
+    }
+    return [v, badge];
   }
-  // --- 週頻度（婉曲・自己申告テイスト） ---
+  // --- 週頻度・相手あり（婉曲・自己申告テイスト） ---
   function chooseInnerWeekFreq(c){
     const age = Number(c.age)||25;
     const married = /既婚|再婚/.test(String(c.maritalText||''));
     const hasLover = /^恋人あり|婚約者あり/.test(String(c.loverText||''));
+    const noInterest = /興味がない/.test(String(c.loveTarget||''));
     let list;
-    if(married) list = [['夫婦円満ペース（月数回）',5],['週1をキープ',3],['最近はご無沙汰気味',4,'d'],['聞くな（察してほしい）',2,'d'],['レス気味だが仲は良い',2.5,'d'],['もっぱらセルフ（家庭円満のコツらしい）',2.5,'d'],['月数回＋セルフで補完（内緒）',2,'d'],['アプリを覗くだけ覗いている',0.5,'g'],['気の置けない友人がいる（察してほしい）',0.3,'g']];
-    else if(hasLover) list = [['週1〜2（会える日次第）',5],['週末集中型',4],['遠距離につき月イチ',1.5],['ノーコメント',2,'d'],['セルフも併用（会えない週用）',3,'d'],['アプリは消した（恋人に誓って）',1.5],['アプリがなぜかまだ生きている',0.4,'g']];
-    else list = [['セルフ週2〜3（本人談）',5,'d'],['セルフ週1',4],['ほぼ毎日（若さ）',age<=27?3:0.8,'d'],['月数回（省エネ）',3],['賢者モード長期継続中',2.5],['ノーカウント主義',2,'d'],['アプリで週末ごとに相手を探す',2,'d'],['マッチング疲れで休止中',2],['気の置けない友人がいる（察してほしい）',1,'d']];
-    if(age>=55) list = list.map(x=>/ほぼ毎日|週2〜3/.test(x[0])?[x[0],x[1]*0.3,x[2]]:x).concat([['もう数えていない（安らか）',3]]);
+    if(married) list = [['夫婦円満ペース（月数回）',5],['週1をキープ',3],['最近はご無沙汰気味',4,'d'],['レス気味だが仲は良い',2.5,'d'],['記念日限定',2],['聞くな（察してほしい）',2,'d'],['アプリを覗くだけ覗いている',0.5,'g'],['気の置けない友人がいる（察してほしい）',0.3,'g']];
+    else if(hasLover) list = [['週1〜2（会える日次第）',5],['週末集中型',4],['遠距離につき月イチ',1.5],['まだそういう関係ではない',1.5],['ノーコメント',2,'d']];
+    else if(noInterest) list = [['なし（そもそも求めていない）',8],['なし',3]];
+    else list = [['なし（相手がいない）',7],['ゼロ更新中（記録継続）',3,'d'],['たまに（アプリで会う人と）',1.5,'d'],['気の置けない友人がいる（察してほしい）',1,'d'],['ご縁があれば（現在は素振りのみ）',2]];
+    if(age>=55) list = list.map(x=>/週1〜2|週末集中/.test(x[0])?[x[0],x[1]*0.4,x[2]]:x).concat(married?[['もう数えていない（安らか）',3]]:[]);
     const it = innerWeighted(list);
     return [it[0], it[2]==='g' ? 'gap' : (it[2]==='d'&&Math.random()<.4 ? 'rare' : null)];
+  }
+  // --- 週頻度・セルフ（婉曲） ---
+  function chooseInnerSelfFreq(c){
+    const age = Number(c.age)||25;
+    const married = /既婚|再婚/.test(String(c.maritalText||''));
+    const hasLover = /^恋人あり|婚約者あり/.test(String(c.loverText||''));
+    const noInterest = /興味がない/.test(String(c.loveTarget||''));
+    let list = [['週2〜3（本人談）',5,'d'],['週1',4],['ほぼ毎日（若さ）',age<=27?3:0.6,'d'],['月数回（省エネ）',3],['賢者モード長期継続中',2],['ノーカウント主義',2,'d']];
+    if(married) list = [['週1（内緒）',4,'d'],['月数回（こっそり）',4],['ほぼ卒業した',3],['ノーカウント主義',2,'d'],['風呂掃除当番の日だけ…いや何でもない',1,'d']];
+    else if(hasLover) list = [['会えない週の補完程度',5],['週1',3],['月数回',3],['恋人に誓って控えめ',2],['ノーコメント',1.5,'d']];
+    if(noInterest) list = [['ほぼなし（性欲も控えめ）',5],['月数回（健康維持）',3],['ノーカウント主義',1.5,'d']];
+    if(age>=55) list = list.map(x=>/ほぼ毎日|週2〜3/.test(x[0])?[x[0],x[1]*0.25,x[2]]:x).concat([['もう数えていない（安らか）',3]]);
+    const it = innerWeighted(list);
+    let v = it[0];
+    let badge = it[2]==='d'&&Math.random()<.35 ? 'rare' : null;
+    // タイミングと場所（住居・職業と整合）
+    if(!/ほぼ卒業|ほぼなし|賢者モード|もう数えていない/.test(v)){
+      const liv = String(c.livingText||''), res = String(c.residenceText||''), role = String(c.role||'');
+      const y = Number(c.eraYear)||2026;
+      const tanshin = /単身赴任/.test(liv);
+      const dorm = /相部屋|営内|隊舎/.test(liv+res);
+      const sumikomi = /住み込み/.test(liv);
+      const jikka = /実家暮らし|祖父母の家/.test(liv);
+      const cohab = married && !tanshin;
+      const share = /ルームシェア/.test(liv);
+      let timings = [['寝る前',5],['風呂上がり',3],['休日の昼下がり',2.5],['深夜',3]];
+      let places;
+      if(dorm) { places = [['風呂の個室（相部屋ゆえ）',4],['消灯後の布団の中（無音の攻防）',3],['トイレの個室',2.5]]; timings = [['消灯後',5],['皆が出払った隙',3],['外泊時にまとめて',2]]; }
+      else if(sumikomi) { places = [['店の上の自室（音量に細心の注意）',5],['風呂場',3]]; }
+      else if(jikka) { places = [['深夜の自室（音に気を使う）',5],['風呂場',3.5],['家族の外出中の自室',3]]; timings = [['深夜、家族が寝静まってから',5],['家に誰もいない隙に',3.5],['風呂のついでに',3]]; }
+      else if(cohab) { places = [['風呂場',4],['書斎（家族に内緒）',2.5],['トイレ（安住の地）',3],['自室（妻の外出中）',3]]; timings = [['妻の外出中',4],['深夜、家族が寝静まってから',4],['早朝、誰よりも早く起きて',1.5]]; }
+      else if(share) { places = [['自室（鍵を確認してから）',5],['風呂場',3]]; }
+      else { places = [['自室（誰にも気兼ねなく）',5],['ベッドでだらだらと',3.5],['風呂場',2.5]]; }
+      if(/看護師|警備員|消防士|自衛官|工場|夜勤/.test(role)) timings.push(['夜勤明けの朝',4]);
+      if(/トラック|長距離/.test(role)) timings.push(['長距離明け',4]);
+      if(/営業|商社|コンサルタント/.test(role) && !dorm) { places.push(['出張先のビジネスホテル',2]); timings.push(['出張の夜',2]); }
+      if(y>=2020 && /IT|エンジニア|Web|デザイナー|企画/.test(role) && !dorm && !jikka){ timings.push(['テレワークの昼休み（背徳）',0.8,'d']); }
+      const t = innerWeighted(timings), p = innerWeighted(places);
+      if(t[2]==='d' && !badge) badge = 'rare';
+      v = `${v}（タイミング：${t[0]}／場所：${p[0]}）`;
+    }
+    return [v, badge];
   }
   // --- 恋愛経験人数（付き合った人数・人物像連動） ---
   function chooseInnerLoveCount(c){
@@ -3729,6 +4105,50 @@
     const it = innerWeighted(list);
     return [it[0], it[2]==='d'&&Math.random()<.4 ? 'rare' : (it[2]==='r'?'rare':null)];
   }
+  // --- コーデ基準（ファッションセンス・服装へ直結） ---
+  function chooseInnerFashionSense(c){
+    const married = /既婚|再婚/.test(String(c.maritalText||''));
+    const hasLover = /^恋人あり|婚約者あり/.test(String(c.loverText||''));
+    const jikka = /実家暮らし/.test(String(c.livingText||''));
+    let l = INNER_FASHION_SENSE.map(x=>x.slice());
+    l = l.filter(x=>!(x[2]==='wife' && !married)).filter(x=>!(x[2]==='gf' && (!hasLover || married))).filter(x=>!(x[2]==='mom' && !jikka));
+    const allSame = c.holidayTopBrand && c.holidayTopBrand===c.holidayBottomBrand && c.holidayBottomBrand===c.holidayShoesBrand;
+    if(allSame) l = l.map(x=>x[2]==='same'?[x[0],x[1]*4,x[2]]:x);
+    if(String(c.vibe||'')==='古着系' || String(c.holidayOutfitType||'')==='古着系') l = l.map(x=>x[2]==='furugi'?[x[0],x[1]*6,x[2]]:x);
+    if(/石橋を叩いて/.test(String(c.principleText||''))) l = l.map(x=>x[2]==='ten'?[x[0],x[1]*4,x[2]]:x);
+    if(/分不相応な買い物/.test(String(c.innerDesire||''))) l = l.map(x=>x[2]==='stretch'?[x[0],x[1]*5,x[2]]:x);
+    const it = innerWeighted(l);
+    let badge = null;
+    if(it[2]==='mute') badge = Math.random()<.4 ? 'rare' : null;
+    if(it[2]==='stretch') badge = 'gap';
+    if(it[2]==='d') badge = 'rare';
+    return [it[0], badge];
+  }
+  function applyFashionSenseFx(c){
+    if(!c) return;
+    const s = String(c.fashionSenseText||'');
+    c.senseFashionNote = '';
+    if(/量販店で3着|色違いを5枚|サイズ表記だけ|穴が開くまで/.test(s)){
+      const cheap = pick(eraBrandList(['無地ノーブランド','UNIQLO','しまむら','GU'], Number(c.eraYear)||2026, '無地ノーブランド'));
+      c.holidayOutfitBrand = cheap; c.holidayTopBrand = cheap; c.holidayBottomBrand = cheap; c.holidayShoesBrand = '';
+      if(c.holidayOuterBrand) c.holidayOuterBrand = cheap;
+      c.holidaySockUse = '着古してよれ気味';
+      c.senseFashionNote = Math.random()<0.12 ? '上下の色が少しケンカしている' : 'サイズ感が微妙に合っていない、飾り気のない着こなし';
+      if(/ケンカ/.test(c.senseFashionNote) && c.innerMeta) c.innerMeta.fashionsense = 'gap';
+    } else if(/妻が選んで|彼女が選んで/.test(s)){
+      c.senseFashionNote = '隅々まで手入れされた小綺麗な着こなし（選んだのは本人ではない）';
+    } else if(/背伸びしたブランド/.test(s)){
+      c.senseFashionNote = 'コーデの中で1点だけ明らかに高級なアイテムが浮いている';
+    } else if(/定番を10年/.test(s)){
+      c.senseFashionNote = '長く着込んだ定番品ならではの馴染んだ風合い';
+    } else if(/古着一筋/.test(s)){
+      c.senseFashionNote = '年代物の風合いを活かした古着ミックス';
+    }
+    // 内面リンク：体型コンプ→オーバーサイズ隠し
+    if(/ぽっちゃり|ビール腹|腹だけ/.test(String(c.bodyType||'')) && /体型|腹/.test(String(c.complexText||'')) && !c.senseFashionNote){
+      c.senseFashionNote = 'オーバーサイズで体型をぼかしがちな着こなし';
+    }
+  }
   // --- 恋愛対象：実際の割合＋対象別の多彩な傾向ノート ---
   INNER_LOVE_BASE.length = 0;
   INNER_LOVE_BASE.push(['女性',90.6],['男性',2.6,'r'],['男女どちらも',2.6,'r'],['まだ揺らいでいて分からない',1.1,'r'],['恋愛にあまり興味がない',1.6,'r'],['二次元にしか本気になれない',1,'r'],['恋愛よりも推しがすべて',0.5,'r']);
@@ -3807,6 +4227,27 @@
       const r = chooseInnerComplexBase(c);
       if(/兄と比べられて/.test(r[0]) && !/次男|三男|末っ子|兄/.test(String(c.originText||'')+String(c.familyText||''))) continue;
       if(/方言/.test(r[0]) && !(typeof innerDialectOf==='function' && innerDialectOf(c))) continue;
+      const by2 = (Number(c.eraYear)||2026) - (Number(c.age)||25);
+      if(/名前がキラキラ/.test(r[0]) && by2 < 1996) continue;
+      if(/名前が古風/.test(r[0])){
+        if(c.nationality && c.nationality!=='日本') continue;
+        const nm = String(c.name||'').match(/^(\S+)[\s\u3000]+(\S+)（([^）]+)）$/);
+        if(!nm) continue;
+        const INNER_RETRO_GIVEN = [['茂','シゲル'],['勇','イサム'],['清','キヨシ'],['進','ススム'],['昇','ノボル'],['稔','ミノル'],['勝','マサル'],['守','マモル'],['武','タケシ'],['正','タダシ'],['博','ヒロシ'],['隆','タカシ'],['修','オサム'],['豊','ユタカ'],['巌','イワオ']];
+        const kanaSep = nm[3].includes('・') ? '・' : ' ';
+        const kanaToks = nm[3].split(/[・\s\u3000]+/).filter(Boolean);
+        const famKana = kanaToks[0] || '';
+        const alreadyRetro = INNER_RETRO_GIVEN.some(([kj])=>nm[2]===kj);
+        if(by2 > 1978 && !alreadyRetro){
+          const [kj, kk] = pick(INNER_RETRO_GIVEN);
+          c.name = `${nm[1]} ${kj}（${famKana}${kanaSep}${kk}）`;
+          const nr = chooseInnerNickname(c);
+          c.nicknameText = nr[0];
+          if(c.innerMeta) c.innerMeta.nickname = nr[1];
+          return [`名前が古風すぎること（祖父と同じ「${kj}」）`, 'rare'];
+        }
+        return [r[0], by2 > 1978 ? 'rare' : r[1]];
+      }
       return r;
     }
     return ['特になし（あるとすれば無頓着なこと）', null];
@@ -3913,7 +4354,8 @@
   INNER_DEPS.desire = ['gamble'];
   INNER_DEPS.past = INNER_DEPS.past.concat(['unforgivable']);
   INNER_DEPS.family = ['complex'];
-  INNER_DEPS.lover = ['weekfreq'];
+  INNER_DEPS.lover = ['weekfreq','selffreq','fashionsense'];
+  INNER_DEPS.marital.push('fashionsense');
   INNER_DEPS.health = ['smoke','drink'];
   INNER_DEPS.marital.push('weekfreq');
   INNER_DEPS.love.push('firstexp');
@@ -3925,6 +4367,19 @@
   INNER_DEPS.desire = (INNER_DEPS.desire||[]).concat(['asset']);
 
 
+  function applyMuscleFashion(c){
+    if(!c) return;
+    const high = HIGH_TRAIN.includes(c.trainingLevel);
+    const heavy = /フィジーク|パワー系|ボディビル/.test(String(c.trainingLevel||''));
+    c.muscleFashionNote = '';
+    c.workFitNote = c.workFitNote && !/既製スーツ|鍛えた体/.test(c.workFitNote) ? c.workFitNote : '';
+    if(!high) return;
+    c.muscleFashionNote = heavy ? pick(['胸と肩で生地がしっかり張るサイズ感','二の腕が袖を押し上げ、上からでも体つきが分かる']) : pick(['胸まわりに程よく張りの出るサイズ感','太ももに合わせて選んだテーパードの穿きこなし']);
+    if(['紺スーツ','黒スーツ','グレースーツ'].includes(c.outfitType) && heavy) c.workFitNote = '既製スーツの肩がやや窮屈そうな、上着の上からでも分かる鍛えた体';
+    if(c.season==='夏' && high && ['大学生カジュアル','ストリート系','私服通学風','古着系'].includes(c.holidayOutfitType) && Math.random()<0.3){
+      c.holidayTop = heavy ? 'タンクトップ' : 'ボディラインの出るピタT';
+    }
+  }
   function generateCharacter(partialMode='full', groupCtx=null){
     const fixed = groupCtx ? {} : getFixed();
     if(FRIEND_CTX){ if(FRIEND_CTX.age) fixed.age = FRIEND_CTX.age; if(FRIEND_CTX.nationality) fixed.nationality = FRIEND_CTX.nationality; if(FRIEND_CTX.season) fixed.season = FRIEND_CTX.season; }
@@ -4046,6 +4501,14 @@
     if(occFull && (UNIFORM_WORKWEAR[role] || UNIFORM_VARIANTS[role]) && !fixed.outfitType && !base.outfitType) outfitType = '職業制服';
     let holidayOutfitType = base.holidayOutfitType || pickOutfitType(false);
     if(holidayOutfitType === outfitType){ const retry = pickOutfitType(false); if(retry !== outfitType) holidayOutfitType = retry; }
+    let holidayGapSuit = base.holidayGapSuit || false;
+    if(!base.holidayOutfitType){
+      const HOLIDAY_BAN = ['紺スーツ','黒スーツ','グレースーツ','三つ揃いスーツ','学生服（学ラン）','学生服（ブレザー）'];
+      if(HOLIDAY_BAN.includes(holidayOutfitType)){
+        if(/スーツ/.test(holidayOutfitType) && Math.random() < 0.03){ holidayGapSuit = true; }
+        else holidayOutfitType = Math.random() < 0.6 ? 'きれいめカジュアル' : 'ジャケットスタイル';
+      }
+    }
     const STYLE_SINCE = {'スキンフェード':2016,'ローフェード':2016,'フェード×ツイストスパイラル':2019,'バーバースタイル（七三フェード）':2015,'クロップスタイル':2018,'マッシュウルフ':2020,'ソフトモヒカン':2003,'アシメショート':2008};
     const OCC_HAIRSTYLE = (()=>{
       const M = {};
@@ -4101,8 +4564,8 @@
       return weighted(entries);
     })();
     const bodyHair = generateBodyHair(age, ethnicity, vibe, mbti, eraYear);
-    const coord = generateCoordinatedOutfit(outfitType, age, rareMode, nationality, vibe, eraYear);
-    const hCoord = generateCoordinatedOutfit(holidayOutfitType, age, rareMode, nationality, vibe, eraYear);
+    const coord = generateCoordinatedOutfit(outfitType, age, rareMode, nationality, vibe, eraYear, season, mbti);
+    const hCoord = generateCoordinatedOutfit(holidayOutfitType, age, rareMode, nationality, vibe, eraYear, season, mbti);
     const uniform = occFull ? (chooseUniformVariant(role, season) || UNIFORM_WORKWEAR[role]) : null;
     if(uniform && !fixed.outfitType && !base.outfitType){
       coord.outfitBrand = '支給品・制服';
@@ -4138,7 +4601,7 @@
       height: `${height}cm`, weight: `${weight}kg`, bodyType,
       footSize: base.footSize || footFromHeight(height, ethnicity),
       measurementA: base.measurementA ?? drawProfileMeasurement('A'),
-      measurementB: base.measurementB ?? drawProfileMeasurement('B'),
+      measurementB: base.measurementB ?? null, // Aから導出（ensureProfileMeasurementsで B = A×1.57＋0〜1）
       measurementC: base.measurementC || drawProfileMeasurement('C'),
       footShape: base.footShape || pick(pools.footShapes),
       facePreset,
@@ -4160,7 +4623,12 @@
       outfitType, outfitBrand: base.outfitBrand || coord.outfitBrand, jacket: base.jacket || coord.jacket, top: base.top || coord.top, bottom: base.bottom || coord.bottom,
       boxerBrand: base.boxerBrand || pick(eraBrandList(pools.boxerBrands, eraYear, '指定しない')), boxerColor: base.boxerColor || pick(pools.boxerColors), baseWearType: base.baseWearType || fixed.baseWearType || weighted([['ボクサーパンツ',6],['ショートショーツ',2],['スポーツスパッツ',2]]), bangs: base.bangs || weighted(pools.bangs.map((v,i)=>[v, i===0?8:1.2])), hairFinish: base.hairFinish || weighted(pools.hairFinishes.map((v,i)=>[v, i===0?7:1.2])), hairVolume: base.hairVolume || weighted(pools.hairVolumes.map((v,i)=>[v, i===0?7:1.5])), bodyAsym: base.bodyAsym || weighted(BODY_ASYMS), posture: base.posture || (()=>{ let e = POSTURES.map(x=>x.slice()); if(age >= 55) e = e.map(([v,w])=>[v, v==='やや猫背気味'? w*2.2 : v==='背筋の伸びた立ち姿'? w*0.7 : w]); return weighted(e); })(),
       glasses: base.glasses || chooseGlasses(eraYear, vibe, role, age),
-      holidayOutfitType, holidayOutfitBrand: hCoord.outfitBrand, holidayJacket: hCoord.jacket, holidayTop: hCoord.top, holidayBottom: hCoord.bottom, holidayShoes: hCoord.shoes, holidaySockBrand: hCoord.sockBrand, holidaySockType: hCoord.sockType, holidaySockColor: hCoord.sockColor, holidaySockUse: hCoord.sockUse,
+      holidayOutfitType, holidayGapSuit, holidayOutfitBrand: hCoord.outfitBrand, holidayJacket: hCoord.jacket, holidayTop: hCoord.top, holidayBottom: hCoord.bottom, holidayShoes: hCoord.shoes, holidaySockBrand: hCoord.sockBrand, holidaySockType: hCoord.sockType, holidaySockColor: hCoord.sockColor, holidaySockUse: hCoord.sockUse,
+      accessories: base.accessories || generateAccessories({eraYear, age, role, vibe, incomeText: base.incomeText, season, outfitType, sportsHistory: sportsHistoryArr}, false),
+      holidayAccessories: base.holidayAccessories || generateAccessories({eraYear, age, role, vibe, incomeText: base.incomeText, season, holidayOutfitType, sportsHistory: sportsHistoryArr, holidayShoes: hCoord.shoes, holidayBottom: hCoord.bottom}, true),
+      facePresetOut: base.facePresetOut || (initial.facePresetOut || '含める'),
+      topBrand: coord.topBrand||'', bottomBrand: coord.bottomBrand||'', shoesBrand: coord.shoesBrand||'', outerBrand: coord.outerBrand||'', tie: coord.tie||'', coat: coord.coat||'', suitSilhouette: coord.silhouette||'', eraFashionNote: coord.eraNote||'', styleNote: coord.styleNote||'',
+      holidayTopBrand: hCoord.topBrand||'', holidayBottomBrand: hCoord.bottomBrand||'', holidayShoesBrand: hCoord.shoesBrand||'', holidayOuterBrand: hCoord.outerBrand||'', holidayEraFashionNote: hCoord.eraNote||'', holidayStyleNote: hCoord.styleNote||'',
       occupationMode, occInfluence, holidayPersona, sportName, sportsHistory: sportsHistoryArr, trainingLevel, season, avgHeightBase: heightAvgBase, workUniform: (uniform && !fixed.outfitType && !base.outfitType) ? uniform[0] : '', workUniformEn: (uniform && !fixed.outfitType && !base.outfitType) ? uniform[1] : '', headwear: (uniform && !fixed.outfitType && !base.outfitType) ? (uniform[7] || '') : '', headwearOn: base.headwearOn !== undefined ? base.headwearOn : true, derivedMode: initial.derivedMode || '参照画像前提（簡潔版）', ikemenIndexMode: initial.ikemenIndexMode || '表示しない', bodyHairMode: initial.bodyHairMode || '詳細指定', catchphraseMode: initial.catchphraseMode || '結果画面のみ表示',
       mainWearMode: initial.mainWearMode || 'ボクサーパンツのみ', underwearType: base.underwearType || (eraUw ? eraUw.type : ''), underwearColor: base.underwearColor || (eraUw ? eraUw.color : ''),
       shoes: base.shoes || coord.shoes, sockBrand: base.sockBrand || coord.sockBrand, sockType: base.sockType || coord.sockType, sockShape: base.sockShape || coord.sockShape, sockMaterial: base.sockMaterial || coord.sockMaterial, sockColor: base.sockColor || coord.sockColor, sockUse: base.sockUse || coord.sockUse,
@@ -4172,6 +4640,7 @@
       createdAt: new Date().toISOString()
     };
     if(partialMode==='face' && current){ Object.assign(c, current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,false), facePreset:c.facePreset, ageAppearance:c.ageAppearance, faceLine:c.faceLine, eyes:c.eyes, tearBags:c.tearBags, nose:c.nose, mouth:c.mouth, lips:c.lips, mouthPos:c.mouthPos, faceSpacing:c.faceSpacing, faceRatio:c.faceRatio, faceAsym:c.faceAsym, skin:c.skin, facialHair:c.facialHair, hairStyle:c.hairStyle, hairColor:c.hairColor, sceneIdea:buildEncounterScene({role:c.role, outfitType:current.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
+    applyMuscleFashion(c);
     if(partialMode==='outfit' && current){ Object.assign(c, current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,false), outfitType:c.outfitType,outfitBrand:c.outfitBrand,jacket:c.jacket,top:c.top,bottom:c.bottom,holidayOutfitType:c.holidayOutfitType,holidayOutfitBrand:c.holidayOutfitBrand,holidayJacket:c.holidayJacket,holidayTop:c.holidayTop,holidayBottom:c.holidayBottom,holidayShoes:c.holidayShoes,holidaySockBrand:c.holidaySockBrand,holidaySockType:c.holidaySockType,holidaySockColor:c.holidaySockColor,holidaySockUse:c.holidaySockUse,boxerBrand:c.boxerBrand,boxerColor:c.boxerColor,mainWearMode:c.mainWearMode,underwearType:c.underwearType,underwearColor:c.underwearColor,shoes:c.shoes,sockBrand:c.sockBrand,sockType:c.sockType,sockShape:c.sockShape,sockMaterial:c.sockMaterial,sockColor:c.sockColor,sockUse:c.sockUse,sceneIdea:buildEncounterScene({role:c.role, outfitType:c.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
     if(!groupCtx) Object.keys(locks).forEach(k=>{ if(locks[k] && current && current[k]!==undefined) c[k]=current[k]; });
     c.personality = mbtiDescription(c.mbti, false);
@@ -4425,7 +4894,7 @@ ${promptTargetGuide(lead, false)}`;
     if(english){
       return `[OUTPUT FORMAT] Create one 16:9 "handoff reference sheet". Panels: full body front / full body side / face front / face side / face front with teeth visible (an "eee" expression, mouth stretched wide sideways to show the upper and lower rows of teeth, dental-reference style — in every other panel teeth appear only as naturally visible when smiling) / bare feet front view / soles (shown by the person himself sitting and presenting his own feet toward the viewer — never as detached, disembodied soles) / an enlarged full-sole view (the same feet as the person panels, detailed enough that the skin ridges of the soles, creases, and arch contours are readable, always oriented toes-up, as a matter-of-fact non-sexual reference enlargement). Every panel must show exactly the same person.${soleDetailLine(c, true)}
 [INFO PANEL] (clean readable typography; list ONLY these items) Name "${nameKana(c)}" / Photo year: ${c.eraYear || '2026'} / Born: ${(Number(c.eraYear)||2026)-(Number(c.age)||25)} (age ${c.age}) / Height ${c.height}, Weight ${c.weight} / Body type "${displayValue('bodyType', c.bodyType)}" / Physique guide "about ${headCount(c)} heads tall" / Foot size ${c.footSize} / Foot width "${fw}". Keep all text crisp and unbroken.
-[PERSON] Photo year: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} ${c.age} years old, ${c.nationality}, ${c.ethnicity}. Face type: ${c.facePreset}. ${eyeAreaLine(c, true)} Nose: ${c.nose}. Base expression: ${c.mouth}.${faceExtraLine(c, true)} Facial symmetry: ${displayValue('faceAsym', c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)} Hair: ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}.
+[PERSON] Photo year: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} ${c.age} years old, ${c.nationality}, ${c.ethnicity}. ${facePresetPhrase(c, true)} ${eyeAreaLine(c, true)} Nose: ${c.nose}. Base expression: ${c.mouth}.${faceExtraLine(c, true)} Facial symmetry: ${displayValue('faceAsym', c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)} Hair: ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}.
 [PHYSIQUE] ${physiqueSpec(c, true, true)} Hip shape: ${displayValue('hipShape', c.hipShape || '標準的な丸みの臀部')} (a neutral body-reference note; never emphasized or staged).${muscleLine(c, true)}${trainingLine(c, true)}${bodyRealismLine(c, true)}
 [FEET] Foot shape: ${c.footShape}; ${footWidthDesc(c, true)}.${footFeatureLine(c, true, true)} In the barefoot panels, render toes with correct counts and joints; show exactly one pair of soles belonging to him only.
 [OUTFIT IN SHEET] Underwear (${underwearDesc(c, true)}) only, as a neutral body-reference presentation in the flat, matter-of-fact tone of clothing-catalog product photos — no sexual staging, emphasis, or posing. No outerwear, tops, bottoms, shoes, or socks.
@@ -4435,7 +4904,7 @@ ${promptTargetGuide(c, true)}`;
     }
     return `【出力形式】16:9の「参考画像作成シート（引継ぎ用）」を1枚作成する。パネル構成：全身前面／全身側面／顔正面／顔側面／顔正面（歯が見える：「イー」と口を横に広げて上下の歯列を見せる、歯科の資料撮影風の即物的な表情。このパネル以外では歯は笑ったときに自然に見える範囲のみ）／裸足の正面／足裏（人物が座って自分の足裏をこちらへ見せる姿として描き、足裏だけが切り離されて描写された状態にしない）／足裏の全体拡大（人物パネルと同一の足。足裏の指紋＝皮膚の隆線やしわ、土踏まずの起伏が分かる精細さ。常につま先が上・かかとが下の向き。資料用の即物的で非性的な拡大）。全パネルを完全に同一人物として一致させる。${soleDetailLine(c, false)}
 【情報欄】（読みやすい文字組で、次の項目のみ記載）氏名「${nameKana(c)}」／撮影年代：${eraLabel(c.eraYear)}／生年：${eraLabel((Number(c.eraYear)||2026)-(Number(c.age)||25))}（${c.age}歳）／身長${c.height}・体重${c.weight}／体型「${c.bodyType}」／体格の目安「約${headCount(c)}頭身」／足サイズ${c.footSize}／ワイズ「${fw}」${c.bioCaptionMode==='情報欄に入れる' ? `／ひとこと：「${c.bioText || bioLine(c, false)}」` : ''}。文字は崩さない。
-【人物】撮影年代：${eraLabel(c.eraYear)}。${countryLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。${sportsHistoryLine(c, false)}顔立ちは${c.facePreset}。${eyeAreaLine(c, false)}鼻は${c.nose}、基本表情は${c.mouth}。${faceExtraLine(c, false)}左右差は${c.faceAsym || 'ほぼ対称（ごく自然な左右差）'}。${realismSpec(c, false)}${teethLine(c, false)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。
+【人物】撮影年代：${eraLabel(c.eraYear)}。${countryLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。${sportsHistoryLine(c, false)}${facePresetPhrase(c)}${eyeAreaLine(c, false)}鼻は${c.nose}、基本表情は${c.mouth}。${faceExtraLine(c, false)}左右差は${c.faceAsym || 'ほぼ対称（ごく自然な左右差）'}。${realismSpec(c, false)}${teethLine(c, false)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。
 【体格】${physiqueSpec(c, false, true)}臀部は${c.hipShape || '標準的な丸みの臀部'}（体型確認のための中立的な記載であり、強調や演出はしない）。${muscleLine(c, false)}${trainingLine(c, false)}${bodyRealismLine(c, false)}
 【足】足の形は${c.footShape}。${footWidthDesc(c, false)}。${footFeatureLine(c, false, true)}裸足パネルでは指の本数・関節を正確に描き、足裏は本人の1人分のみとする。
 【服装】基準服装は${underwearDesc(c, false)}のみ。体型確認のための中立的な資料表現であり、衣料品カタログの商品写真と同じ即物的なトーンで描く。性的な演出・強調・ポーズは一切しない。上着・トップス・ボトムス・靴・靴下は描写しない。
@@ -4489,6 +4958,21 @@ ${promptTargetGuide(c, false)}`;
   }
   function slotEditPool(key){
     if(key==='name') return nameCandidates();
+    if(current){
+      if(key==='jacket') return eraOptionsFor('jacket', current, false);
+      if(key==='top') return eraOptionsFor('top', current, false);
+      if(key==='bottom') return eraOptionsFor('bottom', current, false);
+      if(key==='shoes') return eraOptionsFor('shoes', current, false);
+      if(key==='holidayJacket') return eraOptionsFor('jacket', current, true);
+      if(key==='holidayTop') return eraOptionsFor('top', current, true);
+      if(key==='holidayBottom') return eraOptionsFor('bottom', current, true);
+      if(key==='holidayShoes') return eraOptionsFor('shoes', current, true);
+      if(key==='tie') return eraOptionsFor('tie', current, false);
+      if(key==='suitSilhouette') return eraOptionsFor('sil', current, false);
+      if(key==='accessoriesEdit' || key==='holidayAccessoriesEdit') return ['なし','ビジネス腕時計','タフネス系デジタル腕時計','スマートウォッチ','機械式の高級腕時計','シンプルな腕時計','革ベルトの腕時計','シルバーチェーンネックレス','華奢なシルバーネックレス','喜平ネックレス','片耳のシルバーピアス','両耳の小ぶりなピアス','左薬指に結婚指輪','ミサンガ','アンクレット'];
+      if(key==='holidayStyleNote') return ['—','清潔感重視のベーシックな着こなし','柄物や差し色をその日の気分で','モノトーン中心・機能優先','柔らかい色味と肌ざわり重視','サイズ感が微妙に合っていない','古着ミックスの味のある風合い'];
+      if(key==='facePresetOut') return ['含める','含めない'];
+    }
     if(key==='height') return rangeOpts(155, 196, 1, 'cm');
     if(key==='weight') return rangeOpts(45, 110, 1, 'kg');
     if(key==='footSize') return rangeOpts(25.5, 31.0, 0.5, 'cm');
@@ -4517,13 +5001,20 @@ ${promptTargetGuide(c, false)}`;
   }
   function applySlotEdit(key, value){
     if(!current) return;
+    if(key==='accessoriesEdit'){ current.accessories = value==='なし' ? [] : [value]; return; }
+    if(key==='holidayAccessoriesEdit'){ current.holidayAccessories = value==='なし' ? [] : [value]; return; }
+    if(key==='holidayStyleNote'){ current.holidayStyleNote = value==='—' ? '' : value; return; }
     current[key] = value;
     if(current.bloodType){
       if(key==='age') generateInnerProfile(current, ['income','education','marital','birthdate']);
       if(key==='role') generateInnerProfile(current, ['income','education']);
       if(key==='nationality') generateInnerProfile(current, ['blood','birthplace','birthdate']);
       if(INNER_FIELD_GEN[key]){ const deps = INNER_DEPS[INNER_FIELD_GEN[key]]; if(deps && deps.length) generateInnerProfile(current, deps.slice()); }
+      if(key==='fashionSenseText') applyFashionSenseFx(current);
+      if(key==='maritalText') syncMarriageRing(current);
     }
+    if(['jacket','top','bottom','shoes'].includes(key)) partBrandRedraw(current, key, false);
+    if(['holidayJacket','holidayTop','holidayBottom','holidayShoes'].includes(key)) partBrandRedraw(current, key.replace('holiday','').toLowerCase(), true);
     if(key==='mbti') current.personality = mbtiDescription(value, uiLang==='en');
     if(key==='footSize') current.footSizeManual = true;
     if(key==='height'){
@@ -4642,7 +5133,7 @@ ${promptTargetGuide(c, false)}`;
     if(opts && opts.name) f.name = opts.name;
     f.friendOf = {name: baseC.name, age: baseC.age, role: baseC.role, relation: relName, hierarchy: hierName};
     f.friendBase = baseC;
-    const history = loadHistory(); history.unshift({...baseC, appVersion:'V3.0.0'});
+    const history = loadHistory(); history.unshift({...baseC, appVersion:'V3.2.0'});
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0,50)));
     currentGroup = null; activeMember = 0;
     current = f;
@@ -4805,11 +5296,18 @@ ${promptTargetGuide(c, false)}`;
     if(['lips','mouthPos','faceRatio','faceAsym','footWidth'].includes(key)){ const pool = slotEditPool(key); if(pool) current[key] = pick(pool); renderAll(); return; }
     if(key==='footFeature'){ current.footFeature = chooseFootFeature(current); renderAll(); return; }
     if(['eyebrowDensity','jawChin','jawAngle','ear','forehead','hairline','cheek','dimple','mole','hairTexture','eyeBags','adamsApple','lipTone','browRidge','facialHairGroom'].includes(key)){ const fx = chooseFaceExtras(current); current[key] = fx[key]; renderAll(); return; }
-    if(key==='trainingLevel'){ current.trainingLevel = chooseTrainingLevel(current); current.bioText = buildBioHook(current); renderAll(); return; }
+    if(['jacket','top','bottom','shoes'].includes(key)){ rerollCoordPart(current, key, false); renderAll(); return; }
+    if(['holidayJacket','holidayTop','holidayBottom','holidayShoes'].includes(key)){ rerollCoordPart(current, key.replace('holiday','').toLowerCase(), true); renderAll(); return; }
+    if(key==='tie'){ rerollCoordPart(current, 'tie', false); renderAll(); return; }
+    if(key==='suitSilhouette'){ rerollCoordPart(current, 'sil', false); renderAll(); return; }
+    if(key==='accessoriesEdit'){ const ring=(current.accessories||[]).some(x=>/結婚指輪/.test(x)); current.accessories=generateAccessories(current,false); if(ring) current.accessories.push('左薬指に結婚指輪'); renderAll(); return; }
+    if(key==='holidayAccessoriesEdit'){ const ring=(current.holidayAccessories||[]).some(x=>/結婚指輪/.test(x)); current.holidayAccessories=generateAccessories(current,true); if(ring) current.holidayAccessories.push('左薬指に結婚指輪'); renderAll(); return; }
+    if(key==='holidayStyleNote'){ current.holidayStyleNote = mbtiStyleNote(current.mbti); applyMuscleFashion(current); if(typeof applyFashionSenseFx==='function') applyFashionSenseFx(current); renderAll(); return; }
+    if(key==='trainingLevel'){ current.trainingLevel = chooseTrainingLevel(current); applyMuscleFashion(current); current.bioText = buildBioHook(current); renderAll(); return; }
     if(key==='sportsHistory'){ current.sportsHistory = generateSportsHistory(current.age, current.role, current.sportName, getInitial().sportsBodyInfluence); current.bioText = buildBioHook(current); renderAll(); return; }
     if(key==='bioText'){ current.bioText = buildBioHook(current); renderAll(); return; }
-    if(key==='measurementA'){ current.measurementA=drawProfileMeasurement('A'); renderAll(); return; }
-    if(key==='measurementB'){ current.measurementB=drawProfileMeasurement('B'); renderAll(); return; }
+    if(key==='measurementA'){ current.measurementA=drawProfileMeasurement('A'); current.measurementB=deriveMeasurementB(current.measurementA); renderAll(); return; }
+    if(key==='measurementB'){ current.measurementB=deriveMeasurementB(current.measurementA); renderAll(); return; }
     if(key==='measurementC'){ current.measurementC=drawProfileMeasurement('C'); renderAll(); return; }
     if(key==='baseWearType'){ current.baseWearType = weighted([['ボクサーパンツ',6],['ショートショーツ',2],['スポーツスパッツ',2]]); renderAll(); return; }
     if(key==='boxerColor'){ current.boxerColor = pick(pools.boxerColors); renderAll(); return; }
@@ -4840,7 +5338,7 @@ ${promptTargetGuide(c, false)}`;
       BODYHAIR_KEYS.forEach(k=>{ if(fresh[k]!==undefined) current[k]=fresh[k]; });
       renderAll(); return;
     }
-    const INNER_REROLL = {innerDream:['dream'], innerDesire:['desire'], weaknessMind:['weakness'], weaknessBody:['weakness'], innerTalent:['talent'], pastUpbringing:['past'], pastTrauma:['past'], pronoun:['pronoun'], incomeText:['income'], originText:['origin'], educationText:['education'], complexText:['complex'], bloodType:['blood'], loveTarget:['love'], maritalText:['marital'], livingText:['living'], familyText:['family'], birthplaceText:['birthplace'], birthdateText:['birthdate'], nicknameText:['nickname'], speechText:['speech'], memoryText:['memory'], friendText:['friend'], loverText:['lover'], residenceText:['residence'], healthText:['health'], hobbyText:['hobby'], myBoomText:['myboom'], foodLikeText:['foods'], foodHateText:['foods'], principleText:['principle'], unforgivableText:['unforgivable'], fuzokuText:['fuzoku'], gambleText:['gamble'], firstExpText:['firstexp'], weekFreqText:['weekfreq'], drinkText:['drink'], smokeText:['smoke'], loveCountText:['lovecount'], assetText:['asset']};
+    const INNER_REROLL = {innerDream:['dream'], innerDesire:['desire'], weaknessMind:['weakness'], weaknessBody:['weakness'], innerTalent:['talent'], pastUpbringing:['past'], pastTrauma:['past'], pronoun:['pronoun'], incomeText:['income'], originText:['origin'], educationText:['education'], complexText:['complex'], bloodType:['blood'], loveTarget:['love'], maritalText:['marital'], livingText:['living'], familyText:['family'], birthplaceText:['birthplace'], birthdateText:['birthdate'], nicknameText:['nickname'], speechText:['speech'], memoryText:['memory'], friendText:['friend'], loverText:['lover'], residenceText:['residence'], healthText:['health'], hobbyText:['hobby'], myBoomText:['myboom'], foodLikeText:['foods'], foodHateText:['foods'], principleText:['principle'], unforgivableText:['unforgivable'], fuzokuText:['fuzoku'], gambleText:['gamble'], firstExpText:['firstexp'], weekFreqText:['weekfreq'], drinkText:['drink'], smokeText:['smoke'], loveCountText:['lovecount'], assetText:['asset'], selfFreqText:['selffreq'], fashionSenseText:['fashionsense']};
     if(INNER_REROLL[key]){ generateInnerProfile(current, INNER_REROLL[key]); renderAll(); return; }
     if(key==='role'){
       const fresh = generateCharacter('full');
@@ -4902,11 +5400,11 @@ ${promptTargetGuide(c, false)}`;
     if(isEnglish(c)){
       return `Draw the adult male character "${c.name}" as the same person in an outfit variation.
 
-Preserve the character's identity. Era setting: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} He is ${c.age} years old, ${c.nationality}, ${c.ethnicity}. His vibe is ${c.vibe}. His personality and demeanor feel ${mbtiDescription(c.mbti, true)}. His face type is ${c.facePreset}, and his age appearance is ${c.ageAppearance}. Height ${c.height}, weight ${c.weight}, body type ${bodyTypeDesc(c.bodyType, true)}. Hair is ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}. ${bodyEn}
+Preserve the character's identity. Era setting: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} He is ${c.age} years old, ${c.nationality}, ${c.ethnicity}. His vibe is ${c.vibe}. His personality and demeanor feel ${mbtiDescription(c.mbti, true)}. ${facePresetPhrase(c, true)}And his age appearance is ${c.ageAppearance}. Height ${c.height}, weight ${c.weight}, body type ${bodyTypeDesc(c.bodyType, true)}. Hair is ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}. ${bodyEn}
 
 ${mode==='holiday'
-  ? `[Casual outfit] This is his personal, off-duty style that reflects his personality and vibe. Base the outfit on ${c.holidayOutfitBrand || c.outfitBrand} ${c.holidayOutfitType || c.outfitType}. Outerwear: ${c.holidayJacket || 'none'}. Top: ${c.holidayTop || c.top}. Bottom: ${c.holidayBottom || c.bottom}. Shoes: ${c.holidayShoes || c.shoes}. Socks: ${c.holidaySockBrand || c.sockBrand} ${c.holidaySockType || c.sockType} (${c.holidaySockColor || c.sockColor}).`
-  : c.workUniform ? `[Work uniform — as a ${(typeof valueTranslations!=='undefined' && valueTranslations[c.role]) || displayValue('role', c.role) || c.role}] He wears ${c.workUniformEn}. Depict it as practical issued workwear. Do NOT accurately reproduce insignia or logos of any real organization, unit, or company — keep it a generic, standard uniform style for his occupation. Outerwear: ${c.jacket && c.jacket !== 'なし' ? c.jacket : 'none'}. Top: ${c.top}. Bottom: ${c.bottom}. Shoes: ${c.shoes}${uniformHatPhrase(c, true)}. Socks: ${c.sockBrand} ${c.sockType} (${c.sockColor}, ${c.sockUse}).` : `[Work outfit${c.role ? ` — as a ${displayValue('role', c.role)}` : ''}] Base the outfit on ${c.outfitBrand} ${c.outfitType}. Outerwear: ${c.jacket}. Top: ${c.top}. Bottom: ${c.bottom}. Shoes: ${c.shoes}. Socks: ${c.sockBrand} ${c.sockType}; shape: ${c.sockShape}; material: ${c.sockMaterial}; color/pattern: ${c.sockColor}; condition: ${c.sockUse}.`}
+  ? `[Casual outfit] This is his personal, off-duty style that reflects his personality and vibe. Base the outfit on ${c.holidayOutfitBrand || c.outfitBrand} ${c.holidayOutfitType || c.outfitType}. Outerwear: ${c.holidayOuterBrand?`${c.holidayOuterBrand} `:''}${c.holidayJacket || 'none'}. Top: ${c.holidayTopBrand?`${c.holidayTopBrand} `:''}${c.holidayTop || c.top}. Bottom: ${c.holidayBottomBrand?`${c.holidayBottomBrand} `:''}${c.holidayBottom || c.bottom}. Shoes: ${c.holidayShoesBrand?`${c.holidayShoesBrand} `:''}${c.holidayShoes || c.shoes}. Socks: ${c.holidaySockBrand || c.sockBrand} ${c.holidaySockType || c.sockType} (${c.holidaySockColor || c.sockColor}).${c.holidayEraFashionNote?` Overall silhouette: ${c.holidayEraFashionNote}.`:''}${accText(c,true,true)}${innerCasualNotes(c, true)}`
+  : c.workUniform ? `[Work uniform — as a ${(typeof valueTranslations!=='undefined' && valueTranslations[c.role]) || displayValue('role', c.role) || c.role}] He wears ${c.workUniformEn}. Depict it as practical issued workwear. Do NOT accurately reproduce insignia or logos of any real organization, unit, or company — keep it a generic, standard uniform style for his occupation. Outerwear: ${c.jacket && c.jacket !== 'なし' ? c.jacket : 'none'}. Top: ${c.top}. Bottom: ${c.bottom}. Shoes: ${c.shoes}${uniformHatPhrase(c, true)}. Socks: ${c.sockBrand} ${c.sockType} (${c.sockColor}, ${c.sockUse}).` : `[Work outfit${c.role ? ` — as a ${displayValue('role', c.role)}` : ''}] Base the outfit on ${c.outfitBrand} ${c.outfitType}. Outerwear: ${c.jacket}. Top: ${c.topBrand?`${c.topBrand} `:''}${c.top}. Bottom: ${c.bottomBrand?`${c.bottomBrand} `:''}${c.bottom}. Shoes: ${c.shoesBrand?`${c.shoesBrand} `:''}${c.shoes}. Socks: ${c.sockBrand} ${c.sockType}; shape: ${c.sockShape}; material: ${c.sockMaterial}; color/pattern: ${c.sockColor}; condition: ${c.sockUse}.${c.tie?` Tie: ${c.tie}.`:''}${c.coat?` Coat: ${c.coat}.`:''}${c.suitSilhouette?` Suit silhouette: ${c.suitSilhouette}.`:''}${c.workFitNote?` ${c.workFitNote}.`:''}${accText(c,false,true)}`}
 
 ${styleEn}
 Era setting: around ${c.eraYear || '2026'}. Match the garment silhouettes, fabrics, and accessories to this period.\n${adultUniformEn}
@@ -4917,11 +5415,11 @@ ${targetEn}`;
     }
     return `成人男性キャラクター「${c.name}」を、同一人物の服装差分として描写する。
 
-人物の特徴は維持する。時代設定は${eraLabel(c.eraYear)}頃。${countryLine(c, false)}${seasonLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。雰囲気は${c.vibe}。性格・立ち居振る舞いの雰囲気は${mbtiDescription(c.mbti,false)}。${c.holidayPersona ? `平日は${c.role}として堅実に働いているが、休日は${c.vibe}の雰囲気に一変するタイプであり、この画像は休日の姿として描く。` : ''}顔立ちは${c.facePreset}、年齢感は${c.ageAppearance}。${realismSpec(c, false)}身長${c.height}、体重${c.weight}、体型は${bodyTypeDesc(c.bodyType, false)}。${physiqueSpec(c, false)}${heightContrastCue(c, false)}${muscleLine(c, false, true)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。${bodyJa}
+人物の特徴は維持する。時代設定は${eraLabel(c.eraYear)}頃。${countryLine(c, false)}${seasonLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。雰囲気は${c.vibe}。性格・立ち居振る舞いの雰囲気は${mbtiDescription(c.mbti,false)}。${c.holidayPersona ? `平日は${c.role}として堅実に働いているが、休日は${c.vibe}の雰囲気に一変するタイプであり、この画像は休日の姿として描く。` : ''}${facePresetPhrase(c)}年齢感は${c.ageAppearance}。${realismSpec(c, false)}身長${c.height}、体重${c.weight}、体型は${bodyTypeDesc(c.bodyType, false)}。${physiqueSpec(c, false)}${heightContrastCue(c, false)}${muscleLine(c, false, true)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。${bodyJa}
 
 ${mode==='holiday'
-  ? `【私服コーデ】仕事とは違う、本人の性格や雰囲気が表れる私服として描く。服装は${c.holidayOutfitBrand || c.outfitBrand}の${c.holidayOutfitType || c.outfitType}を基調にする。上着は${c.holidayJacket || 'なし'}、トップスは${c.holidayTop || c.top}、ボトムスは${c.holidayBottom || c.bottom}、靴は${c.holidayShoes || c.shoes}。靴下は${c.holidaySockBrand || c.sockBrand}の${c.holidaySockType || c.sockType}（${c.holidaySockColor || c.sockColor}）。`
-  : c.workUniform ? `【職業コーデ（${c.role}の勤務服）】服装は${c.workUniform}。支給品らしい実用的な着こなしで描く。実在の特定組織・部隊・企業の記章やロゴを正確に再現せず、標準的な${c.role}の制服スタイルにとどめる。上着は${c.jacket && c.jacket !== 'なし' ? c.jacket : 'なし'}、トップスは${c.top}、ボトムスは${c.bottom}、靴は${c.shoes}${uniformHatPhrase(c, false)}。靴下は${c.sockBrand}の${c.sockType}（${c.sockColor}、${c.sockUse}）。` : `【職業コーデ${c.role ? `（${c.role}の仕事着・仕事帰りの装い）` : ''}】服装は${c.outfitBrand}の${c.outfitType}を基調にする。上着は${c.jacket}、トップスは${c.top}、ボトムスは${c.bottom}、靴は${c.shoes}。靴下は${c.sockBrand}の${c.sockType}で、形状は${c.sockShape}、素材は${c.sockMaterial}、色・柄は${c.sockColor}、使用感は${c.sockUse}。`}
+  ? `【私服コーデ】仕事とは違う、本人の性格や雰囲気が表れる私服として描く。服装は${c.holidayOutfitBrand || c.outfitBrand}の${c.holidayOutfitType || c.outfitType}を基調にする。上着は${c.holidayOuterBrand?`${c.holidayOuterBrand}の`:''}${c.holidayJacket || 'なし'}、トップスは${c.holidayTopBrand?`${c.holidayTopBrand}の`:''}${c.holidayTop || c.top}、ボトムスは${c.holidayBottomBrand?`${c.holidayBottomBrand}の`:''}${c.holidayBottom || c.bottom}、靴は${c.holidayShoesBrand?`${c.holidayShoesBrand}の`:''}${c.holidayShoes || c.shoes}。靴下は${c.holidaySockBrand || c.sockBrand}の${c.holidaySockType || c.sockType}（${c.holidaySockColor || c.sockColor}）。${c.holidayEraFashionNote?`全体は${c.holidayEraFashionNote}。`:''}${accText(c,true,false)}${innerCasualNotes(c)}`
+  : c.workUniform ? `【職業コーデ（${c.role}の勤務服）】服装は${c.workUniform}。支給品らしい実用的な着こなしで描く。実在の特定組織・部隊・企業の記章やロゴを正確に再現せず、標準的な${c.role}の制服スタイルにとどめる。上着は${c.jacket && c.jacket !== 'なし' ? c.jacket : 'なし'}、トップスは${c.top}、ボトムスは${c.bottom}、靴は${c.shoes}${uniformHatPhrase(c, false)}。靴下は${c.sockBrand}の${c.sockType}（${c.sockColor}、${c.sockUse}）。` : `【職業コーデ${c.role ? `（${c.role}の仕事着・仕事帰りの装い）` : ''}】服装は${c.outfitBrand}の${c.outfitType}を基調にする。上着は${c.jacket}、トップスは${c.topBrand?`${c.topBrand}の`:''}${c.top}、ボトムスは${c.bottomBrand?`${c.bottomBrand}の`:''}${c.bottom}、靴は${c.shoesBrand?`${c.shoesBrand}の`:''}${c.shoes}。靴下は${c.sockBrand}の${c.sockType}で、形状は${c.sockShape}、素材は${c.sockMaterial}、色・柄は${c.sockColor}、使用感は${c.sockUse}。${c.tie?`ネクタイは${c.tie}。`:''}${c.coat?`コートは${c.outerBrand?`${c.outerBrand}の`:''}${c.coat}。`:''}${c.suitSilhouette?`スーツのシルエットは「${c.suitSilhouette}」。`:''}${c.workFitNote?`${c.workFitNote}。`:''}${accText(c,false,false)}`}
 
 ${styleJa}
 時代設定は${eraLabel(c.eraYear)}頃。${countryLine(c, false)}${seasonLine(c, false)}服のシルエット・素材感・小物もこの年代に合わせる。\n${adultUniformJa}
@@ -4945,7 +5443,7 @@ ${targetJa}`;
     if(isEnglish(c)){
       return `Draw the adult male character "${c.name}" in a natural everyday scene where he is casually spotted by chance.
 
-Scene: "${scene}". Era setting: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} He is ${c.age} years old, ${c.nationality}, ${c.ethnicity}. His occupation is ${c.role}, his vibe is ${c.vibe}, and his MBTI is ${c.mbti} (${mbtiDescription(c.mbti,true)}). His face type is ${c.facePreset}, and his age appearance is ${c.ageAppearance}. Height ${c.height}, weight ${c.weight}, body type ${bodyTypeDesc(c.bodyType, true)}. Hair is ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}. ${bodyEn}
+Scene: "${scene}". Era setting: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} He is ${c.age} years old, ${c.nationality}, ${c.ethnicity}. His occupation is ${c.role}, his vibe is ${c.vibe}, and his MBTI is ${c.mbti} (${mbtiDescription(c.mbti,true)}). ${facePresetPhrase(c, true)}And his age appearance is ${c.ageAppearance}. Height ${c.height}, weight ${c.weight}, body type ${bodyTypeDesc(c.bodyType, true)}. Hair is ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}. ${bodyEn}
 
 Use natural everyday clothing that fits the character and the scene, or clothing aligned with the suggested outfit direction. ${styleEn} Base the background on ${c.background}, use ${c.lighting}, and render it in ${enQuality(c.quality)}. Avoid an overly direct camera-facing pose; make it feel like a naturally observed moment in a street or facility setting.
 
@@ -4956,7 +5454,7 @@ ${targetEn}`;
     }
     return `成人男性キャラクター「${c.name}」を、日常の中で偶然見かけた自然な場面として描写する。
 
-場面は「${scene}」。時代設定は${eraLabel(c.eraYear)}頃。${countryLine(c, false)}${seasonLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。職業は${roleWithSport(c, false)}、雰囲気は${c.vibe}、性格・立ち居振る舞いの雰囲気は${mbtiDescription(c.mbti,false)}。${c.holidayPersona ? `平日は${c.role}として堅実に働いているが、休日は${c.vibe}の雰囲気に一変するタイプであり、この画像は休日の姿として描く。` : ''}顔立ちは${c.facePreset}、年齢感は${c.ageAppearance}。${realismSpec(c, false)}身長${c.height}、体重${c.weight}、体型は${bodyTypeDesc(c.bodyType, false)}。${physiqueSpec(c, false)}${heightContrastCue(c, false)}${muscleLine(c, false, true)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。${bodyJa}
+場面は「${scene}」。時代設定は${eraLabel(c.eraYear)}頃。${countryLine(c, false)}${seasonLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。職業は${roleWithSport(c, false)}、雰囲気は${c.vibe}、性格・立ち居振る舞いの雰囲気は${mbtiDescription(c.mbti,false)}。${c.holidayPersona ? `平日は${c.role}として堅実に働いているが、休日は${c.vibe}の雰囲気に一変するタイプであり、この画像は休日の姿として描く。` : ''}${facePresetPhrase(c)}年齢感は${c.ageAppearance}。${realismSpec(c, false)}身長${c.height}、体重${c.weight}、体型は${bodyTypeDesc(c.bodyType, false)}。${physiqueSpec(c, false)}${heightContrastCue(c, false)}${muscleLine(c, false, true)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。${bodyJa}
 
 服装は人物像と場面に合う自然な私服、または提案服装の方向性に合わせる。${styleJa} 背景は${c.background}を基調にし、光は${c.lighting}、質感は${c.quality}。カメラ目線にしすぎず、街中や施設内でふと見かけたような自然な距離感にする。
 
@@ -4980,7 +5478,7 @@ ${targetJa}`;
     if(english){
       return `Create a separate trading-card-style variation prompt for the adult male character "${c.name}".
 
-Era setting: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} Keep the character consistent with the main profile. He is ${c.age} years old, ${c.nationality}, ${c.ethnicity}. Occupation: ${c.role}. Vibe: ${c.vibe}. His personality and demeanor feel ${mbtiDescription(c.mbti,true)}. ${c.holidayPersona ? `On weekdays he works earnestly as a ${displayValue('role', c.role)}, but on days off his whole vibe transforms into a ${displayValue('vibe', c.vibe)} style — depict him here in his day-off persona.` : ''} Face type: ${c.facePreset}.${realismSpec(c, true)} Body type: ${bodyTypeDesc(c.bodyType, true)}. Height: ${c.height}. Weight: ${c.weight}. ${physiqueSpec(c, true)}${heightContrastCue(c, true)}${muscleLine(c, true, true)} Foot size: ${c.footSize}. Facial hair: ${c.facialHair}${c.facialHair!=='なし' && ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor) ? ' (with graying facial hair)' : ''}. ${c.glasses && c.glasses!=='なし' ? `He wears ${displayValue('glasses', c.glasses)}. ` : ''}Hair: ${c.hairColor} ${c.hairStyle}. ${body}
+Era setting: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} Keep the character consistent with the main profile. He is ${c.age} years old, ${c.nationality}, ${c.ethnicity}. Occupation: ${c.role}. Vibe: ${c.vibe}. His personality and demeanor feel ${mbtiDescription(c.mbti,true)}. ${c.holidayPersona ? `On weekdays he works earnestly as a ${displayValue('role', c.role)}, but on days off his whole vibe transforms into a ${displayValue('vibe', c.vibe)} style — depict him here in his day-off persona.` : ''} ${facePresetPhrase(c, true)}${realismSpec(c, true)} Body type: ${bodyTypeDesc(c.bodyType, true)}. Height: ${c.height}. Weight: ${c.weight}. ${physiqueSpec(c, true)}${heightContrastCue(c, true)}${muscleLine(c, true, true)} Foot size: ${c.footSize}. Facial hair: ${c.facialHair}${c.facialHair!=='なし' && ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor) ? ' (with graying facial hair)' : ''}. ${c.glasses && c.glasses!=='なし' ? `He wears ${displayValue('glasses', c.glasses)}. ` : ''}Hair: ${c.hairColor} ${c.hairStyle}. ${body}
 
 ${wear}
 ${pose}
@@ -4993,7 +5491,7 @@ ${target}`;
     }
     return `成人男性キャラクター「${c.name}」のトレーディングカード風差分プロンプトを作成する。
 
-時代設定は${eraLabel(c.eraYear)}頃。${countryLine(c, false)}${seasonLine(c, false)}${eraStyleNote(c, false)}同一人物として、メインプロフィールの顔立ち・体型・身長感・髪型を維持する。${c.age}歳、${c.nationality}、${c.ethnicity}。職業は${roleWithSport(c, false)}、雰囲気は${c.vibe}。性格・立ち居振る舞いの雰囲気は${mbtiDescription(c.mbti,false)}。${c.holidayPersona ? `平日は${c.role}として堅実に働いているが、休日は${c.vibe}の雰囲気に一変するタイプであり、この画像は休日の姿として描く。` : ''}顔立ちは${c.facePreset}。体型は${bodyTypeDesc(c.bodyType, false)}。身長${c.height}、体重${c.weight}、足のサイズ${c.footSize}。${physiqueSpec(c, false)}ひげは${c.facialHair}${c.facialHair!=='なし' && ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor) ? '（白髪まじりのひげ）' : ''}。${c.glasses && c.glasses!=='なし' ? `眼鏡は${c.glasses}をかけている。` : ''}髪は${c.hairColor}の${c.hairStyle}。${body}
+時代設定は${eraLabel(c.eraYear)}頃。${countryLine(c, false)}${seasonLine(c, false)}${eraStyleNote(c, false)}同一人物として、メインプロフィールの顔立ち・体型・身長感・髪型を維持する。${c.age}歳、${c.nationality}、${c.ethnicity}。職業は${roleWithSport(c, false)}、雰囲気は${c.vibe}。性格・立ち居振る舞いの雰囲気は${mbtiDescription(c.mbti,false)}。${c.holidayPersona ? `平日は${c.role}として堅実に働いているが、休日は${c.vibe}の雰囲気に一変するタイプであり、この画像は休日の姿として描く。` : ''}${facePresetPhrase(c)}体型は${bodyTypeDesc(c.bodyType, false)}。身長${c.height}、体重${c.weight}、足のサイズ${c.footSize}。${physiqueSpec(c, false)}ひげは${c.facialHair}${c.facialHair!=='なし' && ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor) ? '（白髪まじりのひげ）' : ''}。${c.glasses && c.glasses!=='なし' ? `眼鏡は${c.glasses}をかけている。` : ''}髪は${c.hairColor}の${c.hairStyle}。${body}
 
 ${wear}
 ${pose}
@@ -5033,7 +5531,7 @@ ${target}`;
       return `Create a non-sexual full-body image of the adult male character "${c.name}".
 
 [BASICS & ERA] Photo year: ${c.eraYear || '2026'} CE. Born: ${(Number(c.eraYear)||2026)-(Number(c.age)||25)} (currently ${c.age}). ${eraStyleNote(c, true)} He is ${c.age} years old, ${c.nationality}, ${c.ethnicity}. His occupation is ${c.role}. His overall vibe is ${c.vibe}. His personality and demeanor feel ${mbtiDescription(c.mbti,true)}. ${c.holidayPersona ? `On weekdays he works earnestly as a ${displayValue('role', c.role)}, but on days off his whole vibe transforms into a ${displayValue('vibe', c.vibe)} style — depict him here in his day-off persona.` : ''}${sportsHistoryLine(c, true)}
-[FACE] His face type is ${c.facePreset}, and his age appearance is ${c.ageAppearance}. His face line is ${c.faceLine}. ${eyeAreaLine(c, true)} Tear bags: ${c.tearBags}. Nose: ${c.nose}. Base expression: ${c.mouth}. Lips: ${displayValue('lips', c.lips || '標準的な厚さの唇')}. Mouth placement: ${displayValue('mouthPos', c.mouthPos || '標準的な位置・大きさの口')}. Feature spacing: ${displayValue('faceSpacing', c.faceSpacing || '標準的な配置')}. Feature proportions: ${displayValue('faceRatio', c.faceRatio || '標準的なバランスの比率')}. Facial symmetry: ${displayValue('faceAsym', c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)}${faceExtraLine(c, true)} Skin: ${valueTranslations[c.skin] || c.skin}.${skinDetailLine(c, true)} Facial hair: ${c.facialHair}${c.facialHair!=='なし' ? ` (${displayValue('facialHairGroom', c.facialHairGroom || '自然に整えている')})` : ''}${c.facialHair!=='なし' && ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor) ? ' (with graying facial hair)' : ''}. ${c.glasses && c.glasses!=='なし' ? `He wears ${displayValue('glasses', c.glasses)}. ` : ''}Hair: ${c.hairColor} ${c.hairStyle}, ${displayValue('hairTexture', c.hairTexture || '直毛')}.${hairDetailLine(c, true)}
+[FACE] ${facePresetPhrase(c, true)}And his age appearance is ${c.ageAppearance}. His face line is ${c.faceLine}. ${eyeAreaLine(c, true)} Tear bags: ${c.tearBags}. Nose: ${c.nose}. Base expression: ${c.mouth}. Lips: ${displayValue('lips', c.lips || '標準的な厚さの唇')}. Mouth placement: ${displayValue('mouthPos', c.mouthPos || '標準的な位置・大きさの口')}. Feature spacing: ${displayValue('faceSpacing', c.faceSpacing || '標準的な配置')}. Feature proportions: ${displayValue('faceRatio', c.faceRatio || '標準的なバランスの比率')}. Facial symmetry: ${displayValue('faceAsym', c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)}${faceExtraLine(c, true)} Skin: ${valueTranslations[c.skin] || c.skin}.${skinDetailLine(c, true)} Facial hair: ${c.facialHair}${c.facialHair!=='なし' ? ` (${displayValue('facialHairGroom', c.facialHairGroom || '自然に整えている')})` : ''}${c.facialHair!=='なし' && ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor) ? ' (with graying facial hair)' : ''}. ${c.glasses && c.glasses!=='なし' ? `He wears ${displayValue('glasses', c.glasses)}. ` : ''}Hair: ${c.hairColor} ${c.hairStyle}, ${displayValue('hairTexture', c.hairTexture || '直毛')}.${hairDetailLine(c, true)}
 [BODY HAIR] ${bodyEn}
 
 [PHYSIQUE & FEET] Height ${c.height}, weight ${c.weight}, body type ${bodyTypeDesc(c.bodyType, true)}. ${physiqueSpec(c, true, true)} Hip shape: ${displayValue('hipShape', c.hipShape || '標準的な丸みの臀部')} (a neutral body-reference note; never emphasized or staged).${muscleLine(c, true)}${trainingLine(c, true)}${bodyRealismLine(c, true)} Foot size ${c.footSize}, foot shape ${c.footShape}; ${footWidthDesc(c, true)}.${footFeatureLine(c, true, true)}${soleDetailLine(c, true)} Use a natural standing pose that makes the balance of height, weight, and foot size easy to understand.
@@ -5052,7 +5550,7 @@ ${targetEn}
     return `成人男性キャラクター「${c.name}」の非性的な全身画像を作成する。
 
 【人物基本・時代】撮影年代：${eraLabel(c.eraYear)}。生年：${eraLabel((Number(c.eraYear)||2026)-(Number(c.age)||25))}（現在${c.age}歳）。${countryLine(c, false)}${seasonLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。職業は${roleWithSport(c, false)}。雰囲気は${c.vibe}。性格・立ち居振る舞いの雰囲気は${mbtiDescription(c.mbti,false)}。${c.holidayPersona ? `平日は${c.role}として堅実に働いているが、休日は${c.vibe}の雰囲気に一変するタイプであり、この画像は休日の姿として描く。` : ''}${sportsHistoryLine(c, false)}
-【顔】顔立ちは${c.facePreset}で、年齢感は${c.ageAppearance}。フェイスラインは${c.faceLine}。${eyeAreaLine(c, false)}涙袋は${c.tearBags}。鼻は${c.nose}。基本表情は${c.mouth}。唇は${c.lips || '標準的な厚さの唇'}で、口は${c.mouthPos || '標準的な位置・大きさの口'}。顔のパーツ配置は${c.faceSpacing || '標準的な配置'}で、目鼻口の比率は${c.faceRatio || '標準的なバランスの比率'}。左右差は${c.faceAsym || 'ほぼ対称（ごく自然な左右差）'}。${realismSpec(c, false)}${teethLine(c, false)}${faceExtraLine(c, false)}肌は${c.skin}。${skinDetailLine(c, false)}ひげは${c.facialHair}${c.facialHair!=='なし' ? `（${c.facialHairGroom || '自然に整えている'}）` : ''}${c.facialHair!=='なし' && ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor) ? '（白髪まじりのひげ）' : ''}。${c.glasses && c.glasses!=='なし' ? `眼鏡は${c.glasses}をかけている。` : ''}髪は${c.hairColor}の${c.hairStyle}で、毛質は${c.hairTexture || '直毛'}。${hairDetailLine(c, false)}
+【顔】${facePresetPhrase(c)}年齢感は${c.ageAppearance}。フェイスラインは${c.faceLine}。${eyeAreaLine(c, false)}涙袋は${c.tearBags}。鼻は${c.nose}。基本表情は${c.mouth}。唇は${c.lips || '標準的な厚さの唇'}で、口は${c.mouthPos || '標準的な位置・大きさの口'}。顔のパーツ配置は${c.faceSpacing || '標準的な配置'}で、目鼻口の比率は${c.faceRatio || '標準的なバランスの比率'}。左右差は${c.faceAsym || 'ほぼ対称（ごく自然な左右差）'}。${realismSpec(c, false)}${teethLine(c, false)}${faceExtraLine(c, false)}肌は${c.skin}。${skinDetailLine(c, false)}ひげは${c.facialHair}${c.facialHair!=='なし' ? `（${c.facialHairGroom || '自然に整えている'}）` : ''}${c.facialHair!=='なし' && ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor) ? '（白髪まじりのひげ）' : ''}。${c.glasses && c.glasses!=='なし' ? `眼鏡は${c.glasses}をかけている。` : ''}髪は${c.hairColor}の${c.hairStyle}で、毛質は${c.hairTexture || '直毛'}。${hairDetailLine(c, false)}
 【体毛】${bodyJa}
 
 【体格・足】身長${c.height}、体重${c.weight}、体型は${bodyTypeDesc(c.bodyType, false)}。${physiqueSpec(c, false, true)}臀部は${c.hipShape || '標準的な丸みの臀部'}（体型確認のための中立的な記載であり、強調や演出はしない）。${muscleLine(c, false)}${trainingLine(c, false)}${bodyRealismLine(c, false)}足のサイズは${c.footSize}、足の形は${c.footShape}。${footWidthDesc(c, false)}。${footFeatureLine(c, false, true)}${soleDetailLine(c, false)}身長、体重、足サイズのバランスが自然に分かる直立姿勢にする。
@@ -5357,6 +5855,8 @@ ${promptTargetGuide(b, false)}`;
     else if(!current.principleText) generateInnerProfile(current, ['principle','unforgivable','fuzoku','gamble']);
     else if(!current.drinkText) generateInnerProfile(current, ['firstexp','weekfreq','drink','smoke']);
     else if(!current.assetText) generateInnerProfile(current, ['lovecount','asset']);
+    else if(!current.selfFreqText) generateInnerProfile(current, ['weekfreq','selffreq']);
+    else if(!current.fashionSenseText) generateInnerProfile(current, ['fashionsense']);
     if(!current.bangs) current.bangs = '指定なし';
     if(!current.hairFinish) current.hairFinish = '指定なし';
     if(!current.hairVolume) current.hairVolume = '標準的な毛量';
@@ -5378,8 +5878,38 @@ ${promptTargetGuide(b, false)}`;
       ['body', L.bodySection, [[L.hw,`${current.height} / ${current.weight}`,'height,weight'],[L.body,displayValue('bodyType',current.bodyType),'bodyType'],[uiLang==='en' ? 'Physique Guide' : '体格の目安', `${uiLang==='en' ? `about ${headCount(current)} heads tall` : `約${headCount(current)}頭身`}`],[uiLang==='en' ? 'Shoulders' : '肩幅', current.shoulderWidth || '普通', 'shoulderWidth'],[uiLang==='en' ? 'Waist Pos / Legs / Arms' : '腰位置 / 脚長 / 腕長', `${current.waistPos||'標準'} / ${current.legLength||'標準'} / ${current.armLength||'標準'}`, 'waistPos,legLength,armLength'],[uiLang==='en' ? 'Frame / Neck / Limbs' : '骨格 / 首 / 手足サイズ感', `${current.frame||'標準'} / ${current.neckLength||'標準'} / ${current.limbSize||'標準'}`, 'frame,neckLength,limbSize'],[uiLang==='en' ? 'Hip Shape' : '臀部の形状', current.hipShape || '標準的な丸みの臀部', 'hipShape'],[uiLang==='en' ? 'Muscle Development' : '発達部位', muscleSummary(current, uiLang==='en')],[uiLang==='en' ? 'Training Habit' : '筋トレ習慣', current.trainingLevel || 'なし', 'trainingLevel'],[uiLang==='en' ? 'Muscle Development' : '発達部位', (muscleLine(current, false) || 'なし（競技経験の影響なし）').replace(/^発達部位：/,'').split('。')[0], 'muscleTone'],[L.foot,current.footSize,'footSize'],[uiLang==='en' ? 'Foot Width' : 'ワイズ（足幅）', current.footWidth || calcFootWidth(current), 'footWidth'],[L.footShape,displayValue('footShape',current.footShape),'footShape'],[uiLang==='en' ? 'Foot Traits' : '足の特徴', current.footFeature || '特徴なし・整った足', 'footFeature'],[uiLang==='en' ? 'Sole Type' : '足裏タイプ', current.soleType || '均整なめらか型', 'soleType'],[uiLang==='en' ? 'Toe Alignment' : '指の並び・向き', current.toeLine || 'まっすぐ前を向いたそろった並び', 'toeLine'],[uiLang==='en' ? 'Creases / Curl' : 'しわ・反り', `${current.soleWrinkle || '標準的なしわ'}／${current.toeCurl || '指がフラットに伸びた状態'}`, 'soleWrinkle,toeCurl']]],
       ['bodyhair', L.bodyHairSection, [[L.bodyHair, buildBodyHairSummary(current, uiLang==='en'),'bodyHairAll']]],
       ['main', L.mainSection, [[L.main, mainWear, (current.mainWearMode||'ボクサーパンツのみ')!=='時代に合った下着の種類' ? 'baseWearType,boxerColor,boxerBrand' : 'underwearType,underwearColor,boxerBrand']]],
-      ['outfit', L.outfitSection, [[L.weekdayOutfit,`${displayValue('outfitBrand',current.outfitBrand)}・${displayValue('outfitType',current.outfitType)}`,'outfitType']].concat(buildUniformEditRows(current, L)).concat([[L.sock,`${displayValue('sockBrand',current.sockBrand)}・${displayValue('sockType',current.sockType)}・${displayValue('sockColor',current.sockColor)}`,'sockType']]).concat(current.holidayOutfitType ? [[L.holidayOutfit,`${displayValue('outfitBrand',current.holidayOutfitBrand)}・${displayValue('outfitType',current.holidayOutfitType)}`,'holidayOutfitType'],[L.holidaySock,`${displayValue('sockBrand',current.holidaySockBrand)}・${displayValue('sockType',current.holidaySockType)}・${displayValue('sockColor',current.holidaySockColor)}`]] : [])],
-      ['output', L.outputSection, [[L.background,displayValue('background',current.background),'background'],[L.output,`${displayValue('outputType',current.outputType)} / ${displayValue('count',current.count)}`],[L.promptTarget,`<span class="mini-badge">${current.promptTarget || 'ChatGPT'}</span>`],[L.imageText, current.captionMode==='表記しない' ? captionModeDisplay(current.captionMode) : `${captionModeDisplay(current.captionMode)} / ${getCaptionFieldLabelsArray(current, uiLang==='en').join(', ')}`],[L.cardSetting, `${displayValue('cardStyle',current.cardStyle)} / ${current.cardRarity} / ${displayValue('cardTheme',current.cardTheme)} / ${displayValue('cardLayout',current.cardLayout)} / ${displayValue('cardWearMode',current.cardWearMode || 'ボクサーパンツのみ')} / ${displayValue('cardEffect',cardEffectByRarity(current.cardRarity))}`]]],
+      ['outfit', L.outfitSection, (()=>{
+        const en2 = uiLang==='en';
+        const B=(b)=>b?`${b}・`:'';
+        const isSuit = ['紺スーツ','黒スーツ','グレースーツ','三つ揃いスーツ'].includes(current.outfitType);
+        const rows=[[L.weekdayOutfit,`${displayValue('outfitBrand',current.outfitBrand)}・${displayValue('outfitType',current.outfitType)}`,'outfitType']];
+        rows.push(...buildUniformEditRows(current, L));
+        if(!current.workUniform){
+          rows.push([en2?'Work Outer':'上着（平日）', `${current.coat?`${B(current.outerBrand)}${current.coat}／中は`:''}${current.jacket||'指定なし'}`, 'jacket']);
+          rows.push([en2?'Work Top':'トップス（平日）', `${B(current.topBrand)}${current.top}`, 'top']);
+          rows.push([en2?'Work Bottom':'ボトムス（平日）', `${B(current.bottomBrand)}${current.bottom}`, 'bottom']);
+          rows.push([en2?'Work Shoes':'靴（平日）', `${B(current.shoesBrand)}${current.shoes}`, 'shoes']);
+          if(isSuit){
+            rows.push([en2?'Tie':'ネクタイ', current.tie||'ノータイ', 'tie']);
+            rows.push([en2?'Suit Silhouette':'シルエット', current.suitSilhouette||'—', 'suitSilhouette']);
+          }
+        }
+        rows.push([L.sock,`${displayValue('sockBrand',current.sockBrand)}・${displayValue('sockType',current.sockType)}・${displayValue('sockColor',current.sockColor)}`,'sockType']);
+        rows.push([en2?'Accessories (Work)':'アクセサリー（平日）', ((current.accessories||[]).join('・')||'なし')+accWorkNote(current), 'accessoriesEdit']);
+        if(current.holidayOutfitType){
+          rows.push([L.holidayOutfit,`${displayValue('outfitBrand',current.holidayOutfitBrand)}・${displayValue('outfitType',current.holidayOutfitType)}${current.holidayGapSuit?'⚡':''}`,'holidayOutfitType']);
+          rows.push([en2?'Casual Outer':'上着（休日）', `${current.holidayOuterBrand?`${current.holidayOuterBrand}・`:''}${current.holidayJacket||'指定なし'}`, 'holidayJacket']);
+          rows.push([en2?'Casual Top':'トップス（休日）', `${current.holidayTopBrand?`${current.holidayTopBrand}・`:''}${current.holidayTop||''}`, 'holidayTop']);
+          rows.push([en2?'Casual Bottom':'ボトムス（休日）', `${current.holidayBottomBrand?`${current.holidayBottomBrand}・`:''}${current.holidayBottom||''}`, 'holidayBottom']);
+          rows.push([en2?'Casual Shoes':'靴（休日）', `${current.holidayShoesBrand?`${current.holidayShoesBrand}・`:''}${current.holidayShoes||''}`, 'holidayShoes']);
+          rows.push([L.holidaySock,`${displayValue('sockBrand',current.holidaySockBrand)}・${displayValue('sockType',current.holidaySockType)}・${displayValue('sockColor',current.holidaySockColor)}`]);
+          rows.push([en2?'Accessories (Casual)':'アクセサリー（休日）', ((current.holidayAccessories||[]).join('・')||'なし'), 'holidayAccessoriesEdit']);
+          const memo=[current.holidayGapSuit?(en2?'Suit even on days off':'休日なのにスーツ（本人は私服のつもり）'):'',current.holidayStyleNote||current.styleNote,current.muscleFashionNote,current.senseFashionNote].filter(Boolean).join('。');
+          rows.push([en2?'Styling Memo':'着こなしメモ', memo||'—', 'holidayStyleNote']);
+        }
+        return rows;
+      })()],
+      ['output', L.outputSection, [[L.background,displayValue('background',current.background),'background'],[L.output,`${displayValue('outputType',current.outputType)} / ${displayValue('count',current.count)}`],[L.promptTarget,`<span class="mini-badge">${current.promptTarget || 'ChatGPT'}</span>`],[L.imageText, current.captionMode==='表記しない' ? captionModeDisplay(current.captionMode) : `${captionModeDisplay(current.captionMode)} / ${getCaptionFieldLabelsArray(current, uiLang==='en').join(', ')}`],[uiLang==='en'?'Face Preset in Prompt':'顔立ちプリセット出力', current.facePresetOut||'含める', 'facePresetOut'],[L.cardSetting, `${displayValue('cardStyle',current.cardStyle)} / ${current.cardRarity} / ${displayValue('cardTheme',current.cardTheme)} / ${displayValue('cardLayout',current.cardLayout)} / ${displayValue('cardWearMode',current.cardWearMode || 'ボクサーパンツのみ')} / ${displayValue('cardEffect',cardEffectByRarity(current.cardRarity))}`]]],
       ['scene', L.sceneSection, [[L.scene,displayValue('sceneIdea',current.sceneIdea),'sceneIdea']]]
     ];
     const pcIcons = {basic:'👤', inner:'🎭', face:'🙂', body:'📐', bodyhair:'🧔', main:'🩳', outfit:'👕', output:'🖨️', scene:'🎬'};
@@ -5467,7 +5997,7 @@ ${promptTargetGuide(b, false)}`;
     const [s,r,note] = scoreRarity(current); els.rarity.textContent=r; els.rarity.className='rare rarity-'+(r==='SUPER RARE'?'SUPER':r); els.rareScore.textContent=s+' pt'; els.rarityNote.textContent = note==='idle' ? T('rarityNoteIdle') : T('rarityNotes')[note];
   }
   function renderAll(){ renderSlots(current,true); renderProfile(); renderRarity(); renderHistory(); renderGroupUI(); renderPromptTabs(); renderSettingChips(); updateCharCounts(); }
-  function saveCurrent(){ if(!current) return alert(T('saveFirst')); const history=loadHistory(); history.unshift({...current, appVersion:'V3.0.0'}); localStorage.setItem(STORAGE_KEY,JSON.stringify(history.slice(0,50))); renderHistory(); alert(T('saved')); }
+  function saveCurrent(){ if(!current) return alert(T('saveFirst')); const history=loadHistory(); history.unshift({...current, appVersion:'V3.2.0'}); localStorage.setItem(STORAGE_KEY,JSON.stringify(history.slice(0,50))); renderHistory(); alert(T('saved')); }
   function loadHistory(){ try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]} }
   function renderHistory(){
     const h = loadHistory();
@@ -5476,7 +6006,16 @@ ${promptTargetGuide(b, false)}`;
     document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{current=h[Number(b.dataset.load)]; currentGroup=null; activeMember=0; renderAll(); switchTab('result');});
     document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{ const i=Number(b.dataset.fav); h[i].fav=!h[i].fav; localStorage.setItem(STORAGE_KEY, JSON.stringify(h)); renderHistory(); });
   }
-  function downloadJson(){ const data = current || {}; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})); a.download='guzen-ikemen-result.json'; a.click(); URL.revokeObjectURL(a.href); }
+  function downloadJson(){
+    const data = current || {};
+    const nm = String(data.name||'').replace(/（.*?）/g,'').replace(/[\s\u3000]+/g,'').replace(/[\\/:*?"<>|]/g,'') || 'result';
+    const d = new Date(); const pad=n=>String(n).padStart(2,'0');
+    const stamp = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+    a.download=`guzen-ikemen_${nm}_${stamp}.json`;
+    a.click(); URL.revokeObjectURL(a.href);
+  }
   function switchTab(name){ document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name)); ['slot','result','history','settings'].forEach(t=>document.getElementById('tab-'+t).classList.toggle('hidden',t!==name)); const ip=document.getElementById('initialPanel'); if(ip) ip.classList.toggle('hidden', !(name==='slot' || name==='settings')); const sa=document.getElementById('slotAside'); if(sa) sa.classList.toggle('hidden', name!=='slot'); }
 
   // ===== V1.9.1 A案 UI logic =====

@@ -137,9 +137,11 @@ async function shoot(baseURL, tag) {
   ok('layer4 storage bytes identical', newState.results === oldState.results && newState.presets === oldState.presets);
   ok('layer4 history rendered in new app', newState.historyItems === 1, `items=${newState.historyItems}`);
   ok('layer4 preset listed in new app', newState.presetOptions.includes('migration-check'), JSON.stringify(newState.presetOptions));
-  // and the loaded history entry must carry the original appVersion stamp
+  // and the loaded history entry must carry the appVersion the old app stamped
+  // (compare against the page title's version so upstream bumps stay green)
   const version = await page.evaluate(() => JSON.parse(localStorage.getItem('guzen-ikemen-maker-v1.results'))[0].appVersion);
-  ok('layer4 appVersion preserved', version === 'V3.0.0', version);
+  const titleVersion = (await page.title()).split(' ').pop();
+  ok('layer4 appVersion preserved', version === titleVersion, `${version} vs title ${titleVersion}`);
   await srv.close();
   await context.close();
 }

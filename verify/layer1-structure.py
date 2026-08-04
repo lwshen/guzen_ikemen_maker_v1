@@ -12,6 +12,16 @@ manifest = json.load(open(f'{ROOT}/verify/data-manifest.json', encoding='utf-8')
 data_js = {f: open(f'{ROOT}/dist/data/{f}', encoding='utf-8').read() for f in manifest['dataFiles']}
 all_js = new_js + ''.join(data_js.values())
 
+# locate baseline regions by marker lines (same shape contract as phase1-extract.py)
+old_lines = old.split('\n')
+loc = lambda exact: old_lines.index(exact)
+style_open, style_close = loc('  <style>'), loc('  </style>')
+body_open, script_open = loc('<body>'), loc('<script>')
+old_css = '\n'.join(old_lines[style_open + 1:style_close])
+old_body = '\n'.join(old_lines[body_open + 1:script_open])
+old_title = next(l for l in old_lines if l.strip().startswith('<title>')).strip()
+old_footer = next(l for l in old_lines if l.startswith('    <p class="footer">')).strip()
+
 fails = []
 def check(name, ok, detail=''):
     print(('PASS' if ok else 'FAIL'), name, detail)
@@ -20,7 +30,7 @@ def check(name, ok, detail=''):
 # 1. id sets
 ids_old = sorted(set(re.findall(r'id="([^"]*)"', old.split('<script>')[0])))
 ids_new = sorted(set(re.findall(r'id="([^"]*)"', new_html)))
-check('id set (176)', ids_old == ids_new and len(ids_old) == 176,
+check(f'id set ({len(ids_old)})', ids_old == ids_new,
       f'old={len(ids_old)} new={len(ids_new)} diff={set(ids_old)^set(ids_new)}')
 
 # 2. data-* attribute names (static HTML region; script tags excluded —
@@ -47,16 +57,14 @@ check('data files are plain assignments (no eval/import/fetch)',
 # 4. head essentials (Astro normalizes void-element `/>` to `>` — HTML-equivalent)
 for frag in ['<html lang="ja">', '<meta charset="utf-8"',
              '<meta name="viewport" content="width=device-width, initial-scale=1"',
-             '<title>Guzen Ikemen Maker V3.0.0</title>']:
+             old_title]:
     check(f'head: {frag[:40]}', frag in new_html)
 
-# 5. footer byte-identical
-footer = '<p class="footer">© DAZ_だいすけ：FOOTHOUSE(AI男子） / Guzen Ikemen Maker V3.0.0</p>'
-check('footer verbatim', footer in new_html)
+# 5. footer byte-identical (taken from the baseline, incl. version string)
+check('footer verbatim', old_footer in new_html)
 
 # 6. CSS not scoped, present verbatim
 check('no :where(.astro-', ':where(.astro-' not in new_html and 'astro-' not in re.sub(r'<script.*?</script>', '', new_html, flags=re.S))
-old_css = '\n'.join(old.split('\n')[7:128])
 check('CSS block verbatim', old_css in new_html)
 
 # 7. long data line intact (measured in BYTES, matching awk length())
@@ -76,7 +84,6 @@ check('script tags = data/*.js then /app.js, all classic',
       and 'type=' not in ''.join(scripts), str(scripts))
 
 # 10. body region byte-identical
-old_body = '\n'.join(old.split('\n')[131:427])
 check('body region verbatim', old_body in new_html)
 
 print()

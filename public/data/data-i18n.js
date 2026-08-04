@@ -14,7 +14,7 @@ GUZEN_DATA.C_MEASUREMENT_EN = {
     '頭が完全に出ている':'The head is fully exposed'
   };
 
-// index.html:682
+// index.html:684
 GUZEN_DATA.slotLabelMap = {
     sportsHistory:{ja:'経験競技',en:'Sports History'}, trainingLevel:{ja:'筋トレ習慣',en:'Training Habit'},
     name:{ja:'名前',en:'Name'}, age:{ja:'年齢',en:'Age'}, eraYear:{ja:'時代設定',en:'Era Year'}, nationality:{ja:'国籍',en:'Nationality'}, ethnicity:{ja:'人種',en:'Ethnicity'}, role:{ja:'職業',en:'Occupation'},sportName:{ja:'競技',en:'Sport'}, vibe:{ja:'雰囲気系統',en:'Vibe'}, mbti:{ja:'MBTI',en:'MBTI'},
@@ -23,12 +23,12 @@ GUZEN_DATA.slotLabelMap = {
     hairStyle:{ja:'髪型',en:'Hairstyle'}, hairColor:{ja:'髪色',en:'Hair Color'}, outfitType:{ja:'職業服装',en:'Work Outfit'}, outfitBrand:{ja:'提案服装ブランド',en:'Outfit Brand'}, jacket:{ja:'上着',en:'Outerwear'}, top:{ja:'トップス',en:'Top'}, bottom:{ja:'ボトムス',en:'Bottom'}, boxerBrand:{ja:'下着ブランド',en:'Underwear Brand'}, shoes:{ja:'靴',en:'Shoes'}, sockBrand:{ja:'靴下ブランド',en:'Sock Brand'}, sockType:{ja:'靴下種類',en:'Sock Type'}, sockShape:{ja:'靴下形状',en:'Sock Shape'}, sockMaterial:{ja:'靴下素材',en:'Sock Material'}, sockColor:{ja:'靴下色・柄',en:'Sock Color / Pattern'}, sockUse:{ja:'靴下使用感',en:'Sock Condition'}
   };
 
-// index.html:689
+// index.html:691
 GUZEN_DATA.fixedFieldLabelMap = {
     age:{ja:'年齢固定',en:'Fixed Age'}, nationality:{ja:'国籍固定',en:'Fixed Nationality'}, ethnicity:{ja:'人種固定',en:'Fixed Ethnicity'}, bodyType:{ja:'体型固定',en:'Fixed Body Type'}, facePreset:{ja:'顔立ち固定',en:'Fixed Face Type'}, vibe:{ja:'雰囲気系統固定',en:'Fixed Vibe'}, mbti:{ja:'MBTI固定',en:'Fixed MBTI'}, outfitType:{ja:'服装固定',en:'Fixed Outfit'}
   };
 
-// index.html:692
+// index.html:694
 GUZEN_DATA.uiText = {
     ja:{
       subtitle:'偶然がつくる、まだ見ぬイケメン。年齢・身長・体型・顔立ち・雰囲気系統・MBTI・体毛・提案服装まで、スロットのようにランダムで決定します。メイン生成はボクサーパンツのみ着用とし、服装案や偶然見かけた場面は別枠で出力します。',
@@ -76,7 +76,7 @@ GUZEN_DATA.uiText = {
     }
   };
 
-// index.html:742
+// index.html:744
 GUZEN_DATA.valueTranslations = {
     '力強い目元':'Strong, intense eyes','優しい目元':'Gentle eyes','涼しげな目元':'Cool, refreshing eyes','知的な目元':'Intelligent eyes','眠たげな目元':'Sleepy-looking eyes','鋭い目元':'Sharp eyes','親しみやすい目元':'Approachable eyes','落ち着いた目元':'Calm eyes',
     '一重':'monolid','奥二重':'hooded double eyelid','末広二重':'tapered double eyelid','平行二重':'parallel double eyelid','左右で異なるまぶた（片方だけ二重）':'differing eyelids (double on one side only)',
@@ -203,7 +203,7 @@ GUZEN_DATA.valueTranslations = {
 
   };
 
-// index.html:867
+// index.html:869
 GUZEN_DATA.sceneTranslations = {
     '駅の伝言板や喫茶店の窓際の近くで、当時らしい落ち着いた私服姿を偶然見かけた場面':'A candid moment near a station message board or a coffee shop window, in a calm outfit that suits the era',
     '商店街のレコード店の前で立ち止まっている姿を偶然見かけた場面':'A candid moment of him pausing in front of a record shop in a shopping street',
@@ -248,20 +248,20 @@ GUZEN_DATA.sceneTranslations = {
     '大学施設や静かな作業スペースの近くで、考え込むように歩く姿を偶然見かけた場面':'A chance sighting near a university facility or quiet workspace, walking as if deep in thought.'
   };
 
-// index.html:941
+// index.html:943
 GUZEN_DATA.captionFieldLabelMap = {
     name:{ja:'氏名',en:'Name'}, age:{ja:'年齢',en:'Age'}, era:{ja:'年代',en:'Era'}, height:{ja:'身長',en:'Height'}, weight:{ja:'体重',en:'Weight'}, footSize:{ja:'足のサイズ',en:'Foot Size'}, mbti:{ja:'MBTI・性格',en:'MBTI / Personality'}, nationality:{ja:'国籍',en:'Nationality'}, role:{ja:'職業',en:'Occupation'}
   };
 
-// index.html:944
+// index.html:946
 GUZEN_DATA.cardFieldLabelMap = {
     name:{ja:'氏名',en:'Name'}, age:{ja:'年齢',en:'Age'}, era:{ja:'年代',en:'Era'}, height:{ja:'身長',en:'Height'}, weight:{ja:'体重',en:'Weight'}, footSize:{ja:'足サイズ',en:'Foot Size'}, nationality:{ja:'国籍',en:'Nationality'}, ethnicity:{ja:'人種',en:'Ethnicity'}, role:{ja:'職業',en:'Occupation'}, vibe:{ja:'雰囲気',en:'Vibe'}, mbti:{ja:'MBTI',en:'MBTI'}, facePreset:{ja:'顔立ち',en:'Face Type'}, bodyType:{ja:'体型',en:'Body Type'}, footShape:{ja:'足の形',en:'Foot Shape'}, bodyHairOverall:{ja:'体毛',en:'Body Hair'}, outfitType:{ja:'提案服装',en:'Outfit'}, scene:{ja:'場面',en:'Scene'}, rarity:{ja:'レアリティ',en:'Rarity'}
   };
 
-// index.html:947
+// index.html:949
 GUZEN_DATA.uiCardTitles = {
     initialBasic:{ja:'基本設定',en:'Basic Settings'}, initialOutput:{ja:'出力設定',en:'Output Settings'}, initialProfileText:{ja:'画像内プロフィール表記',en:'Profile Text in Image'}, initialCard:{ja:'カード差分プロンプト設定',en:'Trading Card Variation Settings'}, manualOutput:{ja:'出力設定',en:'Output Settings'}, manualProfileText:{ja:'画像内プロフィール表記',en:'Profile Text in Image'}, manualCard:{ja:'カード差分プロンプト設定',en:'Trading Card Variation Settings'}
   };
 
-// index.html:3382
+// index.html:3708
 GUZEN_DATA.UNDERWEAR_COLOR_EN = {'白':'white','ライトブルー':'light blue','グレー':'gray','ネイビー':'navy','チェック柄':'plaid','ストライプ柄':'striped','無地ネイビー':'plain navy','無地グレー':'plain gray','小紋柄':'subtly patterned','ライトグレー':'light gray','黒':'black','チャコール':'charcoal','ダークグレー':'dark gray'};

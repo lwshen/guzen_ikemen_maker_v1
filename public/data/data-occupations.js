@@ -4,7 +4,7 @@
 // that is expected once you change data intentionally).
 window.GUZEN_DATA = window.GUZEN_DATA || {};
 
-// index.html:1722
+// index.html:1725
 GUZEN_DATA.OCC_SCENES = {
     '大学生':['講義棟から出てきてキャンパスの並木道を歩く姿を偶然見かけた場面','学食の窓際の席でトレーを持って席を探す姿を偶然見かけた場面','図書館の返却ポストに本を入れている姿を偶然見かけた場面','サークル棟の前で仲間と笑い合う姿を偶然見かけた場面','履修相談の掲示板の前で腕を組んで考え込む姿を偶然見かけた場面','大学近くの安い定食屋ののれんをくぐる姿を偶然見かけた場面','試験期間の夜、コンビニコーヒー片手に自習室へ向かう姿を偶然見かけた場面'],
     '大学1年生':['入学したてで慣れないキャンパスの案内図を見上げる姿を偶然見かけた場面','真新しい学生証を首から下げて教科書販売の列に並ぶ姿を偶然見かけた場面','サークルの新歓ビラを何枚も抱えて歩く姿を偶然見かけた場面','初めての履修登録に苦戦してスマホと掲示板を見比べる姿を偶然見かけた場面','高校の制服が抜けきらない雰囲気で通学電車を降りる姿を偶然見かけた場面'],
@@ -108,7 +108,7 @@ GUZEN_DATA.OCC_SCENES = {
     '銭湯・サウナ店スタッフ':['開店前に暖簾を掛けて湯温を確かめる姿を偶然見かけた場面','薪をくべて釜の火加減を調整する姿を偶然見かけた場面','サウナ室の熱波イベントでタオルを振るう姿を偶然見かけた場面','閉店後に浴場のタイルをデッキブラシで磨く姿を偶然見かけた場面','番台で常連客と楽しそうに世間話をする姿を偶然見かけた場面']
   };
 
-// index.html:1824
+// index.html:1827
 GUZEN_DATA.OCC_CAT_SCENES = {
     student:['講義帰りのキャンパス周辺で、リュックを背負って歩く姿を偶然見かけた場面','学食の券売機の前でメニューを迷う姿を偶然見かけた場面','キャンパスの芝生で友人と昼を過ごす姿を偶然見かけた場面','図書館の閉館音楽と共に出てくる姿を偶然見かけた場面','バイト先へ急ぐ学生らしい姿を偶然見かけた場面'],
     office:['仕事帰りのオフィス街で、少し力の抜けた表情で歩く姿を偶然見かけた場面','昼休みにオフィス街の弁当屋の列に並ぶ姿を偶然見かけた場面','朝のエレベーターホールでネクタイを直す姿を偶然見かけた場面','退勤後に同僚と居酒屋の暖簾をくぐる姿を偶然見かけた場面','金曜の夜、心なしか軽い足取りで駅へ向かう姿を偶然見かけた場面'],
@@ -125,10 +125,10 @@ GUZEN_DATA.OCC_CAT_SCENES = {
     retired:['朝の公園でラジオ体操の輪に加わる姿を偶然見かけた場面','平日の昼間に悠々と図書館へ向かう姿を偶然見かけた場面']
   };
 
-// index.html:2109
+// index.html:2430
 GUZEN_DATA.VIBE_AGE_MAX = {'陽キャ大学生系':26,'やりらふぃー系':30,'ギャル男系':35,'韓国風':40,'中性系':40,'ホスト系':45,'ヤンキー系':45,'ストリート系':50,'バンドマン系':60};
 
-// index.html:2126
+// index.html:2447
 GUZEN_DATA.OCCUPATIONS = [
     ['大学生','student',0,0,18,24],['大学1年生','student',0,0,18,19],['高校卒業直後（進路準備中）','student',1950,0,18,19],['浪人生（予備校生）','student',1950,0,18,21],['大学院生','student',0,0,22,29],['専門学校生','student',0,0,18,23],['就活中の大学生','student',0,0,20,24],
     ['営業職','office',0,0,22,65],['経理・事務職','office',0,0,20,65],['企画職','office',0,0,23,65],['公務員','office',0,0,22,64],['銀行員','office',0,0,22,60],['商社勤務','office',0,0,22,65],['コンサルタント','office',1985,0,24,70],['不動産営業','office',0,0,22,70],
@@ -151,13 +151,13 @@ GUZEN_DATA.OCCUPATIONS = [
     ['スーパー店員','service',0,0,18,70],['家電量販店店員','service',1975,0,18,60],['花屋店員','service',0,0,18,65],['シェフ（洋食）','service',0,0,20,75],['理容師','service',0,0,19,75],['銭湯・サウナ店スタッフ','service',0,0,18,70]
   ];
 
-// index.html:2148
+// index.html:2469
 GUZEN_DATA.OCC_CAT_LABELS = {student:{ja:'学生',en:'Students'}, office:{ja:'オフィス・専門職',en:'Office / Professional'}, it:{ja:'IT・Web',en:'IT / Web'}, medical:{ja:'医療・福祉',en:'Medical / Care'}, edu:{ja:'教育',en:'Education'}, service:{ja:'接客・飲食・販売',en:'Service / Retail'}, trade:{ja:'技能・現場・運輸',en:'Trade / Transport'}, creative:{ja:'クリエイティブ',en:'Creative'}, uniform:{ja:'制服・スポーツ・保安',en:'Uniform / Sports / Safety'}, enta:{ja:'エンタメ',en:'Entertainment'}, showa:{ja:'昭和・レトロ',en:'Showa / Retro'}, other:{ja:'その他',en:'Other'}, retired:{ja:'リタイア',en:'Retired'}};
 
-// index.html:2149
+// index.html:2470
 GUZEN_DATA.OCC_CAT_ORDER = ['student','office','it','medical','edu','service','trade','creative','uniform','enta','showa','other','retired'];
 
-// index.html:2163
+// index.html:2484
 GUZEN_DATA.OCC_MBTI_CAT = {
     guardian:{enta:1, office:3, medical:2, edu:2, trade:2, uniform:2, showa:2, service:1, it:1, creative:1, student:1},
     analyst:{enta:1, it:3, edu:2, creative:2, office:2, medical:1, trade:1, uniform:1, service:1, showa:1, student:1},
@@ -165,10 +165,10 @@ GUZEN_DATA.OCC_MBTI_CAT = {
     creative:{enta:2, creative:3, service:2, it:2, student:1, office:1, edu:1, medical:1, trade:1, uniform:1, showa:1}
   };
 
-// index.html:2169
+// index.html:2490
 GUZEN_DATA.ATHLETIC_OCC = ['消防士','警察官','自衛官','プロスポーツ選手','体育教師','ジムトレーナー','スポーツインストラクター','漁師','大工'];
 
-// index.html:2183
+// index.html:2504
 GUZEN_DATA.UNIFORM_WORKWEAR = {
     '消防士':['消防署の活動服（紺の作業服スタイル）','a firefighter station duty uniform (navy work-wear style)','紺の活動服上衣','紺の活動服パンツ','編み上げの作業ブーツ'],
     '警察官':['警察官の勤務制服風（濃紺）','a police-style duty uniform (dark navy)','濃紺の制服シャツ','濃紺の制服スラックス','黒の革靴'],
@@ -220,7 +220,7 @@ GUZEN_DATA.UNIFORM_WORKWEAR = {
     '中学校教員':['中学校の先生スタイル（シャツ＋ジャージ）','a junior-high teacher style','ワイシャツ（腕まくり）','ジャージパンツまたはスラックス','白スニーカー']
   };
 
-// index.html:2233
+// index.html:2554
 GUZEN_DATA.UNIFORM_VARIANTS = {
     '消防士': [
       ['消防署の活動服（紺の作業服スタイル）','a firefighter station duty uniform (navy work-wear style)','紺の活動服上衣','紺の活動服パンツ','編み上げの作業ブーツ',5,'','紺のキャップ型活動帽'],
@@ -252,7 +252,7 @@ GUZEN_DATA.UNIFORM_VARIANTS = {
     ]
   };
 
-// index.html:2359
+// index.html:2680
 GUZEN_DATA.VIBE_OCC = {
     'ギャル男系':{good:['アパレル店員','美容師','古着屋店主','YouTuber'], bad:['銀行員','公務員','僧侶','高校教師','自衛官','研修医','経理・事務職','警察官','消防士','救急隊員','防衛大学校学生']},
     'ヤンキー系':{good:['大工','自動車整備士','配送ドライバー','漁師','電気工事士'], bad:['銀行員','公務員','高校教師','塾講師','僧侶','薬剤師','研修医','看護師']},
@@ -270,13 +270,13 @@ GUZEN_DATA.VIBE_OCC = {
     '清潔系ダミー':{good:[], bad:[]}
   };
 
-// index.html:2428
+// index.html:2749
 GUZEN_DATA.STRICT_HAIR_OCC = ['銀行員','公務員','警察官','消防士','自衛官','救急隊員','防衛大学校学生','ホテルスタッフ','商社勤務','研修医','看護師','高校教師','僧侶','新聞記者','国鉄職員','経理・事務職'];
 
-// index.html:2429
+// index.html:2750
 GUZEN_DATA.FREE_HAIR_OCC = ['美容師','アパレル店員','ミュージシャン','YouTuber','お笑い芸人','古着屋店主','モデル','俳優','バーテンダー','プロゲーマー','動画クリエイター'];
 
-// index.html:2812
+// index.html:3133
 GUZEN_DATA.OCC_HOOK = {
     '消防士':['仮眠中でも靴下だけは履いている','非番の日も駅の階段を2段で上る'],
     '救急隊員':['当直明けのコンビニコーヒーがいちばんうまいと言う','サイレンの音で目が覚める体になった'],
@@ -298,7 +298,7 @@ GUZEN_DATA.OCC_HOOK = {
     'YouTuber':['日常の全部がネタに見える','サムネイルの表情だけ3割増し']
   };
 
-// index.html:2832
+// index.html:3153
 GUZEN_DATA.OCC_CAT_HOOK = {
     office:['月曜の朝礼で一番声が出る','エクセルのショートカットで生きている'],
     it:['納期前だけ早起きになる','椅子にはこだわる派'],
@@ -313,7 +313,7 @@ GUZEN_DATA.OCC_CAT_HOOK = {
     retired:['朝の公園のラジオ体操の常連','孫の話になると止まらない']
   };
 
-// index.html:3156
+// index.html:3477
 GUZEN_DATA.BRAND_SINCE = {
     'UNIQLO':1984,'GU':2006,'無印良品':1980,'MUJI':1980,'ZARA':1998,'H&M':2008,
     'BEAMS':1976,'UNITED ARROWS':1989,'SHIPS':1977,'GLOBAL WORK':1994,'nano・universe':1999,'URBAN RESEARCH':1989,'JOURNAL STANDARD':1997,
@@ -337,7 +337,7 @@ GUZEN_DATA.BRAND_SINCE = {
     'VAN':1954,'JUN':1958,'D\'URBAN':1970,'TAKEO KIKUCHI':1984,'MEN\'S BIGI':1975,'COMME des GARÇONS HOMME':1978,'A BATHING APE':1993,'UNDERCOVER':1990,'Stüssy':1991,'GAP':1995,'洋服の青山':1964,'はるやま':1955
   };
 
-// index.html:6664
+// index.html:7200
 GUZEN_DATA.UNIFORM_NAME_MIGRATION = {
     '防衛大学校の常装制服風（濃紺の詰襟スタイル）':'防衛大学校の常装冬服風（花紺色の詰襟型短ジャケット）',
     '防衛大学校の第1種夏服風（白の上衣）':'防衛大学校の第1種夏服風（白の詰襟上下）',

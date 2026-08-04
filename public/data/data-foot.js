@@ -4,26 +4,26 @@
 // that is expected once you change data intentionally).
 window.GUZEN_DATA = window.GUZEN_DATA || {};
 
-// index.html:3412
+// index.html:3738
 GUZEN_DATA.FOOT_CFG_AXES = [['scene','場面','Scene'],['posture','座り方','Posture'],['shoeState','靴の状態','Shoes'],['wear','服装','Outfit'],['fabric','靴下の生地状態','Sock Fabric'],['sockState','靴下の着脱','Sock State'],['angle','カメラアングル','Camera Angle'],['prop','足元まわりの小物','Props']];
 
-// index.html:3413
+// index.html:3739
 GUZEN_DATA.FOOT_SCENES = [
     ['玄関で靴を脱ぐ場面','stand','玄関のたたき'],['座敷・和室でくつろぐ','floor','畳'],['自室でくつろぐ','floor','フローリング'],['リビングのソファー周り','chair','カーペット'],['オフィスの椅子まわり（休憩中）','chair','オフィスの床'],['更衣室・ロッカールーム','chair','更衣室の床'],['スリッパに履き替える場面','stand','フローリング'],['ベッドの上でくつろぐ','bed',''],['縁側で休む','floor','縁側の木板'],['小上がりの飲食店','floor','畳'],['畳の休憩室（職場の仮眠室）','floor','畳'],['こたつのある部屋','floor','カーペットとこたつ布団'],['足湯上がりに靴下を履き直した後','chair','ベンチのある床'],['新幹線の座席（靴を脱いでくつろぐ）','chair','車内の床']
   ];
 
-// index.html:3416
+// index.html:3742
 GUZEN_DATA.FOOT_COZY = ['座敷・和室でくつろぐ','自室でくつろぐ','ベッドの上でくつろぐ','縁側で休む','こたつのある部屋','リビングのソファー周り','畳の休憩室（職場の仮眠室）'];
 
-// index.html:3417
+// index.html:3743
 GUZEN_DATA.FOOT_POSTURES = [
     ['床・座敷にあぐらをかく',['floor']],['椅子の上であぐらをかく',['chair']],['足を伸ばして座る',['floor','bed','chair']],['椅子・ソファーで足を組む',['chair']],['普通に椅子・ソファーに座る',['chair']],['足首を交差させて座る',['chair']],['軽くストレッチをしている',['floor','bed']],['正座で座る',['floor']],['横座り（足を崩した正座）',['floor']],['体育座りをする',['floor','bed']],['片膝を立てて座る',['floor']],['立ったまま片足ずつ履き替え中',['stand']],['ソファーに浅く腰掛けて足を投げ出す',['chair']]
   ];
 
-// index.html:3420
+// index.html:3746
 GUZEN_DATA.FOOT_SHOE_STATES = ['脱いだ靴をそばにそろえて置いてある','靴は画面に表示しない','靴を完全に履いている','靴を脱いでいるところ','かかとを踏んでサンダル履きのようにしている','つま先だけ靴に入れてかかとを出している','脱いだ靴の上に足をのせている'];
 
-// index.html:3421
+// index.html:3747
 GUZEN_DATA.FOOT_FABRICS = [
     ['軽い使用感',[1,3],'数回の洗濯を経た柔らかな風合いで、ごくわずかな毛玉がある'],
     ['日常使いの使用感',[3,4],'生地が少しくたびれ、かかととつま先の色がうっすら薄れている'],
@@ -32,15 +32,15 @@ GUZEN_DATA.FOOT_FABRICS = [
     ['長時間履いた後の状態',[4,1.5],'一日履いた後の自然なしわが寄り、足裏にうっすらした踏み跡とくすみがある']
   ];
 
-// index.html:3428
+// index.html:3754
 GUZEN_DATA.FOOT_SOCK_STATES = [
     ['靴下を履いたまま',12],['片足だけ靴下を脱いでいる途中',0.8],['両足とも靴下を脱いでいる途中',0.4],['靴下を脱いだ直後（素足）',0.4]
   ];
 
-// index.html:3431
+// index.html:3757
 GUZEN_DATA.FOOT_ANGLES = ['自然な目線の高さ','やや低めのアングル','床・座面レベルの低アングル'];
 
-// index.html:3432
+// index.html:3758
 GUZEN_DATA.FOOT_OCC_SCENES = {
     '自衛官':[
       ['駐屯地の営内居室（白いパイプの2段ベッドが整然と並ぶ明るい大部屋）','chair','明るいリノリウムの床',['きっちり角を揃えて畳んだ布団と毛布','水色のプラスチック収納ボックス','窓際の共用机と椅子','ベッド下につま先を揃えて並べた半長靴','磨き途中の半長靴と靴磨きセット'],true],
@@ -65,7 +65,7 @@ GUZEN_DATA.FOOT_OCC_SCENES = {
     ]
   };
 
-// index.html:3455
+// index.html:3781
 GUZEN_DATA.FOOT_SCENE_MIGRATION = {
     '駐屯地の営内居室（ベッドとスチールロッカーが整然と並ぶ部屋）':'駐屯地の営内居室（白いパイプの2段ベッドが整然と並ぶ明るい大部屋）',
     '営内のベッドに腰掛けて休む':'営内の2段ベッドの下段に腰掛けて休む',
@@ -75,17 +75,17 @@ GUZEN_DATA.FOOT_SCENE_MIGRATION = {
     '消防署の仮眠室':'消防署の仮眠室（青いパーティションで仕切られた個別のベッド区画）'
   };
 
-// index.html:3463
+// index.html:3789
 GUZEN_DATA.FOOT_OCC_CAT_SCENES = {
     office:[['オフィスのリフレッシュスペース','chair','カーペット',['コーヒーカップ','観葉植物'],false]],
     it:[['オフィスの仮眠スペース','bed','',['ノートPC','ワイヤレスイヤホン'],true]],
     student:[['大学のサークル部室','floor','古いカーペット',['マンガ雑誌','部室のポット'],true]]
   };
 
-// index.html:3474
+// index.html:3800
 GUZEN_DATA.FOOT_PROPS = { generic:['湯のみとお茶','読みかけの本','スマートフォン','クッション','脱いだ上着','そばで丸まる猫'], '新幹線の座席（靴を脱いでくつろぐ）':['駅弁とお茶','車窓を流れる景色','膝の上のバッグ'], 'こたつのある部屋':['みかんと湯のみ','こたつ布団'] };
 
-// index.html:3524
+// index.html:3850
 GUZEN_DATA.POSTER_FOOT = {
     '僧侶':['寺内や和室の場面なら素足や足袋・雪駄が自然。屋外なら雪駄や作業用の履物を選ぶ','in a temple or tatami setting, bare feet or tabi/setta sandals are natural; outdoors, setta or work footwear'],
     '書道家':['和室で揮毫する構図なら素足または足袋が自然','bare feet or tabi are natural if he is writing in a tatami room'],
@@ -96,7 +96,7 @@ GUZEN_DATA.POSTER_FOOT = {
     'ジムトレーナー':['トレーニングシューズが基本だが、ストレッチエリアなら素足も可','training shoes as standard, bare feet acceptable in a stretch area']
   };
 
-// index.html:3635
+// index.html:3961
 GUZEN_DATA.FOOT_WIDTHS = [
     ['E（やや細め）','すっきりした細めの足幅。甲は薄めで、足の輪郭が直線的','a slim foot width with a low instep and straight outline'],
     ['2E（標準）','標準的な足幅。甲の厚みも平均的で自然なバランス','a standard foot width with average instep thickness'],
@@ -104,7 +104,7 @@ GUZEN_DATA.FOOT_WIDTHS = [
     ['4E（幅広・甲高）','かなり幅広で甲高。足全体にどっしりした量感があり、指の付け根が横に広がる','a very wide, high-instep foot with a solid, weighty volume']
   ];
 
-// index.html:3659
+// index.html:3985
 GUZEN_DATA.FOOT_FEATURES = [
     ['特徴なし・整った足', 10, 0, ''],
     ['軽度の外反母趾', 2, 35, '親指の付け根がわずかに内側へ張り出しているが、痛々しくならない自然な範囲'],
@@ -133,7 +133,7 @@ GUZEN_DATA.FOOT_FEATURES = [
     ['親指がまっすぐで力強い足', 1.2, 0, '親指がまっすぐ伸びて力強い印象がある']
   ];
 
-// index.html:3686
+// index.html:4012
 GUZEN_DATA.SOLE_TYPES = [
     ['すっきり細長型', 4, '輪郭が直線的で細長く、かかとは小さめ。足裏はなめらかでしわが少ない', 'a slim, elongated sole with a straight outline, small heel, and smooth skin'],
     ['幅広肉厚型', 3, '全体に幅広で肉厚。かかとが大きく丸く、足裏に柔らかな量感がある', 'a wide, thick sole with a large round heel and soft volume'],
@@ -149,14 +149,14 @@ GUZEN_DATA.SOLE_TYPES = [
     ['武骨大判型', 2, '大きくどっしりした足裏で、後半部にしわが多く、働く足らしい武骨な質感', 'a large, sturdy sole with heavy creasing toward the heel — a hardworking foot']
   ];
 
-// index.html:3700
+// index.html:4026
 GUZEN_DATA.SOLE_WRINKLES = [
     ['しわ少なめ', 'しわは少なく、なめらかな質感', 'few creases; smooth texture'],
     ['標準的なしわ', '土踏まずと指の付け根に自然な浅いしわ', 'natural shallow creases at the arch and toe bases'],
     ['しわ多め', '土踏まずと指の付け根に細かいしわがはっきり寄る', 'fine creases gather clearly at the arch and toe bases']
   ];
 
-// index.html:3705
+// index.html:4031
 GUZEN_DATA.TOE_LINES = [
     ['まっすぐ前を向いたそろった並び', 5, '各指がまっすぐ前を向き、自然に整列している', 'toes point straight ahead in a natural, even row'],
     ['指先が密着した並び', 3, '指同士がぴったり寄り添い、すき間なく並ぶ', 'toes rest snugly together with no gaps'],
@@ -170,7 +170,7 @@ GUZEN_DATA.TOE_LINES = [
     ['指の付け根ラインが強くカーブした並び', 1.5, '指の付け根の並びが弧を描き、指先の高さに段差がつく', 'the toe-base line curves strongly, stepping the toe tips at different heights']
   ];
 
-// index.html:3717
+// index.html:4043
 GUZEN_DATA.TOE_CURLS = [
     ['指先がわずかに上へ反った自然な状態', 4, 'toe tips lifted in a slight natural upward curl'],
     ['指がフラットに伸びた状態', 4, 'toes extended flat and relaxed'],

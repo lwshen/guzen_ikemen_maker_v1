@@ -13,652 +13,687 @@
   {
    "name": "pools",
    "file": "data-core.js",
-   "indexHtmlLine": 551
+   "indexHtmlLine": 553
   },
   {
    "name": "slotDefs",
    "file": "data-core.js",
-   "indexHtmlLine": 666
+   "indexHtmlLine": 668
   },
   {
    "name": "slotLabelMap",
    "file": "data-i18n.js",
-   "indexHtmlLine": 682
+   "indexHtmlLine": 684
   },
   {
    "name": "fixedFieldLabelMap",
    "file": "data-i18n.js",
-   "indexHtmlLine": 689
+   "indexHtmlLine": 691
   },
   {
    "name": "uiText",
    "file": "data-i18n.js",
-   "indexHtmlLine": 692
+   "indexHtmlLine": 694
   },
   {
    "name": "valueTranslations",
    "file": "data-i18n.js",
-   "indexHtmlLine": 742
+   "indexHtmlLine": 744
   },
   {
    "name": "sceneTranslations",
    "file": "data-i18n.js",
-   "indexHtmlLine": 867
+   "indexHtmlLine": 869
   },
   {
    "name": "captionFieldLabelMap",
    "file": "data-i18n.js",
-   "indexHtmlLine": 941
+   "indexHtmlLine": 943
   },
   {
    "name": "cardFieldLabelMap",
    "file": "data-i18n.js",
-   "indexHtmlLine": 944
+   "indexHtmlLine": 946
   },
   {
    "name": "uiCardTitles",
    "file": "data-i18n.js",
-   "indexHtmlLine": 947
+   "indexHtmlLine": 949
   },
   {
    "name": "NAMES_BY_YEAR",
    "file": "data-names.js",
-   "indexHtmlLine": 1461
+   "indexHtmlLine": 1464
   },
   {
    "name": "NATION_NAMES",
    "file": "data-names.js",
-   "indexHtmlLine": 1490
+   "indexHtmlLine": 1493
   },
   {
    "name": "OCC_SCENES",
    "file": "data-occupations.js",
-   "indexHtmlLine": 1722
+   "indexHtmlLine": 1725
   },
   {
    "name": "OCC_CAT_SCENES",
    "file": "data-occupations.js",
-   "indexHtmlLine": 1824
+   "indexHtmlLine": 1827
+  },
+  {
+   "name": "FVOCAB",
+   "file": "data-core.js",
+   "indexHtmlLine": 1909
+  },
+  {
+   "name": "FASHION_CASUAL_TAGS",
+   "file": "data-core.js",
+   "indexHtmlLine": 1988
+  },
+  {
+   "name": "ACC_NO_PIERCE",
+   "file": "data-core.js",
+   "indexHtmlLine": 2123
+  },
+  {
+   "name": "ACC_HI_PIERCE",
+   "file": "data-core.js",
+   "indexHtmlLine": 2124
+  },
+  {
+   "name": "ACC_WORK_OFF",
+   "file": "data-core.js",
+   "indexHtmlLine": 2125
   },
   {
    "name": "VIBE_AGE_MAX",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2109
+   "indexHtmlLine": 2430
   },
   {
    "name": "OCCUPATIONS",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2126
+   "indexHtmlLine": 2447
   },
   {
    "name": "OCC_CAT_LABELS",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2148
+   "indexHtmlLine": 2469
   },
   {
    "name": "OCC_CAT_ORDER",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2149
+   "indexHtmlLine": 2470
   },
   {
    "name": "OCC_MBTI_CAT",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2163
+   "indexHtmlLine": 2484
   },
   {
    "name": "ATHLETIC_OCC",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2169
+   "indexHtmlLine": 2490
   },
   {
    "name": "UNIFORM_WORKWEAR",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2183
+   "indexHtmlLine": 2504
   },
   {
    "name": "UNIFORM_VARIANTS",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2233
+   "indexHtmlLine": 2554
   },
   {
    "name": "SPORTS",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2321
+   "indexHtmlLine": 2642
   },
   {
    "name": "SPORT_BODY",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2322
+   "indexHtmlLine": 2643
   },
   {
    "name": "VIBE_OCC",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2359
+   "indexHtmlLine": 2680
   },
   {
    "name": "ETHNIC_HAIR_WEIGHTS",
    "file": "data-core.js",
-   "indexHtmlLine": 2410
+   "indexHtmlLine": 2731
   },
   {
    "name": "STRICT_HAIR_OCC",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2428
+   "indexHtmlLine": 2749
   },
   {
    "name": "FREE_HAIR_OCC",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2429
+   "indexHtmlLine": 2750
   },
   {
    "name": "SPORT_EXP_POOL",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2460
+   "indexHtmlLine": 2781
   },
   {
    "name": "SPORT_EXP_WEIGHTS",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2489
+   "indexHtmlLine": 2810
   },
   {
    "name": "SPORT_MUSCLE",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2542
+   "indexHtmlLine": 2863
   },
   {
    "name": "SPORT_SKELETON",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2571
+   "indexHtmlLine": 2892
   },
   {
    "name": "TRAINING_LEVELS",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2638
+   "indexHtmlLine": 2959
   },
   {
    "name": "TRAINING_DESC",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2644
+   "indexHtmlLine": 2965
   },
   {
    "name": "TRAINING_BODY",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2675
+   "indexHtmlLine": 2996
   },
   {
    "name": "TRAINING_EXCL",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2683
+   "indexHtmlLine": 3004
   },
   {
    "name": "BODY_ASYMS",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2697
+   "indexHtmlLine": 3018
   },
   {
    "name": "POSTURES",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2698
+   "indexHtmlLine": 3019
   },
   {
    "name": "BODY_ASYM_EN",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2699
+   "indexHtmlLine": 3020
   },
   {
    "name": "POSTURE_EN",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2700
+   "indexHtmlLine": 3021
   },
   {
    "name": "SPORT_MEM",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2758
+   "indexHtmlLine": 3079
   },
   {
    "name": "CULT_MEM",
    "file": "data-body-sports.js",
-   "indexHtmlLine": 2788
+   "indexHtmlLine": 3109
   },
   {
    "name": "MBTI_INTRO",
    "file": "data-inner.js",
-   "indexHtmlLine": 2802
+   "indexHtmlLine": 3123
   },
   {
    "name": "OCC_HOOK",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2812
+   "indexHtmlLine": 3133
   },
   {
    "name": "OCC_CAT_HOOK",
    "file": "data-occupations.js",
-   "indexHtmlLine": 2832
+   "indexHtmlLine": 3153
   },
   {
    "name": "ERA_HOOK",
    "file": "data-inner.js",
-   "indexHtmlLine": 2845
+   "indexHtmlLine": 3166
   },
   {
    "name": "BRIDGE_HOOK",
    "file": "data-inner.js",
-   "indexHtmlLine": 2855
+   "indexHtmlLine": 3176
   },
   {
    "name": "TRAIN_HOOK",
    "file": "data-inner.js",
-   "indexHtmlLine": 2862
+   "indexHtmlLine": 3183
   },
   {
    "name": "EYE_MIGRATION",
    "file": "data-core.js",
-   "indexHtmlLine": 3032
+   "indexHtmlLine": 3353
   },
   {
    "name": "BRAND_SINCE",
    "file": "data-occupations.js",
-   "indexHtmlLine": 3156
+   "indexHtmlLine": 3477
   },
   {
    "name": "UNDERWEAR_COLOR_EN",
    "file": "data-i18n.js",
-   "indexHtmlLine": 3382
+   "indexHtmlLine": 3708
   },
   {
    "name": "FOOT_CFG_AXES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3412
+   "indexHtmlLine": 3738
   },
   {
    "name": "FOOT_SCENES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3413
+   "indexHtmlLine": 3739
   },
   {
    "name": "FOOT_COZY",
    "file": "data-foot.js",
-   "indexHtmlLine": 3416
+   "indexHtmlLine": 3742
   },
   {
    "name": "FOOT_POSTURES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3417
+   "indexHtmlLine": 3743
   },
   {
    "name": "FOOT_SHOE_STATES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3420
+   "indexHtmlLine": 3746
   },
   {
    "name": "FOOT_FABRICS",
    "file": "data-foot.js",
-   "indexHtmlLine": 3421
+   "indexHtmlLine": 3747
   },
   {
    "name": "FOOT_SOCK_STATES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3428
+   "indexHtmlLine": 3754
   },
   {
    "name": "FOOT_ANGLES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3431
+   "indexHtmlLine": 3757
   },
   {
    "name": "FOOT_OCC_SCENES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3432
+   "indexHtmlLine": 3758
   },
   {
    "name": "FOOT_SCENE_MIGRATION",
    "file": "data-foot.js",
-   "indexHtmlLine": 3455
+   "indexHtmlLine": 3781
   },
   {
    "name": "FOOT_OCC_CAT_SCENES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3463
+   "indexHtmlLine": 3789
   },
   {
    "name": "FOOT_PROPS",
    "file": "data-foot.js",
-   "indexHtmlLine": 3474
+   "indexHtmlLine": 3800
   },
   {
    "name": "POSTER_FOOT",
    "file": "data-foot.js",
-   "indexHtmlLine": 3524
+   "indexHtmlLine": 3850
   },
   {
    "name": "FOOT_WIDTHS",
    "file": "data-foot.js",
-   "indexHtmlLine": 3635
+   "indexHtmlLine": 3961
   },
   {
    "name": "FOOT_FEATURES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3659
+   "indexHtmlLine": 3985
   },
   {
    "name": "SOLE_TYPES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3686
+   "indexHtmlLine": 4012
   },
   {
    "name": "SOLE_WRINKLES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3700
+   "indexHtmlLine": 4026
   },
   {
    "name": "TOE_LINES",
    "file": "data-foot.js",
-   "indexHtmlLine": 3705
+   "indexHtmlLine": 4031
   },
   {
    "name": "TOE_CURLS",
    "file": "data-foot.js",
-   "indexHtmlLine": 3717
+   "indexHtmlLine": 4043
   },
   {
    "name": "FACE_EXTRA_DEFAULTS",
    "file": "data-core.js",
-   "indexHtmlLine": 3861
+   "indexHtmlLine": 4187
   },
   {
    "name": "INNER_DISPLAY_KEYS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4245
+   "indexHtmlLine": 4577
   },
   {
    "name": "INNER_DREAMS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4259
+   "indexHtmlLine": 4591
   },
   {
    "name": "INNER_DREAM_CAT",
    "file": "data-inner.js",
-   "indexHtmlLine": 4266
+   "indexHtmlLine": 4598
   },
   {
    "name": "INNER_DESIRES",
    "file": "data-inner.js",
-   "indexHtmlLine": 4267
+   "indexHtmlLine": 4599
   },
   {
    "name": "INNER_WEAK_MIND",
    "file": "data-inner.js",
-   "indexHtmlLine": 4271
+   "indexHtmlLine": 4603
   },
   {
    "name": "INNER_WEAK_BODY",
    "file": "data-inner.js",
-   "indexHtmlLine": 4275
+   "indexHtmlLine": 4607
   },
   {
    "name": "INNER_TALENTS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4279
+   "indexHtmlLine": 4611
   },
   {
    "name": "INNER_UPBRINGINGS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4282
+   "indexHtmlLine": 4614
   },
   {
    "name": "INNER_TRAUMAS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4286
+   "indexHtmlLine": 4618
   },
   {
    "name": "INNER_PRONOUNS_BASE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4289
+   "indexHtmlLine": 4621
   },
   {
    "name": "INNER_LOVE_BASE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4290
+   "indexHtmlLine": 4622
   },
   {
    "name": "INNER_LOVE_NOTES",
    "file": "data-inner.js",
-   "indexHtmlLine": 4291
+   "indexHtmlLine": 4623
   },
   {
    "name": "INNER_ORIGINS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4292
+   "indexHtmlLine": 4624
   },
   {
    "name": "INNER_COMPLEX_GENERIC",
    "file": "data-inner.js",
-   "indexHtmlLine": 4295
+   "indexHtmlLine": 4627
   },
   {
    "name": "INNER_BLOOD_DIST",
    "file": "data-inner.js",
-   "indexHtmlLine": 4299
+   "indexHtmlLine": 4631
   },
   {
    "name": "INNER_INCOME_TABLE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4378
+   "indexHtmlLine": 4710
   },
   {
    "name": "INNER_HOBBY_GENERIC",
    "file": "data-inner.js",
-   "indexHtmlLine": 4570
+   "indexHtmlLine": 4907
   },
   {
    "name": "INNER_HOBBY_BY_VIBE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4571
+   "indexHtmlLine": 4908
   },
   {
    "name": "INNER_MYBOOM_MODERN",
    "file": "data-inner.js",
-   "indexHtmlLine": 4572
+   "indexHtmlLine": 4909
   },
   {
    "name": "INNER_MYBOOM_COMMON",
    "file": "data-inner.js",
-   "indexHtmlLine": 4573
+   "indexHtmlLine": 4910
   },
   {
    "name": "INNER_MYBOOM_RETRO",
    "file": "data-inner.js",
-   "indexHtmlLine": 4574
+   "indexHtmlLine": 4911
   },
   {
    "name": "INNER_FOOD_LIKE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4575
+   "indexHtmlLine": 4912
   },
   {
    "name": "INNER_FOOD_HATE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4576
+   "indexHtmlLine": 4913
   },
   {
    "name": "INNER_HEALTH_BASE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4577
+   "indexHtmlLine": 4914
   },
   {
    "name": "INNER_HEALTH_MID",
    "file": "data-inner.js",
-   "indexHtmlLine": 4578
+   "indexHtmlLine": 4915
   },
   {
    "name": "INNER_LIVING_SINGLE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4579
+   "indexHtmlLine": 4916
   },
   {
    "name": "INNER_LIVING_MARRIED",
    "file": "data-inner.js",
-   "indexHtmlLine": 4580
+   "indexHtmlLine": 4917
   },
   {
    "name": "INNER_FRIEND_MEET",
    "file": "data-inner.js",
-   "indexHtmlLine": 4581
+   "indexHtmlLine": 4918
   },
   {
    "name": "INNER_FRIEND_NAMES",
    "file": "data-inner.js",
-   "indexHtmlLine": 4582
+   "indexHtmlLine": 4919
   },
   {
    "name": "INNER_FRIEND_FREQ",
    "file": "data-inner.js",
-   "indexHtmlLine": 4583
+   "indexHtmlLine": 4920
   },
   {
    "name": "INNER_LOVER_NONE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4584
+   "indexHtmlLine": 4921
   },
   {
    "name": "INNER_LOVER_YES",
    "file": "data-inner.js",
-   "indexHtmlLine": 4585
+   "indexHtmlLine": 4922
   },
   {
    "name": "INNER_MEMORY_BASE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4586
+   "indexHtmlLine": 4923
   },
   {
    "name": "INNER_JP_PREFS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4587
+   "indexHtmlLine": 4924
   },
   {
    "name": "INNER_NATION_CITIES",
    "file": "data-inner.js",
-   "indexHtmlLine": 4596
+   "indexHtmlLine": 4933
   },
   {
    "name": "INNER_DIALECTS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4597
+   "indexHtmlLine": 4934
   },
   {
    "name": "INNER_SPEECH_REGISTER",
    "file": "data-inner.js",
-   "indexHtmlLine": 4598
+   "indexHtmlLine": 4935
   },
   {
    "name": "INNER_SPEECH_VOICE",
    "file": "data-inner.js",
-   "indexHtmlLine": 4599
+   "indexHtmlLine": 4936
   },
   {
    "name": "INNER_SPEECH_HABITS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4600
+   "indexHtmlLine": 4937
   },
   {
    "name": "INNER_DEPS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4850
+   "indexHtmlLine": 5187
   },
   {
    "name": "INNER_CATS",
    "file": "data-inner.js",
-   "indexHtmlLine": 4922
+   "indexHtmlLine": 5262
   },
   {
    "name": "INNER_PRINCIPLES",
    "file": "data-inner.js",
-   "indexHtmlLine": 5114
+   "indexHtmlLine": 5458
   },
   {
    "name": "INNER_UNFORGIVABLES",
    "file": "data-inner.js",
-   "indexHtmlLine": 5119
+   "indexHtmlLine": 5463
+  },
+  {
+   "name": "INNER_FASHION_SENSE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5684
   },
   {
    "name": "INNER_LOVE_NOTE_ANY",
    "file": "data-inner.js",
-   "indexHtmlLine": 5279
+   "indexHtmlLine": 5736
   },
   {
    "name": "INNER_LOVE_NOTE_F",
    "file": "data-inner.js",
-   "indexHtmlLine": 5280
+   "indexHtmlLine": 5737
   },
   {
    "name": "INNER_LOVE_NOTE_M",
    "file": "data-inner.js",
-   "indexHtmlLine": 5281
+   "indexHtmlLine": 5738
   },
   {
    "name": "INNER_LOVE_NOTE_BI",
    "file": "data-inner.js",
-   "indexHtmlLine": 5282
+   "indexHtmlLine": 5739
   },
   {
    "name": "INNER_KANA2KANJI",
    "file": "data-inner.js",
-   "indexHtmlLine": 5400
+   "indexHtmlLine": 5878
   },
   {
    "name": "INNER_FIELD_GEN",
    "file": "data-inner.js",
-   "indexHtmlLine": 5476
+   "indexHtmlLine": 5955
+  },
+  {
+   "name": "HIGH_TRAIN",
+   "file": "data-core.js",
+   "indexHtmlLine": 5957
   },
   {
    "name": "DICE_GROUPS",
    "file": "data-core.js",
-   "indexHtmlLine": 6157
+   "indexHtmlLine": 6686
   },
   {
    "name": "FRIEND_RELATIONS",
    "file": "data-core.js",
-   "indexHtmlLine": 6167
+   "indexHtmlLine": 6696
   },
   {
    "name": "FRIEND_HIER_DELTA",
    "file": "data-core.js",
-   "indexHtmlLine": 6175
+   "indexHtmlLine": 6704
   },
   {
    "name": "FRIEND_REL_EN",
    "file": "data-core.js",
-   "indexHtmlLine": 6176
+   "indexHtmlLine": 6705
   },
   {
    "name": "FRIEND_HIER_EN",
    "file": "data-core.js",
-   "indexHtmlLine": 6177
+   "indexHtmlLine": 6706
   },
   {
    "name": "IKEMEN_DELTAS",
    "file": "data-core.js",
-   "indexHtmlLine": 6334
+   "indexHtmlLine": 6863
   },
   {
    "name": "IKEMEN_AXIS_LABELS",
    "file": "data-core.js",
-   "indexHtmlLine": 6353
+   "indexHtmlLine": 6882
   },
   {
    "name": "BODYHAIR_KEYS",
    "file": "data-core.js",
-   "indexHtmlLine": 6387
+   "indexHtmlLine": 6916
   },
   {
    "name": "UNIFORM_NAME_MIGRATION",
    "file": "data-occupations.js",
-   "indexHtmlLine": 6664
+   "indexHtmlLine": 7200
   },
   {
    "name": "PROMPT_PANES",
    "file": "data-core.js",
-   "indexHtmlLine": 7083
+   "indexHtmlLine": 7660
   }
  ],
  "skipped": [
@@ -699,6 +734,10 @@
    "reason": "contains function(s)"
   },
   {
+   "name": "deriveMeasurementB",
+   "reason": "contains function(s)"
+  },
+  {
    "name": "ensureProfileMeasurements",
    "reason": "contains function(s)"
   },
@@ -721,6 +760,18 @@
   {
    "name": "els",
    "reason": "not a pure literal (ReferenceError)"
+  },
+  {
+   "name": "FV_INDEX",
+   "reason": "not a pure literal (ReferenceError)"
+  },
+  {
+   "name": "FV_SUIT_TYPES",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "COORD_TYPE_TAG",
+   "reason": "tiny literal / config"
   },
   {
    "name": "OCC_CAT",
