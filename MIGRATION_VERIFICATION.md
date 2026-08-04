@@ -161,6 +161,32 @@ awk 'length($0)>10000' <js> | wc -l   # 基线 ≥1
 
 **已知局限**：① 逻辑仍是单个 6000 行 IIFE（Phase 3）；② 第 5 层以原版 index.html 为基线——**迁移验收后**若开始有意修改数据，第 5 层报 FAIL 是预期行为，届时应把基线切换为「上一个已验收版本」或停用该层；③ TDZ（暂时性死区）语义差异理论上存在（常量从「声明行处生效」变为「IIFE 顶部生效」），但原代码若在声明前引用早已崩溃，故不可能有此依赖，第 2 层亦为兜底。
 
+## 3.3 Phase 3 执行结果（2026-08-04，分支 `astro-migration`）
+
+**已完成**：HTML 组件化。`verify/phase3-split-components.mjs` 带锚点断言地把页面 body 按区块机械切成 7 个 Astro 组件（内容逐行原样）：
+
+| 组件                 | 原行号  | 内容                                                        |
+| -------------------- | ------- | ----------------------------------------------------------- |
+| `Hero.astro`         | 133–156 | 标题横幅 + commandBar（SLOT START/演出スキップ/设置 chips） |
+| `TabsNav.astro`      | 158–163 | 4 个主 tab 按钮                                             |
+| `InitialPanel.astro` | 165–251 | 初期設定面板（4 subcard + presetBar）                       |
+| `SlotTab.astro`      | 253–276 | スロット页（slotGrid + Rarity/Modes 侧栏）                  |
+| `ResultTab.astro`    | 278–408 | 結果・画像指示文页（プロフィール + 7 个 prompt 面板）       |
+| `HistoryTab.astro`   | 410–417 | 保存結果页（復元コード + 履歴列表）                         |
+| `SettingsTab.astro`  | 419–423 | 条件固定页（fixedForm）                                     |
+
+`index.astro` 从 438 行缩到 169 行（head + 原样内联 CSS + 组件调用 + 脚本标签）。**未引入 Layout 层**——单页应用暂无第二页面，等有需求再抽。
+
+**关键发现（Astro 组件空白语义）**：Astro 会裁掉组件模板**首部的空白文本**（第一行缩进）和**尾部的空白文本**（结尾换行）。补偿方式：页面侧提供这两处空白——调用写成 4 空格缩进的 `    <X />`、调用之间留空行。这样构建产物与拆分前**字节级一致**（第 1 层 body verbatim 仍然通过）。
+
+**验证结果（全部通过）**：第 1 层 ALL PASS（含 body 区域逐字节）；第 5 层 132/132；第 2 层 100/100 场景逐字节一致、0 JS 错误；第 3/4 层 ALL PASS（连跑 3 次确认稳定）。
+
+**顺手修复**：第 3 层截图此前偶发抖动——应用 CSS 有 0.15–0.2s transition，150ms 等待可能截到过渡中间帧。现在测试对新旧两侧同等注入 `transition:none/animation:none` 后再截图。
+
+**已知局限**：① `public/app.js` 仍是单个约 6000 行 IIFE——**有意保留**：转 ES module 会强加 strict mode（风险 #1）并改变 7 组同名函数的覆盖语义（风险 #8），如确需模块化应作为独立 phase、配合逐函数测试进行；② 组件是「原样切块」，未做 props 化/复用抽象——那需要改动 markup，应在迁移验收后按需进行；③ 组件文件在 `.prettierignore` 中（verbatim 内容不可重排）。
+
+**重建管线**：`python3 verify/phase1-extract.py && node verify/phase2-extract-data.mjs && node verify/phase3-split-components.mjs && npm run build && npm run verify`。
+
 ## 附录 A — 146 个数据常量基线表
 
 | 行号 | 常量                     | 类型    | 条目数 | 内容                                                                                                                                                                 |

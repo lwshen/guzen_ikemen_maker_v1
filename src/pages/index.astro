@@ -1,3 +1,12 @@
+---
+import Hero from '../components/Hero.astro';
+import TabsNav from '../components/TabsNav.astro';
+import InitialPanel from '../components/InitialPanel.astro';
+import SlotTab from '../components/SlotTab.astro';
+import ResultTab from '../components/ResultTab.astro';
+import HistoryTab from '../components/HistoryTab.astro';
+import SettingsTab from '../components/SettingsTab.astro';
+---
 <!doctype html>
 <html lang="ja">
 <head>
@@ -130,297 +139,19 @@
 </head>
 <body>
   <div class="wrap">
-    <header class="hero">
-      <div>
-        <span class="badge">GUZEN SLOT SYSTEM / V3.0.0</span>
-        <h1 class="title">Guzen Ikemen Maker V3.0.0</h1>
-        <p class="subtitle">偶然がつくる、まだ見ぬイケメン。年齢・身長・体型・顔立ち・雰囲気系統・提案服装まで、スロットのようにランダムで決定します。メイン生成はボクサーパンツのみ着用とし、服装案や偶然見かけた場面は別枠で出力します。</p>
-      </div>
-      <div class="panel">
-        <p class="notice" id="heroNotice">成人男性キャラクターの非性的な画像生成用指示文を作成するアプリです。結果はブラウザ内に保存され、外部サーバーへ送信されません。</p>
-        <div class="form" style="margin-top:12px;margin-bottom:12px;grid-template-columns:minmax(180px,240px)">
-          <label class="field"><span id="makerLanguageLabel">メーカー言語 / App Language</span><select id="makerLanguage"><option value="ja">日本語</option><option value="en">English</option></select></label>
-        </div>
-        <div class="toolbar" style="margin-top:12px">
-          <div id="commandBar">
-          <div class="toolbar">
-          <button class="btn primary" id="startBtn">SLOT START</button>
-          <button class="btn dark" id="rerollUnlockedBtn">ロック以外を回す</button>
-          <button class="btn dark" id="resetLocksBtn">ロック解除</button>
-          <label class="pill" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none"><input type="checkbox" id="instantMode" style="accent-color:var(--gold)"> <span id="instantModeText">演出スキップ</span></label>
-          </div>
-          <div id="settingChips"></div>
-        </div>
-        </div>
-      </div>
-    </header>
+    <Hero />
 
-    <nav class="tabs">
-      <button class="tab active" data-tab="slot">スロット</button>
-      <button class="tab" data-tab="result">結果・画像指示文</button>
-      <button class="tab" data-tab="history">保存結果</button>
-      <button class="tab" data-tab="settings">条件固定</button>
-    </nav>
+    <TabsNav />
 
-    <section class="panel" id="initialPanel" style="margin-bottom:14px">
-      <div class="section-title"><h2>初期設定</h2><span class="pill">スロットを回す前に指定</span></div>
-      <div class="settings-grid">
-        <div class="subcard" data-ui-card="initialBasic"><h3>基本設定</h3><div class="form">
-          <label class="field"><span>初期国籍</span><select id="initialNationality"></select></label>
-          <label class="field"><span>初期人種</span><select id="initialEthnicity"></select></label>
-          <label class="field"><span>年齢下限</span><select id="initialAgeMin"></select></label>
-          <label class="field"><span>年齢上限</span><select id="initialAgeMax"></select></label>
-          <label class="field"><span>雰囲気系統</span><select id="initialVibe"></select></label>
-          <label class="field"><span>生成モード</span><select id="initialGroupSize"></select></label>
-          <label class="field"><span>職業</span><select id="initialOccupation"></select></label>
-          <label class="field"><span>職業の影響</span><select id="initialOccInfluence"></select></label>
-          <label class="field"><span>キャッチフレーズ</span><select id="initialCatchphrase"></select></label>
-          <label class="field"><span>派生プロンプト形式</span><select id="initialDerivedMode"></select></label>
-          <label class="field"><span>季節</span><select id="initialSeason"></select></label>
-          <label class="field"><span>イケメン指数</span><select id="initialIkemenIndex"><option value="表示しない">表示しない</option><option value="表示する">表示する</option></select></label>
-          <label class="field"><span>体毛表現</span><select id="initialBodyHairMode"><option value="詳細指定">詳細指定（従来）</option><option value="自然な表現（簡潔）">自然な表現（簡潔）</option></select></label>
-          <label class="field"><span>筋トレ習慣</span><select id="initialTraining"><option value="ランダム">ランダム</option></select></label>
-          <label class="field"><span>経験競技の体型影響</span><select id="initialSportsInfluence"><option value="標準">標準</option><option value="控えめ">控えめ（×0.5）</option><option value="強め">強め（×1.5）</option><option value="影響なし">影響なし</option></select></label>
-          <label class="field"><span>身長ベース</span><select id="initialHeightBase"><option value="平均身長ベース">平均身長ベース</option><option value="高めベース（+6cm）">高めベース（+6cm）</option><option value="長身多めベース（+10cm）">長身多めベース（+10cm）</option></select></label>
-          <label class="field"><span>グループ出力形式</span><select id="initialGroupPromptMode"></select></label>
-          <label class="field"><span>時代設定</span><select id="initialEraYear"></select></label>
-        </div></div>
-        <div class="subcard" data-ui-card="initialOutput"><h3>出力設定</h3><div class="form">
-          <label class="field"><span>背景</span><select id="initialBackground"></select></label>
-          <label class="field"><span>光</span><select id="initialLighting"></select></label>
-          <label class="field"><span>画質・質感</span><select id="initialQuality"></select></label>
-          <label class="field"><span>出力タイプ</span><select id="initialOutputType"></select></label>
-          <label class="field"><span>基準服装（下着）</span><select id="initialMainWearMode"></select></label>
-          <label class="field"><span>出力枚数</span><select id="initialCount"></select></label>
-          <label class="field"><span>指示文言語</span><select id="initialPromptLanguage"></select></label>
-          <label class="field"><span>生成先</span><select id="initialPromptTarget"></select></label>
-        </div></div>
-        <div class="subcard" data-ui-card="initialProfileText"><h3>画像内プロフィール表記</h3><div class="form">
-          <label class="field"><span>画像内スペック表示</span><select id="initialCaptionMode"></select></label>
-          <label class="field"><span>プロンプト最適化</span><select id="initialPromptDetail"><option value="自動（生成先に合わせる）">自動（生成先に合わせる）</option><option value="フル記述">フル記述</option><option value="要点圧縮">要点圧縮（ChatGPT向け）</option></select></label>
-          <label class="field"><span>ひとこと背景</span><select id="initialBioCaption"><option value="入れない">入れない</option><option value="情報欄に入れる">情報欄に入れる</option></select></label>
-          <div class="field" style="grid-column:1/-1">
-            <span id="initialCaptionFieldsLabel">画像内に表示する項目</span>
-            <div class="toolbar" id="initialCaptionFields">
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="name" checked> <span data-caption-label="name">氏名</span></label>
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="age"> <span data-caption-label="age">年齢</span></label>
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="era" checked> <span data-caption-label="era">年代</span></label>
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="height" checked> <span data-caption-label="height">身長</span></label>
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="weight" checked> <span data-caption-label="weight">体重</span></label>
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="footSize" checked> <span data-caption-label="footSize">足のサイズ</span></label>
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="mbti" checked> <span data-caption-label="mbti">MBTI・性格</span></label>
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="nationality"> <span data-caption-label="nationality">国籍</span></label>
-              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="role"> <span data-caption-label="role">役割</span></label>
-            </div>
-          </div>
-        </div></div>
-        <div class="subcard hidden" data-ui-card="initialCard"><h3>カード差分プロンプト設定</h3><div class="form">
-          <label class="field"><span>カードスタイル</span><select id="initialCardStyle"></select></label>
-          <label class="field"><span>カードレアリティ表示</span><select id="initialCardRarity"></select></label>
-          <label class="field"><span>カード配色テーマ</span><select id="initialCardTheme"></select></label>
-          <label class="field"><span>カードレイアウト</span><select id="initialCardLayout"></select></label>
-          <label class="field"><span>カード衣装</span><select id="initialCardWearMode"></select></label>
-          <label class="field"><span>装飾効果（レアリティ連動）</span><select id="initialCardEffect" disabled></select></label>
-          <div class="field" style="grid-column:1/-1">
-            <span id="initialCardFieldsLabel">カード内表示項目</span>
-            <div class="toolbar" id="initialCardFields">
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="name" checked> <span data-card-label="name">氏名</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="age" checked> <span data-card-label="age">年齢</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="era" checked> <span data-card-label="era">年代</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="height" checked> <span data-card-label="height">身長</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="weight" checked> <span data-card-label="weight">体重</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="footSize" checked> <span data-card-label="footSize">足サイズ</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="mbti" checked> <span data-card-label="mbti">MBTI</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="role" checked> <span data-card-label="role">役割</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="bodyHairOverall"> <span data-card-label="bodyHairOverall">体毛</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="outfitType"> <span data-card-label="outfitType">提案服装</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="scene"> <span data-card-label="scene">場面</span></label>
-              <label><input type="checkbox" data-card-scope="initial" data-card-field="rarity" checked> <span data-card-label="rarity">レアリティ</span></label>
-            </div>
-          </div>
-        </div></div>
-      </div>
-      <div class="toolbar" id="presetBar" style="margin-top:14px">
-        <input class="preset-input" id="presetName" placeholder="プリセット名" maxlength="24">
-        <button class="btn dark" id="savePresetBtn">設定を保存</button>
-        <select class="preset-input" id="presetSelect"></select>
-        <button class="btn dark" id="loadPresetBtn">読み込み</button>
-        <button class="btn dark" id="deletePresetBtn">削除</button>
-      </div>
-      <p class="notice" style="margin-top:12px">ここで国籍・人種・年齢範囲・雰囲気系統・背景・光・画質・出力タイプ・出力枚数・生成先・画像内表記・カード差分プロンプト設定を指定します。出力系は抽選せず、ここで選んだ内容が画像指示文へ反映されます。雰囲気系統を選ぶと、髪型・顔立ち・提案服装の抽選傾向が連動します。</p>
-    </section>
+    <InitialPanel />
 
-    <main class="grid cols">
-      <section id="tab-slot" class="panel">
-        <div class="section-title"><h2>Slot Result</h2><span class="pill" id="statusPill">待機中</span></div>
-        <div class="slot-grid" id="slotGrid"></div>
-      </section>
+    <SlotTab />
 
-      <aside class="grid" id="slotAside">
-        <section class="panel">
-          <div class="section-title"><h2>Rarity</h2><span class="pill" id="rareScore">0 pt</span></div>
-          <p class="rare rarity-NORMAL" id="rarity">NORMAL</p>
-          <p class="notice" id="rarityNote">スロットを回すと判定されます。</p>
-        </section>
-        <section class="panel">
-          <div class="section-title"><h2>Modes</h2></div>
-          <div class="toolbar">
-            <button class="btn blue" data-mode="full">完全ランダム</button>
-            <button class="btn dark" data-mode="face">顔だけ</button>
-            <button class="btn dark" data-mode="outfit">服装だけ</button>
-            <button class="btn dark" data-mode="rare">レア設定</button>
-          </div>
-          <p class="notice" id="modeNote" style="margin-top:12px">現在：完全ランダム</p>
-        </section>
-      </aside>
-    </main>
+    <ResultTab />
 
-    <section id="tab-result" class="grid cols hidden" style="margin-top:14px">
-      <div class="panel">
-        <div class="section-title"><h2>完成プロフィール</h2><div class="toolbar"><button class="btn dark" id="friendBtn">👥 友人を作成</button><button class="btn dark" id="saveBtn">結果を保存</button><button class="btn dark" id="jsonBtn">JSONを書き出す</button><button class="btn dark" id="importBtn">JSONを読み込む</button><input type="file" id="importFile" accept="application/json" style="display:none"></div></div>
-        <div class="subcard hidden" id="friendPanel" style="margin-bottom:10px"><h3 id="friendPanelTitle">友人を作成</h3><div class="form">
-          <label class="field"><span id="friendRelationLabel">関係</span><select id="friendRelation"></select></label>
-          <label class="field" id="friendHierField"><span id="friendHierLabel">上下関係</span><select id="friendHierarchy"></select></label>
-          <div class="toolbar" style="grid-column:1/-1"><button class="btn primary" id="friendGoBtn">この関係で友人を作成</button><span class="notice" id="friendNote">元の人物は履歴に自動保存されます</span></div>
-        </div></div>
-        <div class="toolbar hidden" id="memberTabs" style="margin-bottom:10px"></div>
-        <div class="result-card" id="profileView"></div>
-      </div>
-      <div class="panel">
-        <div id="innerAboveTabs"></div>
-        <div class="section-title"><h2 id="promptAreaTitle">画像生成用 指示文</h2><span class="pill" id="promptAreaTarget"></span></div>
-        <div class="form" style="margin-bottom:12px">
-          <div class="subcard" data-ui-card="manualOutput"><h3>出力設定</h3><div class="form">
-            <label class="field"><span>出力タイプ</span><select id="manualOutputType"></select></label>
-            <label class="field"><span>出力枚数</span><select id="manualCount"></select></label>
-            <label class="field"><span>画風・質感</span><select id="manualQuality"></select></label>
-            <label class="field"><span>背景</span><select id="manualBackground"></select></label>
-            <label class="field"><span>光</span><select id="manualLighting"></select></label>
-            <label class="field"><span>指示文言語</span><select id="manualPromptLanguage"></select></label>
-            <label class="field"><span>生成先</span><select id="manualPromptTarget"></select></label>
-          </div></div>
-          <div class="subcard" data-ui-card="manualProfileText"><h3>画像内プロフィール表記</h3><div class="form">
-            <label class="field"><span>画像内スペック表示</span><select id="manualCaptionMode"></select></label>
-            <div class="field" style="grid-column:1/-1">
-              <span id="manualCaptionFieldsLabel">画像内に表示する項目</span>
-              <div class="toolbar" id="manualCaptionFields">
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="name" checked> <span data-caption-label="name">氏名</span></label>
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="age"> <span data-caption-label="age">年齢</span></label>
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="era" checked> <span data-caption-label="era">年代</span></label>
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="height" checked> <span data-caption-label="height">身長</span></label>
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="weight" checked> <span data-caption-label="weight">体重</span></label>
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="footSize" checked> <span data-caption-label="footSize">足のサイズ</span></label>
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="mbti" checked> <span data-caption-label="mbti">MBTI・性格</span></label>
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="nationality"> <span data-caption-label="nationality">国籍</span></label>
-                <label><input type="checkbox" data-caption-scope="manual" data-caption-field="role"> <span data-caption-label="role">役割</span></label>
-              </div>
-            </div>
-          </div></div>
-          <div class="subcard" data-ui-card="manualCard"><h3>カード差分プロンプト設定</h3><div class="form">
-            <label class="field"><span>カードスタイル</span><select id="manualCardStyle"></select></label>
-            <label class="field"><span>カードレアリティ表示</span><select id="manualCardRarity"></select></label>
-            <label class="field"><span>カード配色テーマ</span><select id="manualCardTheme"></select></label>
-            <label class="field"><span>カードレイアウト</span><select id="manualCardLayout"></select></label>
-            <label class="field"><span>カード衣装</span><select id="manualCardWearMode"></select></label>
-            <label class="field"><span>装飾効果（レアリティ連動）</span><select id="manualCardEffect" disabled></select></label>
-            <div class="field" style="grid-column:1/-1">
-              <span id="manualCardFieldsLabel">カード内表示項目</span>
-              <div class="toolbar" id="manualCardFields">
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="name" checked> <span data-card-label="name">氏名</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="age" checked> <span data-card-label="age">年齢</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="era" checked> <span data-card-label="era">年代</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="height" checked> <span data-card-label="height">身長</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="weight" checked> <span data-card-label="weight">体重</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="footSize" checked> <span data-card-label="footSize">足サイズ</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="mbti" checked> <span data-card-label="mbti">MBTI</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="role" checked> <span data-card-label="role">役割</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="bodyHairOverall"> <span data-card-label="bodyHairOverall">体毛</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="outfitType"> <span data-card-label="outfitType">提案服装</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="scene"> <span data-card-label="scene">場面</span></label>
-                <label><input type="checkbox" data-card-scope="manual" data-card-field="rarity" checked> <span data-card-label="rarity">レアリティ</span></label>
-              </div>
-            </div>
-          </div></div>
-        </div>
-        <div id="flowGuide"><span class="flow-step" data-flow="1">STEP1&nbsp;🪪&nbsp;<b id="flowStep1">基準カードで画像を生成</b></span><span class="flow-arrow">→</span><span class="flow-step" data-flow="2">STEP2&nbsp;🎨&nbsp;<b id="flowStep2">その画像を添付して派生出力</b></span></div>
-        <div id="promptTabs"></div>
-        <div class="prompt-pane" id="pane-main">
-        <div class="section-title"><h2 id="paneTitle-main" style="font-size:15px">メイン画像用 指示文</h2><button class="btn primary" id="copyPromptBtn">📋 コピー</button></div>
-        <p class="notice pane-desc" id="desc-main"></p>
-        <textarea class="textarea" id="promptBox" readonly></textarea>
-        <p class="notice charcount" id="cc-promptBox"></p>
-        </div>
-        <div class="prompt-pane hidden" id="pane-outfit">
-        <div class="section-title"><h2 id="paneTitle-outfit" style="font-size:15px">平日服装 指示文</h2><button class="btn primary" id="copyOutfitBtn">📋 コピー</button></div>
-        <p class="notice pane-desc" id="desc-outfit"></p>
-        <textarea class="textarea" id="outfitPromptBox" readonly style="min-height:190px"></textarea>
-        <p class="notice charcount" id="cc-outfitPromptBox"></p>
-        </div>
-        <div class="prompt-pane hidden" id="pane-outfitHoliday">
-        <div class="section-title"><h2 id="paneTitle-outfitHoliday" style="font-size:15px">休日服装 指示文</h2><button class="btn primary" id="copyOutfitHolidayBtn">📋 コピー</button></div>
-        <p class="notice pane-desc" id="desc-outfitHoliday"></p>
-        <textarea class="textarea" id="outfitHolidayPromptBox" readonly style="min-height:190px"></textarea>
-        <p class="notice charcount" id="cc-outfitHolidayPromptBox"></p>
-        </div>
-        <div class="prompt-pane hidden" id="pane-scene">
-        <div class="section-title"><h2 id="paneTitle-scene" style="font-size:15px">偶然見かけた場面 指示文</h2><button class="btn primary" id="copySceneBtn">📋 コピー</button></div>
-        <p class="notice pane-desc" id="desc-scene"></p>
-        <textarea class="textarea" id="scenePromptBox" readonly style="min-height:190px"></textarea>
-        <p class="notice charcount" id="cc-scenePromptBox"></p>
-        </div>
-        <div class="prompt-pane hidden" id="pane-friendPair">
-        <div class="section-title"><h2 id="paneTitle-friendPair" style="font-size:15px">友人ツーショット 指示文</h2><button class="btn primary" id="copyFriendPairBtn">📋 コピー</button></div>
-        <p class="notice pane-desc" id="desc-friendPair"></p>
-        <div class="toolbar" style="margin:0 0 8px;align-items:center"><span class="pill warn-pill" id="friendPairWarn">⚠ 2人分の基準カード画像を添付してから使用</span></div>
-        <div class="toolbar" style="margin:0 0 8px;align-items:center;gap:10px">
-          <label class="field" style="margin:0"><span id="friendPairWearLabel">服装</span><select id="friendPairWearSel"></select></label>
-          <label class="field" style="margin:0"><span id="friendPairCountLabel">出力枚数</span><select id="friendPairCountSel"></select></label>
-        </div>
-        <textarea class="textarea" id="friendPairPromptBox" readonly style="min-height:190px"></textarea>
-        <p class="notice charcount" id="cc-friendPairPromptBox"></p>
-        </div>
-        <div class="prompt-pane hidden" id="pane-derived">
-        <div class="section-title"><h2 id="paneTitle-derived" style="font-size:15px">派生出力 指示文</h2><button class="btn primary" id="copyDerivedBtn">📋 コピー</button></div>
-        <p class="notice pane-desc" id="desc-derived"></p>
-        <div class="toolbar" style="margin:0 0 8px;align-items:center"><span class="pill warn-pill" id="derivedWarn">⚠ 基準カードの画像を添付してから使用</span></div>
-        <div id="derivedTypeGrid" class="dtype-grid"></div>
-        <div class="toolbar" style="margin:6px 0 8px"><select id="derivedTypeSel" class="preset-input" style="max-width:360px"></select></div>
-        <p id="derivedTypeLabel" class="dtype-label"></p>
-        <div id="derivedCardSettingsSlot"></div>
-        <div id="profileSheetCfg" class="toolbar hidden" style="margin:6px 0 8px;align-items:center"><label class="field" style="margin:0"><span>プロフィールシートの服装</span><select id="profileSheetWearSel" class="preset-input" style="max-width:200px"><option value="職業服装">職業服装</option><option value="私服">私服</option></select></label></div>
-        <div class="subcard hidden" id="footSceneCfg" style="margin:0 0 8px">
-          <h3 id="footCfgTitle">足元強調シート 詳細設定 <button class="pf-btn" id="footCfgDiceBtn" style="margin-left:8px">🎲 おまかせ抽選</button> <button class="pf-btn" id="footCfgResetBtn">↺ すべてランダムに戻す</button></h3>
-          <div class="form" id="footCfgForm"></div>
-          <p class="notice" id="footCfgNote" style="margin-top:8px">「ランダム」の項目は生成AI側の自由発想に任せます。🎲で全項目を状況連動の重みで一括抽選できます（素足・脱ぎかけは低確率）。</p>
-        </div>
-        <textarea class="textarea" id="derivedPromptBox" readonly style="min-height:230px"></textarea>
-        <p class="notice charcount" id="cc-derivedPromptBox"></p>
-        </div>
-        <div class="prompt-pane hidden" id="pane-group">
-        <div id="groupSection" class="hidden" style="margin-top:14px">
-          <div class="section-title"><h2 id="groupPromptTitle" style="font-size:15px">集合写真 指示文</h2><button class="btn primary" id="copyGroupBtn">📋 コピー</button></div>
-          <p class="notice pane-desc" id="desc-group"></p>
-          <textarea class="textarea" id="groupPromptBox" readonly style="min-height:230px"></textarea>
-          <p class="notice charcount" id="cc-groupPromptBox"></p>
-        </div>
-        </div>
-      </div>
-    </section>
+    <HistoryTab />
 
-    <section id="tab-history" class="panel hidden" style="margin-top:14px">
-      <div class="subcard" style="margin-bottom:12px"><h3 id="restoreTitle">復元コードから読み込む</h3>
-        <textarea class="textarea" id="restoreCodeInput" style="min-height:70px" placeholder="基準カードの画像指示文（日本語）を丸ごと貼り付けると人物を読み取ります"></textarea>
-        <div class="toolbar" style="margin-top:6px"><button class="btn primary" id="restoreCodeBtn">読み込む</button><span class="notice" id="restoreNote">プロンプト全文のままでもコード単体でも読み込めます</span></div>
-      </div>
-      <div class="section-title"><h2>保存結果</h2><button class="btn red" id="clearHistoryBtn">履歴クリア</button></div>
-      <div class="history" id="historyList"></div>
-    </section>
-
-    <section id="tab-settings" class="panel hidden" style="margin-top:14px">
-      <div class="section-title"><h2>条件固定ランダム</h2><span class="pill">空欄はランダム</span></div>
-      <div class="form" id="fixedForm"></div>
-      <p class="notice" style="margin-top:12px">固定条件を選んだ状態で「SLOT START」を押すと、指定した人物・服装項目を優先してランダム生成します。背景・光・画質・出力タイプ・出力枚数は上部の初期設定または結果画面の選択欄で指定します。</p>
-    </section>
+    <SettingsTab />
 
     <p class="footer">© DAZ_だいすけ：FOOTHOUSE(AI男子） / Guzen Ikemen Maker V3.0.0</p>
   </div>

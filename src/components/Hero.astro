@@ -1,0 +1,24 @@
+    <header class="hero">
+      <div>
+        <span class="badge">GUZEN SLOT SYSTEM / V3.0.0</span>
+        <h1 class="title">Guzen Ikemen Maker V3.0.0</h1>
+        <p class="subtitle">偶然がつくる、まだ見ぬイケメン。年齢・身長・体型・顔立ち・雰囲気系統・提案服装まで、スロットのようにランダムで決定します。メイン生成はボクサーパンツのみ着用とし、服装案や偶然見かけた場面は別枠で出力します。</p>
+      </div>
+      <div class="panel">
+        <p class="notice" id="heroNotice">成人男性キャラクターの非性的な画像生成用指示文を作成するアプリです。結果はブラウザ内に保存され、外部サーバーへ送信されません。</p>
+        <div class="form" style="margin-top:12px;margin-bottom:12px;grid-template-columns:minmax(180px,240px)">
+          <label class="field"><span id="makerLanguageLabel">メーカー言語 / App Language</span><select id="makerLanguage"><option value="ja">日本語</option><option value="en">English</option></select></label>
+        </div>
+        <div class="toolbar" style="margin-top:12px">
+          <div id="commandBar">
+          <div class="toolbar">
+          <button class="btn primary" id="startBtn">SLOT START</button>
+          <button class="btn dark" id="rerollUnlockedBtn">ロック以外を回す</button>
+          <button class="btn dark" id="resetLocksBtn">ロック解除</button>
+          <label class="pill" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none"><input type="checkbox" id="instantMode" style="accent-color:var(--gold)"> <span id="instantModeText">演出スキップ</span></label>
+          </div>
+          <div id="settingChips"></div>
+        </div>
+        </div>
+      </div>
+    </header>

@@ -1,0 +1,24 @@
+    <main class="grid cols">
+      <section id="tab-slot" class="panel">
+        <div class="section-title"><h2>Slot Result</h2><span class="pill" id="statusPill">待機中</span></div>
+        <div class="slot-grid" id="slotGrid"></div>
+      </section>
+
+      <aside class="grid" id="slotAside">
+        <section class="panel">
+          <div class="section-title"><h2>Rarity</h2><span class="pill" id="rareScore">0 pt</span></div>
+          <p class="rare rarity-NORMAL" id="rarity">NORMAL</p>
+          <p class="notice" id="rarityNote">スロットを回すと判定されます。</p>
+        </section>
+        <section class="panel">
+          <div class="section-title"><h2>Modes</h2></div>
+          <div class="toolbar">
+            <button class="btn blue" data-mode="full">完全ランダム</button>
+            <button class="btn dark" data-mode="face">顔だけ</button>
+            <button class="btn dark" data-mode="outfit">服装だけ</button>
+            <button class="btn dark" data-mode="rare">レア設定</button>
+          </div>
+          <p class="notice" id="modeNote" style="margin-top:12px">現在：完全ランダム</p>
+        </section>
+      </aside>
+    </main>

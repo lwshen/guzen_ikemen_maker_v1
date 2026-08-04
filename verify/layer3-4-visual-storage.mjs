@@ -65,6 +65,9 @@ async function shoot(baseURL, tag) {
     const page = await context.newPage();
     await page.addInitScript(initScript(1));
     await page.goto(baseURL, { waitUntil: 'load' });
+    // kill transitions/animations (injected on BOTH sides): the app has .15-.2s
+    // transitions, and a screenshot mid-transition-frame makes byte-compare flaky
+    await page.addStyleTag({ content: '*{transition:none!important;animation:none!important;caret-color:transparent!important}' });
     await page.check('#instantMode');
     const before = await page.$eval('#promptBox', el => el.value);
     await page.click('#startBtn');

@@ -1,0 +1,87 @@
+    <section class="panel" id="initialPanel" style="margin-bottom:14px">
+      <div class="section-title"><h2>初期設定</h2><span class="pill">スロットを回す前に指定</span></div>
+      <div class="settings-grid">
+        <div class="subcard" data-ui-card="initialBasic"><h3>基本設定</h3><div class="form">
+          <label class="field"><span>初期国籍</span><select id="initialNationality"></select></label>
+          <label class="field"><span>初期人種</span><select id="initialEthnicity"></select></label>
+          <label class="field"><span>年齢下限</span><select id="initialAgeMin"></select></label>
+          <label class="field"><span>年齢上限</span><select id="initialAgeMax"></select></label>
+          <label class="field"><span>雰囲気系統</span><select id="initialVibe"></select></label>
+          <label class="field"><span>生成モード</span><select id="initialGroupSize"></select></label>
+          <label class="field"><span>職業</span><select id="initialOccupation"></select></label>
+          <label class="field"><span>職業の影響</span><select id="initialOccInfluence"></select></label>
+          <label class="field"><span>キャッチフレーズ</span><select id="initialCatchphrase"></select></label>
+          <label class="field"><span>派生プロンプト形式</span><select id="initialDerivedMode"></select></label>
+          <label class="field"><span>季節</span><select id="initialSeason"></select></label>
+          <label class="field"><span>イケメン指数</span><select id="initialIkemenIndex"><option value="表示しない">表示しない</option><option value="表示する">表示する</option></select></label>
+          <label class="field"><span>体毛表現</span><select id="initialBodyHairMode"><option value="詳細指定">詳細指定（従来）</option><option value="自然な表現（簡潔）">自然な表現（簡潔）</option></select></label>
+          <label class="field"><span>筋トレ習慣</span><select id="initialTraining"><option value="ランダム">ランダム</option></select></label>
+          <label class="field"><span>経験競技の体型影響</span><select id="initialSportsInfluence"><option value="標準">標準</option><option value="控えめ">控えめ（×0.5）</option><option value="強め">強め（×1.5）</option><option value="影響なし">影響なし</option></select></label>
+          <label class="field"><span>身長ベース</span><select id="initialHeightBase"><option value="平均身長ベース">平均身長ベース</option><option value="高めベース（+6cm）">高めベース（+6cm）</option><option value="長身多めベース（+10cm）">長身多めベース（+10cm）</option></select></label>
+          <label class="field"><span>グループ出力形式</span><select id="initialGroupPromptMode"></select></label>
+          <label class="field"><span>時代設定</span><select id="initialEraYear"></select></label>
+        </div></div>
+        <div class="subcard" data-ui-card="initialOutput"><h3>出力設定</h3><div class="form">
+          <label class="field"><span>背景</span><select id="initialBackground"></select></label>
+          <label class="field"><span>光</span><select id="initialLighting"></select></label>
+          <label class="field"><span>画質・質感</span><select id="initialQuality"></select></label>
+          <label class="field"><span>出力タイプ</span><select id="initialOutputType"></select></label>
+          <label class="field"><span>基準服装（下着）</span><select id="initialMainWearMode"></select></label>
+          <label class="field"><span>出力枚数</span><select id="initialCount"></select></label>
+          <label class="field"><span>指示文言語</span><select id="initialPromptLanguage"></select></label>
+          <label class="field"><span>生成先</span><select id="initialPromptTarget"></select></label>
+        </div></div>
+        <div class="subcard" data-ui-card="initialProfileText"><h3>画像内プロフィール表記</h3><div class="form">
+          <label class="field"><span>画像内スペック表示</span><select id="initialCaptionMode"></select></label>
+          <label class="field"><span>プロンプト最適化</span><select id="initialPromptDetail"><option value="自動（生成先に合わせる）">自動（生成先に合わせる）</option><option value="フル記述">フル記述</option><option value="要点圧縮">要点圧縮（ChatGPT向け）</option></select></label>
+          <label class="field"><span>ひとこと背景</span><select id="initialBioCaption"><option value="入れない">入れない</option><option value="情報欄に入れる">情報欄に入れる</option></select></label>
+          <div class="field" style="grid-column:1/-1">
+            <span id="initialCaptionFieldsLabel">画像内に表示する項目</span>
+            <div class="toolbar" id="initialCaptionFields">
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="name" checked> <span data-caption-label="name">氏名</span></label>
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="age"> <span data-caption-label="age">年齢</span></label>
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="era" checked> <span data-caption-label="era">年代</span></label>
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="height" checked> <span data-caption-label="height">身長</span></label>
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="weight" checked> <span data-caption-label="weight">体重</span></label>
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="footSize" checked> <span data-caption-label="footSize">足のサイズ</span></label>
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="mbti" checked> <span data-caption-label="mbti">MBTI・性格</span></label>
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="nationality"> <span data-caption-label="nationality">国籍</span></label>
+              <label><input type="checkbox" data-caption-scope="initial" data-caption-field="role"> <span data-caption-label="role">役割</span></label>
+            </div>
+          </div>
+        </div></div>
+        <div class="subcard hidden" data-ui-card="initialCard"><h3>カード差分プロンプト設定</h3><div class="form">
+          <label class="field"><span>カードスタイル</span><select id="initialCardStyle"></select></label>
+          <label class="field"><span>カードレアリティ表示</span><select id="initialCardRarity"></select></label>
+          <label class="field"><span>カード配色テーマ</span><select id="initialCardTheme"></select></label>
+          <label class="field"><span>カードレイアウト</span><select id="initialCardLayout"></select></label>
+          <label class="field"><span>カード衣装</span><select id="initialCardWearMode"></select></label>
+          <label class="field"><span>装飾効果（レアリティ連動）</span><select id="initialCardEffect" disabled></select></label>
+          <div class="field" style="grid-column:1/-1">
+            <span id="initialCardFieldsLabel">カード内表示項目</span>
+            <div class="toolbar" id="initialCardFields">
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="name" checked> <span data-card-label="name">氏名</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="age" checked> <span data-card-label="age">年齢</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="era" checked> <span data-card-label="era">年代</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="height" checked> <span data-card-label="height">身長</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="weight" checked> <span data-card-label="weight">体重</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="footSize" checked> <span data-card-label="footSize">足サイズ</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="mbti" checked> <span data-card-label="mbti">MBTI</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="role" checked> <span data-card-label="role">役割</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="bodyHairOverall"> <span data-card-label="bodyHairOverall">体毛</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="outfitType"> <span data-card-label="outfitType">提案服装</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="scene"> <span data-card-label="scene">場面</span></label>
+              <label><input type="checkbox" data-card-scope="initial" data-card-field="rarity" checked> <span data-card-label="rarity">レアリティ</span></label>
+            </div>
+          </div>
+        </div></div>
+      </div>
+      <div class="toolbar" id="presetBar" style="margin-top:14px">
+        <input class="preset-input" id="presetName" placeholder="プリセット名" maxlength="24">
+        <button class="btn dark" id="savePresetBtn">設定を保存</button>
+        <select class="preset-input" id="presetSelect"></select>
+        <button class="btn dark" id="loadPresetBtn">読み込み</button>
+        <button class="btn dark" id="deletePresetBtn">削除</button>
+      </div>
+      <p class="notice" style="margin-top:12px">ここで国籍・人種・年齢範囲・雰囲気系統・背景・光・画質・出力タイプ・出力枚数・生成先・画像内表記・カード差分プロンプト設定を指定します。出力系は抽選せず、ここで選んだ内容が画像指示文へ反映されます。雰囲気系統を選ぶと、髪型・顔立ち・提案服装の抽選傾向が連動します。</p>
+    </section>
