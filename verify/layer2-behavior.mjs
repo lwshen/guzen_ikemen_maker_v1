@@ -48,16 +48,18 @@ const initScript = seed => `(() => {
 const PROMPT_IDS = ['promptBox', 'outfitPromptBox', 'outfitHolidayPromptBox', 'scenePromptBox',
   'friendPairPromptBox', 'derivedPromptBox', 'groupPromptBox'];
 
-async function runScenario(browser, baseURL, { seed, lang, modes }) {
+async function runScenario(browser, baseURL, { seed, lang, modes, group, friend }) {
   const context = await browser.newContext();
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('dialog', d => d.accept());
   await page.addInitScript(initScript(seed));
   await page.goto(baseURL, { waitUntil: 'load' });
 
   if (lang === 'en') await page.selectOption('#makerLanguage', 'en');
+  if (group) await page.selectOption('#initialGroupSize', '3人グループ');
   await page.check('#instantMode');
 
   const captures = [];
@@ -79,6 +81,19 @@ async function runScenario(browser, baseURL, { seed, lang, modes }) {
       rarity: document.getElementById('rarity').textContent,
     }), PROMPT_IDS));
   }
+  if (friend) {
+    // create a friend from the current result (auto-saves the original to history)
+    await page.click('#friendBtn');
+    await page.click('#friendGoBtn');
+    await page.waitForFunction(() => document.getElementById('friendPairPromptBox').value !== '', null, { timeout: 30000 });
+    captures.push(await page.evaluate(ids => ({
+      prompts: Object.fromEntries(ids.map(id => [id, document.getElementById(id).value])),
+      profile: document.getElementById('profileView').innerHTML,
+      rareScore: document.getElementById('rareScore').textContent,
+      rarity: document.getElementById('rarity').textContent,
+      history: localStorage.getItem('guzen-ikemen-maker-v1.results'),
+    }), PROMPT_IDS));
+  }
   await context.close();
   return { captures, errors };
 }
@@ -90,6 +105,10 @@ for (let s = 1; s <= Math.min(10, SEEDS); s++) {
   scenarios.push({ seed: 200 + s, lang: 'ja', modes: ['rare'] });
   scenarios.push({ seed: 300 + s, lang: 'ja', modes: ['full', 'face'] });
   scenarios.push({ seed: 400 + s, lang: 'ja', modes: ['full', 'outfit'] });
+}
+for (let s = 1; s <= Math.min(5, SEEDS); s++) {
+  scenarios.push({ seed: 500 + s, lang: 'ja', modes: ['full'], group: true });
+  scenarios.push({ seed: 600 + s, lang: 'ja', modes: ['full'], friend: true });
 }
 
 const oldSrv = await serve(path.join(ROOT));        // original index.html (self-contained)
@@ -108,7 +127,8 @@ for (let i = 0; i < scenarios.length; i += CONCURRENCY) {
     return { sc, a, b };
   }));
   for (const { sc, a, b } of results) {
-    const label = `seed=${sc.seed} lang=${sc.lang} modes=${sc.modes.join('+')}`;
+    const label = `seed=${sc.seed} lang=${sc.lang} modes=${sc.modes.join('+')}`
+      + (sc.group ? ' group' : '') + (sc.friend ? ' friend' : '');
     const same = JSON.stringify(a.captures) === JSON.stringify(b.captures);
     if (a.errors.length || b.errors.length) {
       jsErrors++;

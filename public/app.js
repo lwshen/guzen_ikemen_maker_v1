@@ -1,4 +1,26 @@
 (function(){
+  // Phase 2: pure data tables live in /data/*.js (loaded before this file),
+  // exposed via window.GUZEN_DATA. Extraction is mechanical and verified —
+  // see verify/phase2-extract-data.mjs and verify/layer5-data-equal.mjs.
+  const {
+    C_MEASUREMENT_VALUES, C_MEASUREMENT_EN, pools, slotDefs, slotLabelMap, fixedFieldLabelMap, uiText, valueTranslations,
+    sceneTranslations, captionFieldLabelMap, cardFieldLabelMap, uiCardTitles, NAMES_BY_YEAR, NATION_NAMES, OCC_SCENES, OCC_CAT_SCENES,
+    VIBE_AGE_MAX, OCCUPATIONS, OCC_CAT_LABELS, OCC_CAT_ORDER, OCC_MBTI_CAT, ATHLETIC_OCC, UNIFORM_WORKWEAR, UNIFORM_VARIANTS,
+    SPORTS, SPORT_BODY, VIBE_OCC, ETHNIC_HAIR_WEIGHTS, STRICT_HAIR_OCC, FREE_HAIR_OCC, SPORT_EXP_POOL, SPORT_EXP_WEIGHTS,
+    SPORT_MUSCLE, SPORT_SKELETON, TRAINING_LEVELS, TRAINING_DESC, TRAINING_BODY, TRAINING_EXCL, BODY_ASYMS, POSTURES,
+    BODY_ASYM_EN, POSTURE_EN, SPORT_MEM, CULT_MEM, MBTI_INTRO, OCC_HOOK, OCC_CAT_HOOK, ERA_HOOK,
+    BRIDGE_HOOK, TRAIN_HOOK, EYE_MIGRATION, BRAND_SINCE, UNDERWEAR_COLOR_EN, FOOT_CFG_AXES, FOOT_SCENES, FOOT_COZY,
+    FOOT_POSTURES, FOOT_SHOE_STATES, FOOT_FABRICS, FOOT_SOCK_STATES, FOOT_ANGLES, FOOT_OCC_SCENES, FOOT_SCENE_MIGRATION, FOOT_OCC_CAT_SCENES,
+    FOOT_PROPS, POSTER_FOOT, FOOT_WIDTHS, FOOT_FEATURES, SOLE_TYPES, SOLE_WRINKLES, TOE_LINES, TOE_CURLS,
+    FACE_EXTRA_DEFAULTS, INNER_DISPLAY_KEYS, INNER_DREAMS, INNER_DREAM_CAT, INNER_DESIRES, INNER_WEAK_MIND, INNER_WEAK_BODY, INNER_TALENTS,
+    INNER_UPBRINGINGS, INNER_TRAUMAS, INNER_PRONOUNS_BASE, INNER_LOVE_BASE, INNER_LOVE_NOTES, INNER_ORIGINS, INNER_COMPLEX_GENERIC, INNER_BLOOD_DIST,
+    INNER_INCOME_TABLE, INNER_HOBBY_GENERIC, INNER_HOBBY_BY_VIBE, INNER_MYBOOM_MODERN, INNER_MYBOOM_COMMON, INNER_MYBOOM_RETRO, INNER_FOOD_LIKE, INNER_FOOD_HATE,
+    INNER_HEALTH_BASE, INNER_HEALTH_MID, INNER_LIVING_SINGLE, INNER_LIVING_MARRIED, INNER_FRIEND_MEET, INNER_FRIEND_NAMES, INNER_FRIEND_FREQ, INNER_LOVER_NONE,
+    INNER_LOVER_YES, INNER_MEMORY_BASE, INNER_JP_PREFS, INNER_NATION_CITIES, INNER_DIALECTS, INNER_SPEECH_REGISTER, INNER_SPEECH_VOICE, INNER_SPEECH_HABITS,
+    INNER_DEPS, INNER_CATS, INNER_PRINCIPLES, INNER_UNFORGIVABLES, INNER_LOVE_NOTE_ANY, INNER_LOVE_NOTE_F, INNER_LOVE_NOTE_M, INNER_LOVE_NOTE_BI,
+    INNER_KANA2KANJI, INNER_FIELD_GEN, DICE_GROUPS, FRIEND_RELATIONS, FRIEND_HIER_DELTA, FRIEND_REL_EN, FRIEND_HIER_EN, IKEMEN_DELTAS,
+    IKEMEN_AXIS_LABELS, BODYHAIR_KEYS, UNIFORM_NAME_MIGRATION, PROMPT_PANES,
+  } = window.GUZEN_DATA;
   const STORAGE_KEY = 'guzen-ikemen-maker-v1.results';
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
   const rnd = (min,max,step=1)=> Math.round((min + Math.random()*(max-min))/step)*step;
@@ -73,22 +95,6 @@
     });
     return shuffleInPlace(deck);
   };
-  const C_MEASUREMENT_VALUES = [
-    '頭を出せずすっぽり',
-    '頭を出せるけどすっぽり',
-    '頭の先が少し出ている',
-    '頭の半分が出ている',
-    '頭の根元らへんまで出ている',
-    '頭が完全に出ている'
-  ];
-  const C_MEASUREMENT_EN = {
-    '頭を出せずすっぽり':'Fully covered; the head cannot be exposed',
-    '頭を出せるけどすっぽり':'The head can be exposed, but is currently fully covered',
-    '頭の先が少し出ている':'Only the tip of the head is slightly exposed',
-    '頭の半分が出ている':'Half of the head is exposed',
-    '頭の根元らへんまで出ている':'Exposed to around the base of the head',
-    '頭が完全に出ている':'The head is fully exposed'
-  };
   // 中央4項目を各20%、両端を各10%にし、中央4項目の合計を厳密に80%とする100個デッキ。
   const makeCMeasurementDeck = () => shuffleInPlace(
     C_MEASUREMENT_VALUES.flatMap((value,index)=>Array(index===0 || index===5 ? 10 : 20).fill(value))
@@ -120,130 +126,7 @@
   const weighted = entries => { const total = entries.reduce((a,b)=>a+b[1],0); let n=Math.random()*total; for(const [v,w] of entries){n-=w; if(n<=0) return v;} return entries[entries.length-1][0]; };
   const uniqId = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
 
-  const pools = {
-    surnames:['佐藤','鈴木','高橋','田中','伊藤','渡辺','山本','中村','小林','加藤','吉田','山田','佐々木','山口','松本','井上','木村','林','斎藤','清水','山崎','森','池田','橋本','阿部','石川','山下','中島','石井','小川','前田','岡田','長谷川','藤田','後藤','近藤','村上','遠藤','青木','坂本','斉藤','福田','太田','西村','藤井','金子','岡本','藤原','三浦','中野','中川','原田','松田','竹内','小野','田村','中山','和田','石田','森田','上田','原','内田','柴田','酒井','宮崎','横山','高木','安藤','宮本','大野','小島','谷口','今井','工藤','高田','増田','丸山','杉山','村田','大塚','新井','小山','平野','藤本','河野','上野','野口','武田','松井','千葉','岩崎','菅原','木下','久保','佐野','野村','松尾','菊地','杉本','市川','古川','大西','島田','水野','桜井','高野','渡部','吉川','山内','西田','飯田','西川','小松','北村','安田','五十嵐','川口','平田','関','服部'],
-    surnamesRare:['阿志賀','勅使河原','東雲','五十君','薬袋','栗花落','四月一日','一尾','神','綾小路'],
-    givenByEra:{
-      s1880:['清','茂','勇','正雄','武雄','辰雄','幸吉','銀次郎','留吉','寅吉','栄吉','千代吉'],
-      s1900:['清','勇','正','茂','三郎','正一','武','實','幸雄','正雄','健三','留次郎'],
-      s1920:['清','勇','弘','實','正','武','茂','三郎','正夫','勝','進','昭二'],
-      s1940:['博','茂','勇','進','清','弘','隆','修','昭','正','勝','実'],
-      s1950:['誠','隆','茂','博','豊','明','浩','修','勝','秀樹','健一','徹'],
-      s1960:['誠','浩','剛','学','健一','直樹','秀樹','徹','淳','聡','英樹','浩二'],
-      s1970:['誠','哲也','剛','直樹','健一','大輔','学','淳','崇','智之','秀幸','雅之'],
-      s1980:['大輔','直樹','健太','翔太','達也','亮','拓也','和也','智也','雄太','慎太郎','啓太'],
-      s1990:['翔太','拓也','健太','翔','大輝','亮太','駿','大樹','直人','大地','海斗','蓮'],
-      s2000:['翔','大翔','拓海','翔真','蓮','颯太','樹','大和','陸','悠斗','悠人','陽向'],
-      s2010:['蓮','湊','悠真','陽翔','颯真','大翔','蒼','律','新','陸','碧','朝陽','結翔','旭']
-    },
-    mbtis:['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP','ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'],
-    ages:[18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,35,38,40,42,45,48,50,53,55,58,60,63,65,68,70,73,75,78,80],
-    eraYears:Array.from({length:2043-1900+1},(_,i)=>1900+i),
-    nationalities:['日本','韓国','中国','台湾','ロシア','アメリカ','カナダ','イギリス','フランス','ドイツ','イタリア','スペイン','スウェーデン','ポーランド','トルコ','ブラジル','メキシコ','アルゼンチン','タイ','ベトナム','フィリピン','インドネシア','マレーシア','インド','モンゴル','ナイジェリア','オーストラリア'],
-    ethnicities:['日本人','韓国系','東アジア系','中国系','東南アジア系','南アジア系','白人系','スラブ系','北欧系','南欧系','黒人系','中東系','ラテン系','中央アジア系','ミックス'],
-    roles:['救急隊員','防衛大学校学生','悠々自適（定年後）','お笑い芸人','声優','YouTuber','プロゲーマー','書道家','パティシエ','寿司職人','ラーメン店店主','僧侶','古着屋店主','大学生','大学1年生','高校卒業直後（進路準備中）','浪人生（予備校生）','大学院生','専門学校生','就活中の大学生','営業職','経理・事務職','企画職','公務員','銀行員','商社勤務','コンサルタント','不動産営業','ITエンジニア','Webデザイナー','ゲーム開発者','動画クリエイター','アプリ開発者','看護師','理学療法士','薬剤師','研修医','介護士','高校教師','塾講師','保育士','大学研究員','体育教師','アパレル店員','カフェ店員','美容師','バーテンダー','ホテルスタッフ','飲食店店長','書店員','コンビニ店長','自動車整備士','電気工事士','大工','建築士','工場勤務','配送ドライバー','農家','漁師','グラフィックデザイナー','カメラマン','ミュージシャン','編集者','イラストレーター','映像ディレクター','消防士','警察官','自衛官','ジムトレーナー','スポーツインストラクター','モデル','俳優','プロスポーツ選手','喫茶店マスター','新聞記者','国鉄職員','アナウンサー','小学校教員','中学校教員','ライフガード','プール監視員（バイト）','医師','歯科医師','弁護士','公認会計士','警備員','タクシー運転手','バス運転手','電車運転士','パイロット','郵便配達員','引越しスタッフ','スーパー店員','家電量販店店員','花屋店員','図書館司書','シェフ（洋食）','理容師','自動車教習所教官','銭湯・サウナ店スタッフ'],
-    glasses:['なし','黒縁メガネ','細フレームメガネ','メタルフレームメガネ','丸メガネ','ハーフリムメガネ','縁なしメガネ','金縁メガネ'],
-    occInfluences:['服装・場面・体型に反映','場面のみに反映','影響なし'],
-    vibes:['ランダム','清潔感のある社会人系','爽やか系','真面目系','ワイルド系','スポーツ系','きれいめ系','カジュアル系','韓国風','中性系','大人っぽい系','やりらふぃー系','ストリート系','塩顔系','犬系男子','クール系','ミステリアス系','サブカル系','古着系','清楚系','陽キャ大学生系','レトロ系','モード系','アウトドア系','バンドマン系','紳士系','ギャル男系','普通系','ブサイク系','地味系','オタク系','ヤンキー系','ホスト系','おじさん系','メガネ知的系'],
-    ageLooks:['実年齢相応','やや若く見える','少し大人びて見える','年相応の渋さがある','穏やかな年配の風格'],
-    facePresets:['普通顔','爽やか知的アナウンサー系','大学サッカー部系','スーツ映え社会人系','高身長モデル系','親しみやすい大学生系','体育会系スポーツ男子','清潔感のある若手俳優風','落ち着いた大人系','韓国アイドル風','日本の若手俳優風','ワイルド系','真面目系','中性系','やりらふぃー系','塩顔系','犬系男子風','クール系','ミステリアス系','サブカル系','やんちゃ系','ホスト系','おじさん系','ブサイク系','昭和顔（濃い顔立ち）','しょうゆ顔','ソース顔','彫りの深い縄文系','あっさり弥生系','たれ目系','つり目系','平成アイドル風'],
-    bodyTypes:['標準体型','中肉中背','やせ型','細身','華奢な体型','細マッチョ','隠れ筋肉質','逆三角形体型','痩せマッチョ','引き締まったスポーツ体型','サッカー選手体型','水泳選手体型','バスケットボール選手体型','ラグビー選手体型','柔道家体型','陸上短距離選手体型','陸上長距離選手体型','クライマー体型','スーツ映え体型','高身長モデル体型','筋肉質','がっしり体型','骨太体型','肩幅広め体型','腹だけぽっちゃり','ビール腹','ぽっちゃり','脚が長い'],
-    faceLines:['自然なフェイスライン','シャープなフェイスライン','しっかりしたフェイスライン','柔らかいフェイスライン','逆三角形に近いフェイスライン','やや角ばったフェイスライン','面長のフェイスライン','丸顔寄りのフェイスライン','ベース型のフェイスライン','卵型のフェイスライン','ホームベース型のフェイスライン','卵型寄りのベース型（顎まわりに厚み）'],
-    eyes:['力強い目元','優しい目元','涼しげな目元','知的な目元','眠たげな目元','鋭い目元','親しみやすい目元','落ち着いた目元'],
-    eyelids:['一重','奥二重','末広二重','平行二重','左右で異なるまぶた（片方だけ二重）'],
-    eyeShapes:['標準的な目の形','切れ長の目','アーモンド形の目','丸みのある目','たれ目気味の目','つり目気味の目','細めの目'],
-    eyebrows:['太めの直線眉','太めのアーチ眉','標準的な直線眉','標準的なゆるいアーチ眉','やや細めの直線眉','やや細めのアーチ眉','眉尻の下がった優しい眉','への字型の眉','眉山のはっきりした眉','短めで力強い眉','眉尻の上がった太めの直線眉','整えたシャープな直線眉','眉尻の上がったアーチ眉'],
-    eyebrowDensities:['濃い眉','標準的な濃さの眉','薄めの眉','とても濃い眉','やや濃い眉','やや薄めの眉','薄い眉'],
-    eyelashes:['短めで控えめなまつ毛','標準的な長さのまつ毛','やや長めのまつ毛','長めで濃いまつ毛','細くまばらなまつ毛'],
-    jawChins:['標準的な顎先','尖り気味の顎先','丸みのある顎先','しっかりした顎先','軽く割れた顎先','丸みのあるしっかりした顎先'],
-    jawAngles:['エラは目立たない','ほどよく張ったエラ','はっきり張ったエラ'],
-    ears:['標準的な耳','立ち耳','寝た耳','福耳','小ぶりな耳','柔道耳（軽度の耳介の厚み）'],
-    foreheads:['標準的な広さの額','狭めの額','広めの額'],
-    hairlines:['直線的な生え際','ゆるいM字の生え際','富士額の生え際','やや後退気味の生え際'],
-    cheeks:['標準的な頬','頬骨が高めの頬','ややこけた頬','ふっくらした頬'],
-    dimples:['えくぼなし','片側にえくぼ','両側にえくぼ'],
-    moles:['ほくろなし','目尻の下の泣きぼくろ','口元のほくろ','顎のほくろ','頬のほくろ','首すじのほくろ'],
-    hairTextures:['直毛','やわらかい猫っ毛','硬めの剛毛','ゆるいくせ毛','強いくせ毛','強いカールのアフロテクスチャ','細かいカールヘア'],
-    eyeBagsPool:['クマなし','うっすらとした目の下のクマ'],
-    adamsApples:['のどぼとけは控えめ','標準的なのどぼとけ','のどぼとけがはっきり出ている'],
-    lipTones:['血色のよい唇','標準的な血色の唇','やや乾燥気味の唇'],
-    browRidges:['彫りは標準的','彫りが深い眉まわり','ややフラットな眉まわり'],
-    facialHairGrooms:['きれいに整えている','自然に整えている','伸ばしっぱなし気味'],
-    tearBags:['なし','控えめ','自然','ややはっきり','ふっくら','笑うと少し出る'],
-    nose:['自然な鼻筋','通った鼻筋','高めの鼻筋','すっきりした鼻筋','しっかりした鼻','控えめで自然な鼻','鼻先の丸い鼻','わし鼻気味の鼻','小鼻の張った鼻','団子鼻気味の鼻','高さ控えめで平たい鼻','鼻筋の細い鼻'],
-    mouth:['自然な笑顔','控えめな微笑み','落ち着いた表情','爽やかな笑顔','誠実な表情','余裕のある表情','穏やかな真顔','凛々しい表情','口角だけ軽く上げた表情','落ち着いた無表情'],
-    lips:['薄い唇','やや薄い唇','標準的な厚さの唇','厚めの唇','上唇が薄く下唇が厚い唇','口角のきゅっと上がった唇','引き締まった一文字の唇','ふっくらした唇'],
-    mouthPos:['標準的な位置・大きさの口','やや大きめの口','小さめの口','鼻と口の距離が近い口','鼻と口の距離がやや長い口','口角の横幅が広い口'],
-    faceSpacings:['求心顔（目鼻口が中心に寄った配置）','やや求心寄りの配置','標準的な配置','やや遠心寄りの配置','遠心顔（パーツが外側に離れた配置）','はっきり求心的な配置（自然範囲の上限）','はっきり遠心的な配置（自然範囲の上限）'],
-    faceRatios:['標準的なバランスの比率','目が大きめで存在感のある比率','目が小さめ・切れ長寄りの比率','鼻の存在感が強い比率','口が大きめではっきりした比率','口が小さめの比率','全体に小づくりな比率','全体に大ぶりでくっきりした比率'],
-    faceAsyms:['左右対称に近い整った顔','ほぼ対称（ごく自然な左右差）','わずかな左右差がある自然な顔','眉の高さに少し左右差がある顔','口角の上がり方に少し左右差がある顔','目の大きさにわずかな左右差がある顔','左右で目の開き方が少し違う顔','笑うと片側の口角が先に上がる顔','鼻筋がごくわずかに湾曲した顔'],
-    shoulderWidths:['狭め','普通','広め','非常に広い'],
-    waistPositions:['低め','標準','高め'],
-    legLengths:['標準','やや長い','長い','非常に長い'],
-    armLengths:['標準','やや長い','長い'],
-    frames:['コンパクト','標準','大柄','大型'],
-    neckLengths:['短め','標準','やや長い'],
-    limbSizes:['小さめ','標準','大きめ'],
-    hipShapes:['標準的な丸みの臀部','筋肉質で引き締まった臀部','平たくすっきりした臀部','骨盤幅が広めのどっしりした臀部','小ぶりでコンパクトな臀部','丸みのしっかりした臀部'],
-    teethAligns:['整った歯列','ほぼ整った歯列','前歯がわずかに重なる歯列','すきっ歯気味の歯列','八重歯が少し覗く歯列','矯正後のきれいな歯列','前歯2本がやや大きめの歯列','下の前歯に軽い重なりがある歯列','前歯がわずかに前傾した歯列','矯正中（目立ちにくい矯正装置）'],
-    teethColors:['自然な白さの歯','やや黄味がかった自然な色の歯','白く手入れされた歯','うっすらした着色のある歯','生まれつきやや灰味・縞状のトーンがある歯','前歯1本だけ色味がわずかに異なる歯（差し歯・補綴由来）'],
-    skinDetails:['なし（クリアな肌）','頬にそばかす','鼻まわりに薄いそばかす','額に小さなニキビ','頬にニキビ跡（薄い凹凸）','口元のほくろ','目元の泣きぼくろ','首筋のほくろ','頬の小さなほくろ','うっすら青ひげ（剃り跡）','日焼けによる肌ムラ','えくぼ','左頬の薄い傷跡','眉尻の剃り込み跡','目の下のうっすらしたクマ','頬の自然な赤み','額の皮脂感（自然なテカリ）','頬の毛穴感（自然な質感）','腕まくり日焼けの跡','ゴーグル跡の日焼けムラ','眉間のしわ','目尻の笑いじわ','ほうれい線','頬の薄いシミ','首のしわ'],
-    skin:['自然な肌質','健康的な肌質','透明感のある肌','ほんのり日焼けした肌','少し日焼けした肌','小麦色に日焼けした肌','しっかり日焼けした肌','屋外仕事のこんがり日焼け肌','マットで自然な肌','スポーツ経験者らしい肌','色白の肌','非常に色白の肌','浅黒い肌','褐色の肌','深い褐色の肌','血色のよい肌'],
-    facialHair:['なし','ごく薄い青ひげ','自然な青ひげ','短い無精ひげ','整えた短いひげ','口ひげ','あごひげ','口ひげ＋あごひげ','ワイルドめのひげ'],
-    hairStyles:['短髪','アップバング','センターパート','サイドパート','マッシュ','ソフトツーブロック','ビジネス短髪','韓国風センターパート','ニュアンスパーマ','ツイストパーマ','スパイラルパーマ','波巻きパーマ','ウルフミディアム','ロング寄りミディアム','七三分け','ナチュラルテーパー短髪','ショートフェード','タイトなアフロショート','ツイストショート','マンバン','スキンフェード','ローフェード','フェード×ツイストスパイラル','バーバースタイル（七三フェード）','クロップスタイル','マッシュウルフ','ソフトモヒカン','アシメショート'],
-    hairColors:['黒','ブルーブラック','ネイビーブラック','黒に近いダークブラウン','ダークアッシュ','ダークチェリーブラウン','チョコレートブラウン','赤みブラウン','マロンブラウン','カーキブラウン','自然な茶髪','アッシュブラウン','オリーブアッシュ','グレージュ','ブルージュ','ラベンダーグレージュ','ミルクティーベージュ','ナチュラルブロンド','ダークブロンド','明るめブラウン','オレンジブラウン','ハイトーンアッシュ','シルバーアッシュ','ブリーチベージュ','金髪（ブリーチ）','メッシュ入りブラック','インナーカラー（アッシュ）','プリン気味の伸びた茶髪','白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'],
-    outfitTypes:['職業制服','書生風スタイル（着物＋袴＋学帽）','着物と羽織','国民服風','開襟シャツスタイル','三つ揃いスーツ','紺スーツ','黒スーツ','グレースーツ','大学生カジュアル','社会人カジュアル','スポーツ練習着','学生服（学ラン）','学生服（ブレザー）','制服風コーデ','私服通学風','ジャケットスタイル','ストリート系'],
-    outfitBrands:['UNIQLO','GU','無印良品','ZARA','H&M','BEAMS','UNITED ARROWS','SHIPS','GLOBAL WORK','nano・universe','URBAN RESEARCH','JOURNAL STANDARD','Calvin Klein','POLO RALPH LAUREN','TOMMY HILFIGER','LACOSTE','AOKI','ORIHICA','SUIT SELECT','THE SUIT COMPANY','P.S.FA','KANKO','TOMBOW','EAST BOY','OLIVE des OLIVE School','NIKE','adidas','MIZUNO','ASICS','PUMA','New Balance','UNDER ARMOUR','Champion','THE NORTH FACE','VAN','JUN','D\'URBAN','TAKEO KIKUCHI','MEN\'S BIGI','COMME des GARÇONS HOMME','A BATHING APE','UNDERCOVER','Stüssy','GAP','洋服の青山','はるやま','無地ノーブランド'],
-    jackets:['指定なし','テーラードジャケット','学生ブレザー','学ラン上着','ステンカラーコート','チェスターコート','MA-1','スタジャン','カーディガン','パーカー','デニムジャケット','ナイロンジャケット','スポーツジャケット'],
-    tops:['白シャツ','サックスブルーシャツ','制服用ワイシャツ','ブレザー用シャツ','ネクタイ付きシャツ','無地Tシャツ','オーバーサイズTシャツ','ロングスリーブTシャツ','ポロシャツ','ニット','カーディガンインナー','スウェット','パーカー','スポーツシャツ','ゲームシャツ'],
-    bottoms:['黒スラックス','紺スラックス','グレースラックス','学生スラックス','ブレザー用スラックス','学ラン用ズボン','チノパン','ワイドパンツ','カーゴパンツ','デニム','ストレートデニム','ジャージパンツ','ナイロンパンツ','黒ショートパンツ','ハーフパンツ'],
-    boxerBrands:['指定しない','Calvin Klein','EMPORIO ARMANI','TOM FORD','ANVIL','UNIQLO','BODY WILD','POLO RALPH LAUREN','DIESEL','グンゼ','BVD','無地ノーブランド'],
-    boxerColors:['ライトグレー','黒','ネイビー','白','チャコール','ダークグレー'],
-    baseWearTypes:['ボクサーパンツ','ショートショーツ','スポーツスパッツ'],
-    bangs:['指定なし','額に一束落ちる長め前髪','自然に下ろした前髪','軽く上げた前髪','かき上げ風前髪','眉にかかる重め前髪','短く切り揃えた前髪'],
-    hairFinishes:['指定なし','ツヤを抑えたナチュラルセット','ワックスの束感セット','きっちり撫でつけたセット','無造作セット','パーマ風の動きを出したセット'],
-    hairVolumes:['標準的な毛量','毛量多め','毛量少なめ'],
-    shoes:['黒革靴','茶革靴','ローファー','白スニーカー','黒スニーカー','キャンバススニーカー','ランニングシューズ','サッカースパイク','バスケットシューズ','サンダル','ブーツ'],
-    sockBrands:['指定しない','UNIQLO','無印良品','Tabio','靴下屋','Fukuske','グンゼ','POLO RALPH LAUREN','Calvin Klein','EMPORIO ARMANI','TOMMY HILFIGER','Paul Smith','BURBERRY','BVD','BODY WILD','NIKE','adidas','Champion','PUMA','New Balance','ASICS','MIZUNO','無地ノーブランド'],
-    sockTypes:['ビジネスソックス','柄ありビジネスソックス','スポーツソックス','クルー丈ソックス','くるぶしソックス','インビジブルソックス','ライン入りソックス','ワンポイントソックス','ロゴ入りソックス'],
-    sockShapes:['クルー丈','ミドル丈','くるぶし丈','インビジブル丈','リブ編み','薄手ビジネス形状','厚手スポーツ形状'],
-    sockMaterials:['綿混','綿＋ナイロン','ウール混','薄手ナイロン混','パイル編み','リブ編みコットン','吸汗速乾素材'],
-    sockColors:['黒','紺','白','チャコール','グレー','ブラウン','ネイビー地ストライプ','黒地ドット','アーガイル柄','ライン入り白'],
-    sockUse:['新品に近い','自然な使用感','少し履き込まれている','毛羽立ちが少しある','スポーツ後の自然な使用感','清潔だが生活感あり'],
-    footShapes:['ギリシャ型','エジプト型','スクエア型','幅広','細め','甲高','土踏まず高め','土踏まず低め','足指が長め','親指が長め'],
-    backgrounds:['シンプルなグレーバック','白背景のスタジオ','ライトグレーのスタジオ','黒背景のスタジオ','大学キャンパス背景','学校の廊下背景','街中スナップ背景','オフィス背景','スポーツ施設背景','ジム背景','テーマパーク風背景','海辺・港町背景','夜景背景','公園背景','室内の自然光背景'],
-    lighting:['自然光。明るく清潔感がある。','柔らかいスタジオ照明。','曇天の拡散光。','写真館風の正面ライト。','斜め45度のスタジオライト。','屋外スポーツ撮影風の明るい光。','夜景に馴染む控えめなライティング。'],
-    qualities:['実写風','高精細','スマホスナップ風','写真館風','ファッションカタログ風','AI感を抑えた自然写真','商業写真風','雑誌グラビアではなく設定資料風','イラスト風','アニメ風イラスト','漫画風線画','キャラクター設定画風'],
-    outputTypes:['前面・側面を1枚にまとめた設定画像','前面・側面・背面を1枚にまとめた設定画像','16:9のリファレンスカードとして、全身の前面・側面、顔の正面・側面、顔正面（歯が見える）、足の正面と側面と足裏（人物が座って自分の足裏をこちらへ見せる構図とし、足裏だけが切り離されて描写された状態にしない）を1枚に整理して表示する。','SNSプロフィール風画像','就活写真風画像','スポーツ選手紹介風画像','比較リファレンスシート（下着×私服・靴なし）','表情差分リファレンスシート','フル設定資料シート','段階着装リファレンスシート','偶然人物ブループリントシート','服装リファレンスシート（職業背景）','人物ポスター（職業・人物像）','街で見かけたイケメンシート：職業編','街で見かけたイケメンシート：オフ編','偶然足元強調場面シート','人物特集雑誌ページ'],
-    counts:['1枚','3パターン別々の画像','5パターン別々の画像','10パターン別々の画像'],
-    promptLanguages:['日本語','English'],
-    promptTargets:['ChatGPT','NanobananaPro','Grok'],
-    captionModes:['表記する','表記しない','画像下部に1行で表記','カード風ミニプロフィールを下部に表示','スタイリッシュなタグ型で表示'],
-    cardStyles:['スタンダード','シンプル','スタイリッシュ','スポーツカード風','アイドルカード風','高級感のあるカード風','レアカード風','ホログラム風','コレクターズカード風'],
-    cardRarities:['おすすめ自動','なし','N','R','SR','SSR','UR','Secret','Legendary'],
-    cardThemes:['モノトーン','ネイビー','ブラックゴールド','シルバー','ブルー','レッド','グリーン','パープル','ランダムカラー'],
-    cardLayouts:['縦長カード','横長カード','情報重視型','ビジュアル重視型','ステータス重視型','リファレンス資料型'],
-    catchphraseModes:['結果画面のみ表示','画像内にも表示する','表示しない'],
-    seasons:['ランダム','春','夏','秋','冬'],
-    derivedModes:['参照画像前提（簡潔版）','単体で完結（フル記述）'],
-    groupSizes:['1人（通常）','2人グループ','3人グループ'],
-    groupPromptModes:['メンバーごとに別々の指示文','1つの指示文にまとめて生成'],
-    mainWearModes:['ボクサーパンツのみ','時代に合った下着の種類'],
-    cardWearModes:['ボクサーパンツのみ','職業服装','私服'],
-    cardEffects:['なし','光沢風','ホログラム風','箔押し風','キラ加工風','フレーム強調','角丸カード風','エンブレム付き'],
-    bodyHairOverall:['ほぼなし','薄め','自然','やや濃い','濃い','部位差あり','手入れされている','ワイルド寄り','スポーツ系で自然','一部のみ目立つ'],
-    bodyHairLevels:['なし','ごく薄い','薄め','自然','やや濃い','濃い','手入れ済み','部分的に残している']
-  };
 
-  const slotDefs = [
-    ['name','名前','basic'],['age','年齢','basic'],['eraYear','時代設定','basic'],['nationality','国籍','basic'],['ethnicity','人種','basic'],['role','職業','basic'],['sportsHistory','経験競技','basic'],['sportName','競技','basic'],['vibe','雰囲気系統','basic'],['mbti','MBTI','basic'],
-    ['height','身長','body'],['weight','体重','body'],['bodyType','体型','body'],['footSize','足サイズ','body'],['footShape','足の形','body'],
-    ['bodyHairOverall','体毛全体傾向','bodyhair'],['chestHair','胸毛','bodyhair'],['abdominalHair','腹毛','bodyhair'],['lowerAbdomenHair','へそ下','bodyhair'],['armHair','腕毛','bodyhair'],['shinHair','すね毛','bodyhair'],['thighHair','もも毛','bodyhair'],['armpitHair','脇毛','bodyhair'],['handFingerHair','手の甲・指毛','bodyhair'],['footToeHair','足の甲・指毛','bodyhair'],['backHair','背中','bodyhair'],
-    ['facePreset','顔立ち','face'],['ageAppearance','年齢感','face'],['faceLine','フェイスライン','face'],['eyebrow','眉','face'],['eyelid','まぶた','face'],['eyeShape','目の形','face'],['eyes','目の印象','face'],['eyelash','まつ毛','face'],['tearBags','涙袋','face'],['nose','鼻','face'],['mouth','基本表情','face'],['lips','唇の形状','face'],['mouthPos','口の位置','face'],['faceSpacing','パーツ配置','face'],['faceRatio','目鼻口比率','face'],['faceAsym','顔の左右差','face'],['skin','肌','face'],['skinDetail','肌の特徴⑴','face'],['skinDetail2','肌の特徴⑵','face'],['facialHair','ひげ','face'],['glasses','眼鏡','face'],
-    ['hairStyle','髪型','hair'],['hairColor','髪色','hair'],
-    ['outfitType','職業服装','outfit'],['holidayOutfitType','私服服装','outfit'],['outfitBrand','提案服装ブランド','outfit'],['jacket','上着','outfit'],['top','トップス','outfit'],['bottom','ボトムス','outfit'],['boxerBrand','下着ブランド','outfit'],
-    ['shoes','靴','feet'],['sockBrand','靴下ブランド','feet'],['sockType','靴下種類','feet'],['sockShape','靴下形状','feet'],['sockMaterial','靴下素材','feet'],['sockColor','靴下色・柄','feet'],['sockUse','靴下使用感','feet']
-  ];
 
   let current = null;
   let locks = {};
@@ -251,234 +134,10 @@
   let spinning = false;
   let uiLang = 'ja';
 
-  const slotLabelMap = {
-    sportsHistory:{ja:'経験競技',en:'Sports History'}, trainingLevel:{ja:'筋トレ習慣',en:'Training Habit'},
-    name:{ja:'名前',en:'Name'}, age:{ja:'年齢',en:'Age'}, eraYear:{ja:'時代設定',en:'Era Year'}, nationality:{ja:'国籍',en:'Nationality'}, ethnicity:{ja:'人種',en:'Ethnicity'}, role:{ja:'職業',en:'Occupation'},sportName:{ja:'競技',en:'Sport'}, vibe:{ja:'雰囲気系統',en:'Vibe'}, mbti:{ja:'MBTI',en:'MBTI'},
-    height:{ja:'身長',en:'Height'}, weight:{ja:'体重',en:'Weight'}, bodyType:{ja:'体型',en:'Body Type'}, footSize:{ja:'足サイズ',en:'Foot Size'}, footShape:{ja:'足の形',en:'Foot Shape'}, bodyHairOverall:{ja:'体毛全体傾向',en:'Body Hair Overall'}, chestHair:{ja:'胸毛',en:'Chest Hair'}, abdominalHair:{ja:'腹毛',en:'Abdominal Hair'}, lowerAbdomenHair:{ja:'へそ下',en:'Lower Abdomen Hair'}, armHair:{ja:'腕毛',en:'Arm Hair'}, shinHair:{ja:'すね毛',en:'Shin Hair'}, thighHair:{ja:'もも毛',en:'Thigh Hair'}, armpitHair:{ja:'脇毛',en:'Armpit Hair'}, handFingerHair:{ja:'手の甲・指毛',en:'Hand / Finger Hair'}, footToeHair:{ja:'足の甲・指毛',en:'Foot / Toe Hair'}, backHair:{ja:'背中',en:'Back Hair'},
-    facePreset:{ja:'顔立ち',en:'Face Type'}, ageAppearance:{ja:'年齢感',en:'Age Appearance'}, faceLine:{ja:'フェイスライン',en:'Face Line'}, eyebrow:{ja:'眉',en:'Eyebrows'}, eyelid:{ja:'まぶた',en:'Eyelid'}, eyeShape:{ja:'目の形',en:'Eye Shape'}, eyes:{ja:'目の印象',en:'Eye Impression'}, eyelash:{ja:'まつ毛',en:'Eyelashes'}, tearBags:{ja:'涙袋',en:'Tear Bags'}, nose:{ja:'鼻',en:'Nose'}, mouth:{ja:'基本表情',en:'Expression'}, lips:{ja:'唇の形状',en:'Lip Shape'}, mouthPos:{ja:'口の位置',en:'Mouth Placement'}, faceSpacing:{ja:'パーツ配置',en:'Feature Spacing'}, faceRatio:{ja:'目鼻口比率',en:'Feature Ratio'}, faceAsym:{ja:'顔の左右差',en:'Facial Asymmetry'}, skin:{ja:'肌',en:'Skin'}, facialHair:{ja:'ひげ',en:'Facial Hair'}, glasses:{ja:'眼鏡',en:'Glasses'}, holidayOutfitType:{ja:'私服服装',en:'Casual Outfit'},
-    hairStyle:{ja:'髪型',en:'Hairstyle'}, hairColor:{ja:'髪色',en:'Hair Color'}, outfitType:{ja:'職業服装',en:'Work Outfit'}, outfitBrand:{ja:'提案服装ブランド',en:'Outfit Brand'}, jacket:{ja:'上着',en:'Outerwear'}, top:{ja:'トップス',en:'Top'}, bottom:{ja:'ボトムス',en:'Bottom'}, boxerBrand:{ja:'下着ブランド',en:'Underwear Brand'}, shoes:{ja:'靴',en:'Shoes'}, sockBrand:{ja:'靴下ブランド',en:'Sock Brand'}, sockType:{ja:'靴下種類',en:'Sock Type'}, sockShape:{ja:'靴下形状',en:'Sock Shape'}, sockMaterial:{ja:'靴下素材',en:'Sock Material'}, sockColor:{ja:'靴下色・柄',en:'Sock Color / Pattern'}, sockUse:{ja:'靴下使用感',en:'Sock Condition'}
-  };
-  const fixedFieldLabelMap = {
-    age:{ja:'年齢固定',en:'Fixed Age'}, nationality:{ja:'国籍固定',en:'Fixed Nationality'}, ethnicity:{ja:'人種固定',en:'Fixed Ethnicity'}, bodyType:{ja:'体型固定',en:'Fixed Body Type'}, facePreset:{ja:'顔立ち固定',en:'Fixed Face Type'}, vibe:{ja:'雰囲気系統固定',en:'Fixed Vibe'}, mbti:{ja:'MBTI固定',en:'Fixed MBTI'}, outfitType:{ja:'服装固定',en:'Fixed Outfit'}
-  };
-  const uiText = {
-    ja:{
-      subtitle:'偶然がつくる、まだ見ぬイケメン。年齢・身長・体型・顔立ち・雰囲気系統・MBTI・体毛・提案服装まで、スロットのようにランダムで決定します。メイン生成はボクサーパンツのみ着用とし、服装案や偶然見かけた場面は別枠で出力します。',
-      heroNotice:'成人男性キャラクターの非性的な画像生成用指示文を作成するアプリです。結果はブラウザ内に保存され、外部サーバーへ送信されません。',
-      startBtn:'SLOT START', rerollUnlockedBtn:'ロック以外を回す', resetLocksBtn:'ロック解除',
-      groupPromptTitle:'集合写真 指示文', copyGroupBtn:'📋 コピー', copyGroupDone:'集合写真の指示文をコピーしました', memberLabel:'メンバー',
-      promptAreaTitle:'画像生成用 指示文', copiedLabel:'✓ コピーしました', copyLabel:'📋 コピー',
-      promptDescs:{main:'STEP1：キャラの基準になるリファレンスカード（ボクサーパンツ・16:9）を作る指示文です。まずこれで基準画像を生成してください。', derived:'STEP2：下で選んだ形式の派生画像を作る指示文です。基準カードで生成した画像を添付してから貼り付けてください。', outfit:'職業に合わせた仕事着・仕事帰りコーデの差分を作る指示文です。', outfitHoliday:'性格・雰囲気重視の私服コーデの差分を作る指示文です。仕事とは違う一面が出ます。', scene:'日常の一場面を切り取ったスナップ風差分を作る指示文です。', card:'トレーディングカード風の1枚に仕上げる指示文です。カード設定はこの上の「カード差分プロンプト設定」で変更できます。', group:'グループ全員を1枚の集合写真として描く指示文です。', friendPair:'参照画像2枚（本人と友人それぞれの基準カード）を添付して使う、2人のツーショット写真の指示文です。服装（職業服装/私服）と出力枚数はこの下で変更できます。'},
-      editTitle:'この項目を直接変更', instantSkip:'演出スキップ', presetPlaceholder:'プリセット名', presetSave:'設定を保存', presetLoad:'読み込み', presetDelete:'削除', importJson:'JSONを読み込む', charsSuffix:'文字', diceTitle:'この項目だけ再抽選', favOn:'★', favOff:'☆', importedMsg:'読み込みました', presetSavedMsg:'プリセットを保存しました', presetNameNeeded:'プリセット名を入力してください',
-      tab_slot:'スロット', tab_result:'結果・画像指示文', tab_history:'保存結果', tab_settings:'条件固定',
-      initialTitle:'初期設定', initialPill:'スロットを回す前に指定', initialNotice:'ここで国籍・人種・年齢範囲・雰囲気系統・背景・光・画質・出力タイプ・出力枚数・生成先・画像内表記・カード差分プロンプト設定を指定します。これらは抽選せず、ここで選んだ内容が画像指示文へ反映されます。雰囲気系統を選ぶと、髪型・顔立ち・提案服装の抽選傾向が連動します。',
-      resultTitle:'完成プロフィール', saveBtn:'結果を保存', jsonBtn:'JSONを書き出す', promptTitle:'基準リファレンスカード 指示文', derivedTitle:'派生出力 指示文', derivedWarn:'⚠ 基準カードの画像を添付してから使用', copyPromptBtn:'📋 コピー', outfitTitle:'職業服装 指示文', outfitHolidayTitle:'私服服装 指示文', copyOutfitBtn:'📋 コピー', sceneTitle:'偶然見かけた場面 指示文', copySceneBtn:'📋 コピー', cardTitle:'トレーディングカード差分 指示文', copyCardBtn:'📋 コピー', footCfgTitlePrefix:'足元強調シート 詳細設定', footCfgNote:'「ランダム」の項目は生成AI側の自由発想に任せます。🎲で全項目を状況連動の重みで一括抽選できます（素足・脱ぎかけは低確率）。', footDiceBtn:'🎲 おまかせ抽選', footResetBtn:'↺ すべてランダムに戻す', friendPairTitle:'友人ツーショット 指示文', friendPairWarn:'⚠ 2人分の基準カード画像を添付してから使用', friendPairWearLabel:'服装', friendPairCountLabel:'出力枚数',
-      historyTitle:'保存結果', clearHistoryBtn:'履歴クリア', noHistory:'保存結果はまだありません。', loadBtn:'読み込む',
-      settingsTitle:'条件固定ランダム', settingsPill:'空欄はランダム', settingsNotice:'固定条件を選んだ状態で「SLOT START」を押すと、指定した人物・服装項目を優先してランダム生成します。MBTIも固定可能です。背景・光・画質・出力タイプ・出力枚数・生成先・画像内表記は上部の初期設定または結果画面の選択欄で指定します。',
-      restoreTitle:'プロンプトから読み込む', restoreCodeBtn:'読み込む', restoreNote:'基準カードの日本語指示文を貼ると、本文から人物設定を読み取って復元します（英語・派生形式は対象外）', restoreNotFound:'プロンプトから人物設定を読み取れませんでした（日本語の基準カード指示文を貼ってください）', restoreFailed:'プロンプトの読み取りに失敗しました', restoreDone:'プロンプトから人物を読み取りました',
-      friendBtn:'👥 友人を作成', friendPanelTitle:'友人を作成', friendRelationLabel:'関係', friendHierLabel:'上下関係', friendGoBtn:'この関係で友人を作成', friendNote:'元の人物は履歴に自動保存されます', friendDone:'友人が完成しました',
-      slotResult:'Slot Result', waiting:'待機中', spinning:'回転中', done:'完成', lock:'LOCK', locked:'LOCKED', clickLock:'クリックで固定', rarityNoteIdle:'スロットを回すと判定されます。', rarityTitle:'Rarity', modesTitle:'Modes',
-      mode_full:'完全ランダム', mode_face:'顔だけ', mode_outfit:'服装だけ', mode_rare:'レア設定', currentMode:'現在：', mode_full_note:'完全ランダム', mode_face_note:'顔だけランダム', mode_outfit_note:'服装だけランダム', mode_rare_note:'レア設定モード',
-      saveFirst:'先にスロットを回してください。', saved:'保存しました。', copyMainDone:'メイン指示文をコピーしました。', copyOutfitDone:'服装差分指示文をコピーしました。', copySceneDone:'場面指示文をコピーしました。', copyCardDone:'カード差分指示文をコピーしました。', confirmClear:'保存結果を削除しますか？',
-      rows:{weekdayOutfit:'職業コーデ',holidayOutfit:'私服コーデ',holidaySock:'私服の靴下',glasses:'眼鏡',group:'グループ',basic:'基本プロフィール',faceSection:'顔立ち',bodySection:'体型・身体',bodyHairSection:'ひげ・体毛',mainSection:'基準服装',outfitSection:'提案服装',outputSection:'出力設定',sceneSection:'偶然見かけた場面',name:'名前',age:'年齢',natEth:'国籍 / 人種',roleVibe:'職業 / 系統',mbti:'MBTI / 性格',era:'時代設定',hw:'身長 / 体重',body:'体型',foot:'足サイズ',footShape:'足の形',face:'顔立ち',faceLine:'フェイスライン',eyes:'目',nose:'鼻',mouth:'口元',skin:'肌',facialHair:'ひげ',hair:'髪型',bodyHair:'体毛',main:'基準服装',outfit:'提案服装',sock:'提案靴下',background:'背景',output:'出力',promptTarget:'生成先',imageText:'画像内表記',cardSetting:'カード出力設定',scene:'偶然見かけた場面',uniformKind:'制服の種類',headwearRow:'着帽',friendRow:'友人関係'},
-      fieldLabels:{initialNationality:'初期国籍',initialEthnicity:'初期人種',initialAgeMin:'年齢下限',initialAgeMax:'年齢上限',initialVibe:'雰囲気系統',initialEraYear:'時代設定',initialBackground:'背景',initialLighting:'光',initialQuality:'画質・質感',initialOutputType:'出力タイプ',initialMainWearMode:'基準服装（下着）',initialGroupSize:'生成モード',initialOccupation:'職業',initialOccInfluence:'職業の影響',initialCatchphrase:'キャッチフレーズ',initialDerivedMode:'派生プロンプト形式',initialSeason:'季節',initialGroupPromptMode:'グループ出力形式',initialCount:'出力枚数',initialPromptLanguage:'指示文言語',initialPromptTarget:'生成先',initialCaptionMode:'画像内スペック表示',manualOutputType:'出力タイプ',manualCount:'出力枚数',manualQuality:'画風・質感',manualBackground:'背景',manualLighting:'光',manualPromptLanguage:'指示文言語',manualPromptTarget:'生成先',manualCaptionMode:'画像内スペック表示',initialCardStyle:'カードスタイル',initialCardRarity:'カードレアリティ表示',initialCardTheme:'カード配色テーマ',initialCardLayout:'カードレイアウト',initialCardWearMode:'カード衣装',initialCardEffect:'装飾効果（レアリティ連動）',manualCardStyle:'カードスタイル',manualCardRarity:'カードレアリティ表示',manualCardTheme:'カード配色テーマ',manualCardLayout:'カードレイアウト',manualCardWearMode:'カード衣装',manualCardEffect:'装飾効果（レアリティ連動）'},
-      rarityNotes:{normal:'自然で使いやすい標準寄りの組み合わせです。',rare:'少し特徴的な組み合わせです。',super:'目立つ特徴が複数あります。',legend:'かなり個性的な偶然の組み合わせです。'}
-    },
-    en:{
-      subtitle:'A chance-based handsome character generator. Age, height, build, facial impression, vibe, MBTI, body hair, and suggested outfit are decided like a slot machine. The main generation uses boxer briefs only, while outfit and candid-scene prompts are output separately.',
-      heroNotice:'This app creates non-sexual image prompts for adult male characters. Results are stored in your browser and are not sent to an external server.',
-      startBtn:'SLOT START', rerollUnlockedBtn:'Spin unlocked only', resetLocksBtn:'Reset locks',
-      groupPromptTitle:'Group Photo Prompt', copyGroupBtn:'📋 Copy', copyGroupDone:'Group photo prompt copied.', memberLabel:'Member',
-      promptAreaTitle:'Image Generation Prompts', copiedLabel:'✓ Copied!', copyLabel:'📋 Copy',
-      promptDescs:{main:'STEP 1: builds the base reference card (boxer briefs, 16:9). Generate the base image with this first.', derived:'STEP 2: builds the selected derived output. Attach the base card image before using this prompt.', outfit:'His work outfit variation, shaped by his occupation.', outfitHoliday:'His casual outfit variation, shaped by his personality and vibe.', scene:'A candid everyday-scene variation prompt.', card:'A trading-card-style variation prompt. Card settings can be changed above.', group:'Renders the whole group as one photo.', friendPair:'A two-shot prompt used with TWO attached reference images (each person\u2019s base card). Outfit (work/casual) and output count can be changed below.'},
-      editTitle:'Edit this value directly', instantSkip:'Skip animation', presetPlaceholder:'Preset name', presetSave:'Save preset', presetLoad:'Load', presetDelete:'Delete', importJson:'Import JSON', charsSuffix:' chars', diceTitle:'Re-roll this item only', favOn:'★', favOff:'☆', importedMsg:'Imported.', presetSavedMsg:'Preset saved.', presetNameNeeded:'Enter a preset name.',
-      tab_slot:'Slots', tab_result:'Results & Prompts', tab_history:'Saved Results', tab_settings:'Fixed Conditions',
-      initialTitle:'Initial Settings', initialPill:'Set before spinning', initialNotice:'Set nationality, ethnicity, age range, vibe, background, lighting, quality, output type, output count, prompt target, image text, and card output settings here. These settings are not randomized and will be reflected directly in the image prompts. Choosing a vibe also influences hairstyle, face type, and suggested outfit generation.',
-      resultTitle:'Final Profile', saveBtn:'Save Result', jsonBtn:'Export JSON', promptTitle:'Base Reference Card Prompt', derivedTitle:'Derived Output Prompt', derivedWarn:'⚠ Attach the base card image before use', copyPromptBtn:'📋 Copy', outfitTitle:'Work Outfit Prompt', outfitHolidayTitle:'Casual Outfit Prompt', copyOutfitBtn:'📋 Copy', sceneTitle:'Candid Encounter Prompt', copySceneBtn:'📋 Copy', cardTitle:'Trading Card Variation Prompt', copyCardBtn:'📋 Copy', footCfgTitlePrefix:'Foot-focus Sheet Details', footCfgNote:'Items left on Random are decided freely by the image AI. 🎲 rolls every item with situation-aware weights (barefoot / mid-removal states stay low-probability).', footDiceBtn:'🎲 Auto-roll all', footResetBtn:'↺ Reset all to Random', friendPairTitle:'Friend Two-shot Prompt', friendPairWarn:'⚠ Attach both base card images before use', friendPairWearLabel:'Outfit', friendPairCountLabel:'Output count',
-      historyTitle:'Saved Results', clearHistoryBtn:'Clear History', noHistory:'No saved results yet.', loadBtn:'Load',
-      settingsTitle:'Random with Fixed Conditions', settingsPill:'Blank = random', settingsNotice:'If you press “SLOT START” after setting fixed conditions, the selected character and outfit items will be prioritized during random generation. MBTI can also be fixed. Background, lighting, quality, output type, output count, prompt target, and image text are set in the initial settings or in the result panel.',
-      restoreTitle:'Load from Prompt', restoreCodeBtn:'Load', restoreNote:'Paste the Japanese base-card prompt; the character is parsed from the text itself (English and derived formats are not supported)', restoreNotFound:'Could not parse a character from this text (paste the Japanese base-card prompt)', restoreFailed:'Failed to parse the prompt', restoreDone:'Character parsed from the prompt',
-      friendBtn:'👥 Create a Friend', friendPanelTitle:'Create a Friend', friendRelationLabel:'Relation', friendHierLabel:'Hierarchy', friendGoBtn:'Create friend with this relation', friendNote:'The original person is auto-saved to history', friendDone:'Friend created',
-      slotResult:'Slot Result', waiting:'Waiting', spinning:'Spinning', done:'Done', lock:'LOCK', locked:'LOCKED', clickLock:'click to lock', rarityNoteIdle:'Spin the slots to evaluate.', rarityTitle:'Rarity', modesTitle:'Modes',
-      mode_full:'Full Random', mode_face:'Face Only', mode_outfit:'Outfit Only', mode_rare:'Rare Mode', currentMode:'Current: ', mode_full_note:'Full random', mode_face_note:'Face-only random', mode_outfit_note:'Outfit-only random', mode_rare_note:'Rare-mode random',
-      saveFirst:'Please spin the slots first.', saved:'Saved.', copyMainDone:'Copied the main prompt.', copyOutfitDone:'Copied the outfit prompt.', copySceneDone:'Copied the scene prompt.', copyCardDone:'Copied the card variation prompt.', confirmClear:'Clear saved results?',
-      rows:{weekdayOutfit:'Work Outfit',holidayOutfit:'Casual Outfit',holidaySock:'Casual Socks',glasses:'Glasses',group:'Group',basic:'Basic Profile',faceSection:'Face',bodySection:'Body',bodyHairSection:'Facial / Body Hair',mainSection:'Main Clothing',outfitSection:'Suggested Outfit',outputSection:'Output Settings',sceneSection:'Candid Scene',name:'Name',age:'Age',natEth:'Nationality / Ethnicity',roleVibe:'Role / Vibe',mbti:'MBTI / Personality',era:'Era',hw:'Height / Weight',body:'Body Type',foot:'Foot Size',footShape:'Foot Shape',face:'Face Type',faceLine:'Face Line',eyes:'Eyes',nose:'Nose',mouth:'Mouth',skin:'Skin',facialHair:'Facial Hair',hair:'Hair',bodyHair:'Body Hair',main:'Main Clothing',outfit:'Suggested Outfit',sock:'Suggested Socks',background:'Background',output:'Output',promptTarget:'Prompt Target',imageText:'Image Text',cardSetting:'Card Settings',scene:'Candid Scene',uniformKind:'Uniform Type',headwearRow:'Headwear',friendRow:'Friendship'},
-      fieldLabels:{initialNationality:'Initial Nationality',initialEthnicity:'Initial Ethnicity',initialAgeMin:'Age Min',initialAgeMax:'Age Max',initialVibe:'Vibe',initialEraYear:'Era Year',initialBackground:'Background',initialLighting:'Lighting',initialQuality:'Quality / Texture',initialOutputType:'Output Type',initialMainWearMode:'Main Underwear Style',initialGroupSize:'Generation Mode',initialOccupation:'Occupation',initialOccInfluence:'Occupation Influence',initialCatchphrase:'Catchphrase',initialDerivedMode:'Derived Prompt Format',initialSeason:'Season',initialGroupPromptMode:'Group Output Format',initialCount:'Output Count',initialPromptLanguage:'Prompt Language',initialPromptTarget:'Prompt Target',initialCaptionMode:'Image Text',manualOutputType:'Output Type',manualCount:'Output Count',manualQuality:'Art / Texture',manualBackground:'Background',manualLighting:'Lighting',manualPromptLanguage:'Prompt Language',manualPromptTarget:'Prompt Target',manualCaptionMode:'Image Text',initialCardStyle:'Card Style',initialCardRarity:'Card Rarity Label',initialCardTheme:'Card Color Theme',initialCardLayout:'Card Layout',initialCardWearMode:'Card Outfit',initialCardEffect:'Effect Linked to Rarity',manualCardStyle:'Card Style',manualCardRarity:'Card Rarity Label',manualCardTheme:'Card Color Theme',manualCardLayout:'Card Layout',manualCardWearMode:'Card Outfit',manualCardEffect:'Effect Linked to Rarity'},
-      rarityNotes:{normal:'A natural and versatile combination.',rare:'A slightly distinctive combination.',super:'Several standout features are present.',legend:'A highly distinctive chance-based combination.'}
-    }
-  };
   function T(key){ return uiText[uiLang][key]; }
   function slotLabel(key, fallback){ return (slotLabelMap[key]||{})[uiLang] || fallback; }
   function fixedLabel(key, fallback){ return (fixedFieldLabelMap[key]||{})[uiLang] || fallback; }
 
-  const valueTranslations = {
-    '力強い目元':'Strong, intense eyes','優しい目元':'Gentle eyes','涼しげな目元':'Cool, refreshing eyes','知的な目元':'Intelligent eyes','眠たげな目元':'Sleepy-looking eyes','鋭い目元':'Sharp eyes','親しみやすい目元':'Approachable eyes','落ち着いた目元':'Calm eyes',
-    '一重':'monolid','奥二重':'hooded double eyelid','末広二重':'tapered double eyelid','平行二重':'parallel double eyelid','左右で異なるまぶた（片方だけ二重）':'differing eyelids (double on one side only)',
-    '標準的な目の形':'standard eye shape','切れ長の目':'long, narrow eyes','アーモンド形の目':'almond-shaped eyes','丸みのある目':'round eyes','たれ目気味の目':'slightly downturned eyes','つり目気味の目':'slightly upturned eyes','細めの目':'narrow eyes',
-    '太めの直線眉':'thick straight eyebrows','太めのアーチ眉':'thick arched eyebrows','標準的な直線眉':'average straight eyebrows','標準的なゆるいアーチ眉':'average softly arched eyebrows','やや細めの直線眉':'slightly thin straight eyebrows','やや細めのアーチ眉':'slightly thin arched eyebrows','眉尻の下がった優しい眉':'gentle eyebrows sloping down at the ends','への字型の眉':'downward-angled eyebrows','眉山のはっきりした眉':'eyebrows with a distinct peak','短めで力強い眉':'short, strong eyebrows',
-    '濃い眉':'dense','標準的な濃さの眉':'average density','薄めの眉':'sparse',
-    '短めで控えめなまつ毛':'short, understated eyelashes','標準的な長さのまつ毛':'average-length eyelashes','やや長めのまつ毛':'slightly long eyelashes','長めで濃いまつ毛':'long, dense eyelashes','細くまばらなまつ毛':'fine, sparse eyelashes',
-    '標準的な顎先':'an average chin','尖り気味の顎先':'a slightly pointed chin','丸みのある顎先':'a rounded chin','しっかりした顎先':'a strong chin','軽く割れた顎先':'a lightly cleft chin',
-    'エラは目立たない':'an unpronounced jaw angle','ほどよく張ったエラ':'a moderately squared jaw','はっきり張ったエラ':'a strongly squared jaw',
-    '標準的な耳':'average ears','立ち耳':'protruding ears','寝た耳':'flat-set ears','福耳':'large-lobed ears','小ぶりな耳':'small ears','柔道耳（軽度の耳介の厚み）':'slightly thickened ears from grappling sports',
-    '標準的な広さの額':'an average forehead','狭めの額':'a narrow forehead','広めの額':'a broad forehead',
-    '直線的な生え際':'a straight hairline','ゆるいM字の生え際':'a softly M-shaped hairline','富士額の生え際':'a widow-peak hairline','やや後退気味の生え際':'a slightly receding hairline',
-    '標準的な頬':'average cheeks','頬骨が高めの頬':'high cheekbones','ややこけた頬':'slightly hollow cheeks','ふっくらした頬':'full cheeks',
-    'えくぼなし':'no dimples','片側にえくぼ':'a dimple on one side','両側にえくぼ':'dimples on both sides',
-    'ほくろなし':'no moles','目尻の下の泣きぼくろ':'a mole below the outer eye','口元のほくろ':'a mole near the mouth','顎のほくろ':'a mole on the chin','頬のほくろ':'a mole on the cheek','首すじのほくろ':'a mole on the neck',
-    '直毛':'straight hair','やわらかい猫っ毛':'soft, fine hair','硬めの剛毛':'coarse, stiff hair','ゆるいくせ毛':'loosely wavy hair','強いくせ毛':'strongly wavy hair',
-    'クマなし':'no under-eye shadows','うっすらとした目の下のクマ':'faint under-eye shadows',
-    'のどぼとけは控えめ':'a subtle throat prominence','標準的なのどぼとけ':'an average throat prominence','のどぼとけがはっきり出ている':'a prominent throat prominence',
-    '血色のよい唇':'well-colored lips','標準的な血色の唇':'normally colored lips','やや乾燥気味の唇':'slightly dry lips',
-    '彫りは標準的':'average brow definition','彫りが深い眉まわり':'a deep-set brow','ややフラットな眉まわり':'a flatter brow',
-    'きれいに整えている':'neatly groomed','自然に整えている':'naturally kept','伸ばしっぱなし気味':'left to grow out',
-    '薄い唇':'Thin lips','やや薄い唇':'Slightly thin lips','標準的な厚さの唇':'Average-thickness lips','厚めの唇':'Fuller lips','上唇が薄く下唇が厚い唇':'Thin upper lip with a fuller lower lip','口角のきゅっと上がった唇':'Lips with neatly upturned corners','引き締まった一文字の唇':'A firm, straight-set mouth','ふっくらした唇':'Plump lips',
-    '標準的な位置・大きさの口':'Average mouth size and placement','やや大きめの口':'A slightly larger mouth','小さめの口':'A smaller mouth','鼻と口の距離が近い口':'A short nose-to-mouth distance','鼻と口の距離がやや長い口':'A slightly long nose-to-mouth distance','口角の横幅が広い口':'A wide-set mouth',
-    '求心顔（目鼻口が中心に寄った配置）':'Centripetal features (set close toward the center)','やや求心寄りの配置':'Slightly centripetal feature spacing','標準的な配置':'Evenly spaced features','やや遠心寄りの配置':'Slightly centrifugal feature spacing','遠心顔（パーツが外側に離れた配置）':'Centrifugal features (set wide toward the outside)',
-    '標準的なバランスの比率':'Balanced feature proportions','目が大きめで存在感のある比率':'Proportions with prominent, larger eyes','目が小さめ・切れ長寄りの比率':'Proportions with smaller, narrow eyes','鼻の存在感が強い比率':'Proportions with a prominent nose','口が大きめではっきりした比率':'Proportions with a larger, defined mouth','口が小さめの比率':'Proportions with a smaller mouth','全体に小づくりな比率':'Overall delicate, compact features','全体に大ぶりでくっきりした比率':'Overall bold, well-defined features',
-    '左右対称に近い整った顔':'A near-symmetrical, even face','ほぼ対称（ごく自然な左右差）':'Almost symmetrical with natural minor asymmetry','わずかな左右差がある自然な顔':'A natural face with slight asymmetry','眉の高さに少し左右差がある顔':'Slightly uneven eyebrow heights','口角の上がり方に少し左右差がある顔':'Slightly uneven mouth-corner lift','目の大きさにわずかな左右差がある顔':'Slightly uneven eye sizes',
-    '防衛大学校の常装冬服風（花紺色の詰襟型短ジャケット）':'NDA winter dress (very dark navy stand-collar jacket)',
-    '防衛大学校の第1種夏服風（白の詰襟上下）':'NDA Type-1 summer uniform (white stand-collar, white trousers)',
-    '防衛大学校の第3種夏服風（白の半袖開襟シャツ）':'NDA Type-3 summer uniform (white short-sleeve shirt)',
-    '防衛大学校の校内服装（水色シャツ＋ネクタイ）':'NDA on-campus uniform (light-blue shirt + navy tie)',
-    '防衛大学校の作業服装（65式作業服と同型・OD色）':'NDA work uniform (Type-65 pattern, olive drab)',
-    '消防署の活動服（紺の作業服スタイル）':'Firefighter station duty uniform (navy)',
-    '救助服（オレンジのレスキュー隊服）':'Rescue-squad uniform (orange)',
-    '防火衣（訓練場面向けの耐火装備スタイル）':'Protective fire gear (training style)',
-    '警察官の冬制服風（濃紺の長袖＋ネクタイ）':'Police winter uniform (dark navy + tie)',
-    '警察官の夏制服風（薄青の半袖シャツ）':'Police summer uniform (light-blue shirt)',
-    '警察官の活動服風（出動服スタイル）':'Police field-duty uniform',
-    '交通機動隊風の乗車服（白ヘルメット着用）':'Traffic-unit rider uniform (white helmet worn)',
-    '機動隊の出動服風（ヘルメット携行）':'Riot-unit duty uniform (helmet carried)',
-    '陸上自衛隊風の迷彩作業服':'JGSDF camouflage work uniform',
-    '陸自の常装制服風（紫紺）':'JGSDF dress uniform (dark purplish navy)',
-    '海自の夏制服風（白）':'JMSDF white summer uniform',
-    '空自の制服風（青）':'JASDF blue uniform',
-    '救急隊の活動服（白シャツ＋紺パンツ）':'Ambulance-crew duty uniform',
-    'ランダム':'Random','日本':'Japan','韓国':'South Korea','中国':'China','台湾':'Taiwan','アメリカ':'United States','カナダ':'Canada','イギリス':'United Kingdom','フランス':'France','ドイツ':'Germany','イタリア':'Italy','スペイン':'Spain','ブラジル':'Brazil','メキシコ':'Mexico','タイ':'Thailand','ベトナム':'Vietnam','フィリピン':'Philippines','インドネシア':'Indonesia','マレーシア':'Malaysia','インド':'India','オーストラリア':'Australia',
-    '日本人':'Japanese','韓国系':'Korean','東アジア系':'East Asian','中国系':'Chinese','東南アジア系':'Southeast Asian','南アジア系':'South Asian','白人系':'White','黒人系':'Black','中東系':'Middle Eastern','ラテン系':'Latino','中央アジア系':'Central Asian','ミックス':'Mixed',
-    '成人男性キャラクター':'Adult male character','若手社会人':'Young working adult','大学生風の成人男性':'Adult man with a university-student vibe','スポーツ経験者':'Athletic / sports-experienced','モデル風':'Model-like','俳優風':'Actor-like','営業職風':'Sales professional','事務職風':'Office worker','クリエイター風':'Creative professional','研究職風':'Research professional','販売員風':'Retail staff','インストラクター風':'Instructor-like','IT系会社員風':'IT office worker','フリーランス風':'Freelancer-like',
-    '爽やか系':'Fresh / clean-cut','真面目系':'Serious','ワイルド系':'Wild','スポーツ系':'Sporty','きれいめ系':'Clean / polished','カジュアル系':'Casual','韓国風':'Korean-inspired','中性系':'Androgynous','大人っぽい系':'Mature','やりらふぃー系':'Trendy party-boy','ストリート系':'Streetwear','塩顔系':'Salt-faced / understated','犬系男子':'Puppy-like boyish','クール系':'Cool','ミステリアス系':'Mysterious','サブカル系':'Subculture','古着系':'Vintage / thrift','清楚系':'Neat / gentle','陽キャ大学生系':'Outgoing college-guy',
-    '実年齢相応':'Looks his age','やや若く見える':'Looks slightly younger','少し大人びて見える':'Looks slightly older',
-    '普通顔':'Average-looking','爽やか知的アナウンサー系':'Fresh, intelligent announcer type','大学サッカー部系':'University soccer-player type','スーツ映え社会人系':'Suit-friendly working professional type','高身長モデル系':'Tall model type','親しみやすい大学生系':'Friendly college-student type','体育会系スポーツ男子':'Athletic sports guy','清潔感のある若手俳優風':'Clean young-actor type','落ち着いた大人系':'Calm mature type','韓国アイドル風':'K-pop idol type','日本の若手俳優風':'Young Japanese actor type','中性系':'Androgynous','塩顔系':'Understated face type','犬系男子風':'Puppy-like boyish type','クール系':'Cool type','ミステリアス系':'Mysterious type','サブカル系':'Subculture type',
-    '標準体型':'Average build','やせ型':'Slim','細身':'Lean','痩せマッチョ':'Lean muscular','引き締まったスポーツ体型':'Toned athletic build','サッカー選手体型':'Soccer-player build','スーツ映え体型':'Suit-friendly build','高身長モデル体型':'Tall model build','筋肉質':'Muscular','がっしり体型':'Solid build','腹だけぽっちゃり':'Only slightly chubby around the belly','ぽっちゃり':'Chubby','脚が長い':'Long-legged',
-    '自然なフェイスライン':'Natural face line','シャープなフェイスライン':'Sharp face line','しっかりしたフェイスライン':'Defined face line','柔らかいフェイスライン':'Soft face line','逆三角形に近いフェイスライン':'Near-inverted-triangle face line','やや角ばったフェイスライン':'Slightly angular face line',
-    '二重風・親しみやすい目元':'Friendly double-eyelid eyes','奥二重風・クールな目元':'Cool inner-double-eyelid eyes','切れ長で知的':'Narrow and intelligent','丸みのある優しい目元':'Soft rounded eyes','力強い目元':'Strong eyes','伏し目がちで落ち着いた目元':'Relaxed downcast eyes',
-    'おすすめ自動':'Auto suggestion','なし':'None','控えめ':'Subtle','自然':'Natural','ややはっきり':'Slightly defined','ふっくら':'Full','笑うと少し出る':'Slightly visible when smiling',
-    '自然な鼻筋':'Natural nose bridge','通った鼻筋':'Defined nose bridge','高めの鼻筋':'High nose bridge','すっきりした鼻筋':'Clean nose bridge','しっかりした鼻':'Well-defined nose','控えめで自然な鼻':'Subtle natural nose',
-    '自然な笑顔':'Natural smile','控えめな微笑み':'Subtle smile','落ち着いた表情':'Calm expression','爽やかな笑顔':'Fresh smile','誠実な表情':'Sincere expression','余裕のある表情':'Composed expression',
-    '自然な肌質':'Natural skin texture','健康的な肌質':'Healthy skin texture','透明感のある肌':'Clear-looking skin','褐色の肌':'Brown skin','深い褐色の肌':'Deep brown skin','日差しでいっそう深まった褐色の肌':'Sun-deepened brown skin','日差しでいっそう深まった深い褐色の肌':'Sun-deepened deep brown skin','非常に色白の肌':'Very fair skin','浅黒い肌':'Dusky skin','強いカールのアフロテクスチャ':'tightly coiled afro-textured hair','細かいカールヘア':'fine curly hair','ショートフェード':'short fade cut','タイトなアフロショート':'tight afro short cut','ツイストショート':'short twists','額に一束落ちる長め前髪':'long bangs with a single strand falling over the forehead','自然に下ろした前髪':'naturally-down bangs','軽く上げた前髪':'lightly swept-up bangs','かき上げ風前髪':'swept-back bangs','眉にかかる重め前髪':'heavy brow-length bangs','短く切り揃えた前髪':'short trimmed bangs','ツヤを抑えたナチュラルセット':'matte natural styling with soft flow','ワックスの束感セット':'waxed, textured styling','きっちり撫でつけたセット':'neatly slicked styling','無造作セット':'effortless tousled styling','パーマ風の動きを出したセット':'perm-like wavy styling','毛量多め':'Thick hair volume','毛量少なめ':'Thin hair volume','標準的な毛量':'Average hair volume','七三分け':'7:3 side part','ナチュラルテーパー短髪':'natural tapered short cut','清潔感のある社会人系':'Clean-cut professional','卵型寄りのベース型（顎まわりに厚み）':'Oval-leaning square face with a full jawline','眉尻の上がった太めの直線眉':'Thick straight eyebrows with upturned tails','整えたシャープな直線眉':'Groomed sharp straight eyebrows','眉尻の上がったアーチ眉':'Arched eyebrows with upturned tails','丸みのあるしっかりした顎先':'Rounded yet firm chin','とても濃い眉':'Very thick eyebrows','やや濃い眉':'Somewhat thick eyebrows','やや薄めの眉':'Somewhat thin eyebrows','薄い眉':'Thin eyebrows','ほんのり日焼けした肌':'Lightly sun-kissed skin','少し日焼けした肌':'Slightly tanned skin','小麦色に日焼けした肌':'Golden tanned skin','しっかり日焼けした肌':'Deeply tanned skin','屋外仕事のこんがり日焼け肌':'Weathered outdoor working tan','マットで自然な肌':'Matte natural skin','スポーツ経験者らしい肌':'Sporty skin texture',
-    'ごく薄い青ひげ':'Very light beard shadow','自然な無精ひげ':'Natural stubble','整えた短いひげ':'Neatly trimmed short beard','口ひげあり':'Mustache','あごひげあり':'Goatee',
-    '短髪':'Short hair','アップバング':'Up-bangs','センターパート':'Center part','サイドパート':'Side part','マッシュ':'Mushroom cut','ソフトツーブロック':'Soft two-block','ビジネス短髪':'Business short hair','韓国風センターパート':'Korean-style center part','ニュアンスパーマ':'Loose perm','ツイストパーマ':'Twist perm','スパイラルパーマ':'Spiral perm','波巻きパーマ':'Wave perm','ウルフミディアム':'Medium wolf cut','ロング寄りミディアム':'Long medium hair','マンバン':'Man bun',
-    '黒':'Black','ブルーブラック':'Blue-black','黒に近いダークブラウン':'Very dark brown','自然な茶髪':'Natural brown','アッシュブラウン':'Ash brown','グレージュ':'Greige','明るめブラウン':'Light brown',
-    '紺スーツ':'Navy suit','黒スーツ':'Black suit','グレースーツ':'Gray suit','大学生カジュアル':'College casual','社会人カジュアル':'Working-adult casual','スポーツ練習着':'Sports practice wear','学生服（学ラン）':'School uniform (gakuran)','学生服（ブレザー）':'School uniform (blazer)','制服風コーデ':'Uniform-inspired outfit','私服通学風':'Casual commuting outfit','ジャケットスタイル':'Jacket style','ストリート系':'Streetwear',
-    '指定なし':'Not specified','無地ノーブランド':'Plain unbranded','学生服メーカー指定なし':'School uniform brand not specified',
-    'テーラードジャケット':'Tailored jacket','学生ブレザー':'School blazer','学ラン上着':'Gakuran jacket','ステンカラーコート':'Bal-collar coat','チェスターコート':'Chester coat','MA-1':'MA-1 jacket','スタジャン':'Varsity jacket','カーディガン':'Cardigan','パーカー':'Hoodie','デニムジャケット':'Denim jacket','ナイロンジャケット':'Nylon jacket','スポーツジャケット':'Sports jacket',
-    '白シャツ':'White shirt','サックスブルーシャツ':'Sax blue shirt','制服用ワイシャツ':'Uniform shirt','ブレザー用シャツ':'Blazer shirt','ネクタイ付きシャツ':'Shirt with tie','無地Tシャツ':'Plain T-shirt','オーバーサイズTシャツ':'Oversized T-shirt','ロングスリーブTシャツ':'Long-sleeve T-shirt','ポロシャツ':'Polo shirt','ニット':'Knit top','カーディガンインナー':'Cardigan innerwear','スウェット':'Sweatshirt','スポーツシャツ':'Sports shirt','ゲームシャツ':'Game shirt',
-    '黒スラックス':'Black slacks','紺スラックス':'Navy slacks','グレースラックス':'Gray slacks','学生スラックス':'Student slacks','ブレザー用スラックス':'Blazer slacks','学ラン用ズボン':'Gakuran trousers','チノパン':'Chinos','ワイドパンツ':'Wide pants','カーゴパンツ':'Cargo pants','デニム':'Denim jeans','ストレートデニム':'Straight jeans','ジャージパンツ':'Track pants','ナイロンパンツ':'Nylon pants','黒ショートパンツ':'Black shorts','ハーフパンツ':'Half pants',
-    'ライトグレー':'Light gray','ネイビー':'Navy','白':'White','チャコール':'Charcoal','ダークグレー':'Dark gray',
-    '黒革靴':'Black leather shoes','茶革靴':'Brown leather shoes','ローファー':'Loafers','白スニーカー':'White sneakers','黒スニーカー':'Black sneakers','キャンバススニーカー':'Canvas sneakers','ランニングシューズ':'Running shoes','サッカースパイク':'Soccer cleats','バスケットシューズ':'Basketball shoes','サンダル':'Sandals','ブーツ':'Boots',
-    'ビジネスソックス':'Business socks','柄ありビジネスソックス':'Patterned business socks','スポーツソックス':'Sports socks','クルー丈ソックス':'Crew socks','くるぶしソックス':'Ankle socks','インビジブルソックス':'Invisible socks','ライン入りソックス':'Striped socks','ワンポイントソックス':'Socks with one-point accent','ロゴ入りソックス':'Logo socks',
-    'クルー丈':'Crew length','ミドル丈':'Mid length','くるぶし丈':'Ankle length','インビジブル丈':'Invisible length','リブ編み':'Ribbed','薄手ビジネス形状':'Thin business shape','厚手スポーツ形状':'Thick sports shape',
-    '綿混':'Cotton blend','綿＋ナイロン':'Cotton + nylon','ウール混':'Wool blend','薄手ナイロン混':'Light nylon blend','パイル編み':'Pile knit','リブ編みコットン':'Ribbed cotton','吸汗速乾素材':'Moisture-wicking quick-dry material',
-    'グレー':'Gray','ブラウン':'Brown','ネイビー地ストライプ':'Navy striped','黒地ドット':'Black with dots','アーガイル柄':'Argyle pattern','ライン入り白':'White with lines',
-    '新品に近い':'Like new','自然な使用感':'Naturally worn','少し履き込まれている':'Slightly well-worn','毛羽立ちが少しある':'Slightly fuzzy','スポーツ後の自然な使用感':'Naturally worn after sports','清潔だが生活感あり':'Clean but lived-in',
-    'ギリシャ型':'Greek foot','エジプト型':'Egyptian foot','スクエア型':'Square foot','幅広':'Wide','細め':'Narrow','甲高':'High instep','土踏まず高め':'High arch','土踏まず低め':'Low arch','足指が長め':'Long toes','親指が長め':'Long big toe',
-    'シンプルなグレーバック':'Simple gray backdrop','白背景のスタジオ':'White studio background','ライトグレーのスタジオ':'Light gray studio','黒背景のスタジオ':'Black studio background','大学キャンパス背景':'University campus background','学校の廊下背景':'School hallway background','街中スナップ背景':'Street-snap background','オフィス背景':'Office background','スポーツ施設背景':'Sports facility background','ジム背景':'Gym background','テーマパーク風背景':'Theme-park-like background','海辺・港町背景':'Seaside / harbor-town background','夜景背景':'Nightscape background','公園背景':'Park background','室内の自然光背景':'Indoor natural-light background',
-    '自然光。明るく清潔感がある。':'Natural light, bright and clean.','柔らかいスタジオ照明。':'Soft studio lighting.','曇天の拡散光。':'Overcast diffused light.','写真館風の正面ライト。':'Photo-studio frontal lighting.','斜め45度のスタジオライト。':'45-degree studio lighting.','屋外スポーツ撮影風の明るい光。':'Bright outdoor sports-style lighting.','夜景に馴染む控えめなライティング。':'Subtle lighting suited to night scenes.',
-    '実写風':'Photorealistic','高精細':'High detail','スマホスナップ風':'Smartphone snapshot style','写真館風':'Studio portrait style','ファッションカタログ風':'Fashion catalog style','AI感を抑えた自然写真':'Natural photo with reduced AI look','商業写真風':'Commercial photography style','雑誌グラビアではなく設定資料風':'Reference-sheet style rather than gravure','イラスト風':'Illustration style','アニメ風イラスト':'Anime-style illustration','漫画風線画':'Manga-style line art','キャラクター設定画風':'Character reference sheet style',
-    '前面・側面を1枚にまとめた設定画像':'Combined front-and-side reference image','前面・側面・背面を1枚にまとめた設定画像':'Combined front-side-back reference image','16:9リファレンスカード（全身前面・側面／顔正面・側面／足詳細）':'16:9 reference card (full body front/side, face front/side, foot details)','16:9のリファレンスカードとして、全身の前面・側面、顔の正面・側面、顔正面（歯が見える）、足の正面と側面と足裏（人物が座って自分の足裏をこちらへ見せる構図とし、足裏だけが切り離されて描写された状態にしない）を1枚に整理して表示する。':'16:9 reference card with full body front/side, face front/side, face front with teeth visible, and foot front/side/sole shown by the seated person himself','SNSプロフィール風画像':'SNS profile-style image','就活写真風画像':'Job-hunting photo style image','スポーツ選手紹介風画像':'Athlete introduction-style image',
-    '1枚':'1 image','3パターン別々の画像':'3 separate variations','5パターン別々の画像':'5 separate variations','10パターン別々の画像':'10 separate variations','10パターン別々の画像':'10 separate variations','日本語':'Japanese','English':'English',
-    '自然な青ひげ':'Natural beard shadow','短い無精ひげ':'Short stubble','口ひげ':'Mustache','あごひげ':'Goatee','口ひげ＋あごひげ':'Mustache + goatee','ワイルドめのひげ':'Wild beard style',
-    'トレーディングカード風画像':'Trading-card-style image','トレーディングカード風リファレンスカード':'Trading-card-style reference card','レアカード風トレーディングカード画像':'Rare trading-card-style image','シンプルな設定カード風画像':'Simple character card-style image',
-    'カード風ミニプロフィールを下部に表示':'Mini profile card at the bottom','スタイリッシュなタグ型で表示':'Stylish tag-style display',
-    'スタンダード':'Standard','シンプル':'Simple','スタイリッシュ':'Stylish','スポーツカード風':'Sports-card style','アイドルカード風':'Idol-card style','高級感のあるカード風':'Premium card style','レアカード風':'Rare card style','ホログラム風':'Holographic style','コレクターズカード風':'Collectors-card style',
-    'モノトーン':'Monotone','ブラックゴールド':'Black gold','シルバー':'Silver','ブルー':'Blue','レッド':'Red','グリーン':'Green','パープル':'Purple','ランダムカラー':'Random colors',
-    '縦長カード':'Vertical card','横長カード':'Horizontal card','情報重視型':'Information-focused','ビジュアル重視型':'Visual-focused','ステータス重視型':'Stats-focused','リファレンス資料型':'Reference-sheet layout',
-    '偶然人物ブループリントシート':'Chance-encounter character blueprint sheet',
-    '街で見かけたイケメンシート：職業編':'Spotted-in-town sheet: at work','街で見かけたイケメンシート：オフ編':'Spotted-in-town sheet: off duty','偶然足元強調場面シート':'Chance foot-focus scene sheet','人物特集雑誌ページ':'Character feature magazine page',
-    '服装リファレンスシート（職業背景）':'Outfit reference sheet (occupation backdrop)','人物ポスター（職業・人物像）':'Character poster (occupation & persona)',
-    '比較リファレンスシート（下着×私服・靴なし）':'Comparison reference sheet (underwear × outfit, no shoes)','表情差分リファレンスシート':'Expression variation reference sheet','フル設定資料シート':'Full character reference sheet','段階着装リファレンスシート':'Step-by-step dressing reference sheet',
-    '大学生':'University student','大学院生':'Graduate student','専門学校生':'Vocational school student','就活中の大学生':'Job-hunting university student',
-    '営業職':'Sales representative','経理・事務職':'Accounting / office clerk','企画職':'Planning staff','公務員':'Civil servant','銀行員':'Bank employee','商社勤務':'Trading company employee','コンサルタント':'Consultant','不動産営業':'Real estate agent',
-    'ITエンジニア':'IT engineer','Webデザイナー':'Web designer','ゲーム開発者':'Game developer','動画クリエイター':'Video creator','アプリ開発者':'App developer',
-    '看護師':'Nurse','理学療法士':'Physical therapist','薬剤師':'Pharmacist','研修医':'Medical resident','介護士':'Care worker',
-    '高校教師':'High school teacher','塾講師':'Cram school teacher','保育士':'Childcare worker','大学研究員':'University researcher','体育教師':'PE teacher',
-    'アパレル店員':'Apparel shop staff','カフェ店員':'Cafe staff','美容師':'Hair stylist','バーテンダー':'Bartender','ホテルスタッフ':'Hotel staff','飲食店店長':'Restaurant manager','書店員':'Bookstore clerk','コンビニ店長':'Convenience store manager',
-    '自動車整備士':'Car mechanic','電気工事士':'Electrician','大工':'Carpenter','建築士':'Architect','工場勤務':'Factory worker','配送ドライバー':'Delivery driver','農家':'Farmer','漁師':'Fisherman',
-    'グラフィックデザイナー':'Graphic designer','カメラマン':'Photographer','ミュージシャン':'Musician','編集者':'Editor','イラストレーター':'Illustrator','映像ディレクター':'Film director',
-    '消防士':'Firefighter','警察官':'Police officer','自衛官':'JSDF member','ジムトレーナー':'Gym trainer','スポーツインストラクター':'Sports instructor','モデル':'Model','俳優':'Actor','プロスポーツ選手':'Professional athlete',
-    '喫茶店マスター':'Coffee shop master','新聞記者':'Newspaper reporter','国鉄職員':'National railway worker',
-    'お笑い芸人':'Comedian','声優':'Voice actor','YouTuber':'YouTuber','プロゲーマー':'Pro gamer','書道家':'Calligrapher','パティシエ':'Pastry chef','寿司職人':'Sushi chef','ラーメン店店主':'Ramen shop owner','僧侶':'Buddhist monk (in casual clothes)','古着屋店主':'Vintage clothing shop owner','悠々自適（定年後）':'Comfortably retired','救急隊員':'Paramedic','防衛大学校学生':'National Defense Academy cadet',
-    '野球':'Baseball','サッカー':'Soccer','バスケットボール':'Basketball','バレーボール':'Volleyball','ラグビー':'Rugby','柔道':'Judo','剣道':'Kendo','陸上短距離':'Sprinting','陸上長距離':'Long-distance running','水泳':'Swimming','テニス':'Tennis','卓球':'Table tennis','ボクシング':'Boxing','ゴルフ':'Golf','自転車ロード':'Road cycling','体操':'Gymnastics',
-    'ネイビーブラック':'Navy black','ダークアッシュ':'Dark ash','ダークチェリーブラウン':'Dark cherry brown','チョコレートブラウン':'Chocolate brown','赤みブラウン':'Reddish brown','マロンブラウン':'Marron brown','カーキブラウン':'Khaki brown','オリーブアッシュ':'Olive ash','ブルージュ':'Blue-beige (bluege)','ラベンダーグレージュ':'Lavender greige','ミルクティーベージュ':'Milk tea beige','ナチュラルブロンド':'Natural blond','ダークブロンド':'Dark blond','既製の実用衣料':'Plain practical clothing','ロシア':'Russia','スウェーデン':'Sweden','ポーランド':'Poland','トルコ':'Turkey','アルゼンチン':'Argentina','モンゴル':'Mongolia','ナイジェリア':'Nigeria','スラブ系':'Slavic','北欧系':'Nordic','南欧系':'Southern European','オレンジブラウン':'Orange brown','ハイトーンアッシュ':'High-tone ash','シルバーアッシュ':'Silver ash','ブリーチベージュ':'Bleached beige','金髪（ブリーチ）':'Bleached blond','メッシュ入りブラック':'Black with highlights','インナーカラー（アッシュ）':'Ash inner color','プリン気味の伸びた茶髪':'Grown-out brown with dark roots','白髪まじり':'Salt-and-pepper (slight gray)','ロマンスグレー':'Distinguished gray','ごま塩頭':'Salt-and-pepper hair','ほぼ白髪':'Mostly white hair',
-    '黒縁メガネ':'Black-rimmed glasses','細フレームメガネ':'Thin-frame glasses','メタルフレームメガネ':'Metal-frame glasses','丸メガネ':'Round glasses','ハーフリムメガネ':'Half-rim glasses','縁なしメガネ':'Rimless glasses','金縁メガネ':'Gold-rimmed glasses',
-    '職業制服':'Work uniform','書生風スタイル（着物＋袴＋学帽）':'Meiji-student style (kimono, hakama, cap)','着物と羽織':'Kimono with haori coat','国民服風':'Wartime national uniform style','開襟シャツスタイル':'Open-collar shirt style','三つ揃いスーツ':'Three-piece suit','仕立て・既製品':'Tailored / ready-made','支給品・制服':'Issued uniform',
-    '参照画像前提（簡潔版）':'Reference-image based (concise)','単体で完結（フル記述）':'Standalone (full description)','トレーディングカード':'Trading card',
-    'スキンフェード':'Skin fade','ローフェード':'Low fade','フェード×ツイストスパイラル':'Fade with twist-spiral perm','バーバースタイル（七三フェード）':'Barber style (side-part fade)','クロップスタイル':'Crop cut','マッシュウルフ':'Mash-wolf cut','ソフトモヒカン':'Soft mohawk','アシメショート':'Asymmetric short cut',
-    '春':'Spring','夏':'Summer','秋':'Autumn','冬':'Winter',
-    '結果画面のみ表示':'Show on result screen only','画像内にも表示する':'Also render inside the image','表示しない':'Hide',
-    '服装・場面・体型に反映':'Affects outfit, scene, and body','場面のみに反映':'Affects scene only','影響なし':'No influence',
-    'ビール腹':'Beer belly','中肉中背':'Average build','細マッチョ':'Lean muscular','隠れ筋肉質':'Secretly muscular','逆三角形体型':'V-shaped torso','華奢な体型':'Delicate slender build','水泳選手体型':'Swimmer build (broad shoulders, V-shape)','バスケットボール選手体型':'Basketball player build (tall, lean-muscular)','ラグビー選手体型':'Rugby player build (thick and powerful)','柔道家体型':'Judoka build (heavy-set, strong)','陸上短距離選手体型':'Sprinter build (explosive muscles)','陸上長距離選手体型':'Distance runner build (lean and wiry)','クライマー体型':'Climber build (defined upper body)','骨太体型':'Big-boned build','肩幅広め体型':'Broad-shouldered build',
-    '普通系':'Ordinary','地味系':'Plain / modest','オタク系':'Otaku','ヤンキー系':'Yankee (delinquent style)','ホスト系':'Host club style','おじさん系':'Middle-aged guy','メガネ知的系':'Intellectual with glasses','ブサイク系':'Homely-looking',
-    '昭和顔（濃い顔立ち）':'Showa-era bold features','しょうゆ顔':'Light refined features (shoyu-gao)','ソース顔':'Deep bold features (sauce-gao)','彫りの深い縄文系':'Deep-set Jomon-type features','あっさり弥生系':'Soft Yayoi-type features','たれ目系':'Droopy-eyed type','つり目系':'Upturned-eyed type','平成アイドル風':'Heisei idol style',
-    'なし（クリアな肌）':'None (clear skin)','頬にそばかす':'Freckles on the cheeks','鼻まわりに薄いそばかす':'Light freckles around the nose','額に小さなニキビ':'A few small pimples on the forehead','頬にニキビ跡（薄い凹凸）':'Faint acne scars on the cheeks','口元のほくろ':'A mole near the mouth','目元の泣きぼくろ':'A teardrop mole under the eye','首筋のほくろ':'A mole on the neck','頬の小さなほくろ':'A small mole on the cheek','うっすら青ひげ（剃り跡）':'A faint shaved-beard shadow','日焼けによる肌ムラ':'Slight tan unevenness','えくぼ':'Dimples','左頬の薄い傷跡':'A faint scar on the left cheek','眉尻の剃り込み跡':'A shaved slit at the eyebrow tail','目の下のうっすらしたクマ':'Faint under-eye circles','頬の自然な赤み':'A natural flush on the cheeks','額の皮脂感（自然なテカリ）':'A natural sheen on the forehead','頬の毛穴感（自然な質感）':'Natural visible pores on the cheeks','腕まくり日焼けの跡':'A rolled-sleeve tan line','ゴーグル跡の日焼けムラ':'A goggle-shaped tan line','眉間のしわ':'A crease between the brows','目尻の笑いじわ':'Smile lines at the eye corners','ほうれい線':'Nasolabial folds','頬の薄いシミ':'Faint sun spots on the cheeks','首のしわ':'Neck lines',
-    '年相応の渋さがある':'Age-appropriate seasoned look','穏やかな年配の風格':'Calm elderly dignity',
-    'やんちゃ系':'Mischievous type','勤務帰り':'After work','休日':'Day off',
-    '1人（通常）':'Solo (normal)','2人グループ':'Group of 2','3人グループ':'Group of 3',
-    'メンバーごとに別々の指示文':'Separate prompts per member','1つの指示文にまとめて生成':'One combined prompt for all members',
-    '同じ大学のサークル仲間':'University club friends','高校からの友人':'Friends since high school','バイト仲間':'Part-time job coworkers','地元の幼なじみ':'Childhood friends from hometown','職場の同期':'Coworkers who joined the same year','大学時代からの友人':'Friends since university','バンド仲間':'Bandmates','スポーツ仲間':'Sports buddies','ジム仲間':'Gym buddies','職場の仲間':'Workplace friends','学生時代からの友人':'Friends since school days','趣味仲間':'Hobby friends',
-    'リーダー格':'Leader type','ムードメーカー':'Mood maker','クール担当':'The cool one','しっかり者':'The reliable one','いじられ役':'The teased one','マイペース担当':'The easygoing one',
-    'ボクサーパンツのみ':'Boxer briefs only','職業服装':'Work outfit','私服':'Casual outfit',
-    'レトロ系':'Retro','モード系':'Mode / high fashion','アウトドア系':'Outdoor','バンドマン系':'Band musician','紳士系':'Gentleman','ギャル男系':'Gyaru-o (flashy)',
-    '商社マン風':'Trading-company businessman style','工場勤務風':'Factory worker style','新聞記者風':'Newspaper reporter style','時代に合った下着の種類':'Era-appropriate underwear','提案服装':'Suggested outfit','白ブリーフ':'Classic white briefs','カラーブリーフ':'Colored classic briefs','トランクス':'Trunks-style boxer shorts','ボクサーパンツ':'Boxer briefs',
-    '光沢風':'Glossy effect','箔押し風':'Foil-stamped effect','キラ加工風':'Sparkle effect','フレーム強調':'Emphasized frame','角丸カード風':'Rounded-card style','エンブレム付き':'With emblem',
-    'ほぼなし':'Almost none','薄め':'Light','自然':'Natural','やや濃い':'Slightly thick','濃い':'Thick','部位差あり':'Varies by area','手入れされている':'Groomed','ワイルド寄り':'Wild-leaning','スポーツ系で自然':'Natural sporty','一部のみ目立つ':'Only some areas stand out','ごく薄い':'Very light','手入れ済み':'Groomed','部分的に残している':'Partially kept'
-
-  };
-  const sceneTranslations = {
-    '駅の伝言板や喫茶店の窓際の近くで、当時らしい落ち着いた私服姿を偶然見かけた場面':'A candid moment near a station message board or a coffee shop window, in a calm outfit that suits the era',
-    '商店街のレコード店の前で立ち止まっている姿を偶然見かけた場面':'A candid moment of him pausing in front of a record shop in a shopping street',
-    '喫茶店や貸レコード店の近くで、時代の空気をまとった私服姿を偶然見かけた場面':'A candid moment near a coffee shop or record rental store, wearing clothes that carry the mood of the era',
-    'レンタルビデオ店やゲームセンターの前で、友人を待つ姿を偶然見かけた場面':'A candid moment of him waiting for friends in front of a video rental shop or an arcade',
-    '公衆電話の近くで連絡を待つような姿を偶然見かけた場面':'A candid moment of him seemingly waiting for a call near a public phone booth',
-    'CDショップや携帯ショップの前で、ふと立ち止まる姿を偶然見かけた場面':'A candid moment of him pausing in front of a CD shop or a mobile phone store',
-    'カフェの前でスマートフォンを見ながら待ち合わせている姿を偶然見かけた場面':'A candid moment of him checking his smartphone while waiting in front of a cafe',
-    'カフェや商業施設の前で、スマートフォンを片手に自然体でたたずむ姿を偶然見かけた場面':'A candid moment of him standing naturally with a smartphone in hand in front of a cafe or shopping complex',
-    '喫茶店やレコードショップの近くで、レトロな雰囲気の私服姿を偶然見かけた場面':'A candid moment near a coffee shop or record store, in a retro-flavored outfit',
-    'ライブハウスの入り口近くで、機材を持って立っている姿を偶然見かけた場面':'A candid moment of him standing near a live-house entrance with some equipment',
-    '落ち着いたホテルのロビーや上質な街並みで、品のある立ち姿を偶然見かけた場面':'A candid moment of a refined standing figure in a calm hotel lobby or an elegant street',
-    '公園の入り口やアウトドアショップの前で、身軽な服装でたたずむ姿を偶然見かけた場面':'A candid moment near a park entrance or an outdoor gear shop, in light comfortable clothes',
-    '繁華街の通りで、華やかな雰囲気で友人と話している姿を偶然見かけた場面':'A candid moment of him chatting with friends in a flashy downtown street',
-    'セレクトショップやギャラリー前で、モードな私服姿を偶然見かけた場面':'A candid moment in a high-fashion outfit in front of a select shop or gallery',
-    'オフィス街の交差点で、書類鞄を持って颯爽と歩く姿を偶然見かけた場面':'A candid moment of him striding through an office-district crossing with a briefcase',
-    '工場や作業場の近くで、仕事帰りに私服へ着替えた姿を偶然見かけた場面':'A candid moment near a factory or workshop, changed into casual clothes on his way home',
-    '駅から学校へ向かう途中、朝の通学路でふと見かけた場面':'A casually spotted moment on the morning route from the station to school.',
-    '出勤前の駅前やオフィス街で偶然すれ違った場面':'A chance encounter near a station or office district before work.',
-    '大学施設や作業スペースの近くで、資料やPCを持って移動しているところを偶然見かけた場面':'A chance sighting near a university facility or workspace while he is moving with documents or a laptop.',
-    'スポーツ施設の外や練習帰りの通路で、汗が引いた自然な状態を偶然見かけた場面':'A chance sighting outside a sports facility or on the way back from practice, after he has cooled down.',
-    '街中で撮影や移動の合間に、ふと立ち止まった瞬間を偶然見かけた場面':'A chance sighting in the city when he briefly pauses between shoots or while moving around.',
-    '夕方の街角で、少しラフな雰囲気で歩いているところを偶然見かけた場面':'A chance sighting at a street corner in the evening, walking with a slightly rough vibe.',
-    '駅前や繁華街の通りで、友人と合流する前の自然な姿を偶然見かけた場面':'A chance sighting near a station or downtown street before meeting friends.',
-    'カフェ前や落ち着いた街角で、柔らかい雰囲気の立ち姿を偶然見かけた場面':'A chance sighting near a café or a calm street corner, standing with a soft vibe.',
-    '古着屋や小さなギャラリーの近くで、個性的な私服姿を偶然見かけた場面':'A chance sighting near a thrift shop or a small gallery, wearing distinctive casual clothes.',
-    '夜の駅前や静かな通りで、落ち着いた雰囲気で歩く姿を偶然見かけた場面':'A chance sighting near a station at night or on a quiet street, walking with a calm vibe.',
-    'カフェや商業施設の近くで、洗練された私服姿を偶然見かけた場面':'A chance sighting near a café or shopping complex, wearing polished casual clothes.',
-    '駅前や商店街、学校やオフィスの近くで、日常の流れの中に自然に溶け込んでいるところを偶然見かけた場面':'A chance sighting near a station, shopping street, school, or office, naturally blending into everyday life.',
-    '都会的なカフェ通りや商業施設の近くで、洗練された雰囲気の立ち姿を偶然見かけた場面':'A chance sighting near an urban café street or shopping complex, standing with a refined vibe.',
-    '大型商業施設や夜の街並みの近くで、都会的な私服姿を偶然見かけた場面':'A chance sighting near a large shopping complex or a night cityscape, wearing urban casual clothes.',
-    '大学キャンパス周辺やダウンタウンの歩道で、自然に歩いている姿を偶然見かけた場面':'A chance sighting around a university campus or downtown sidewalk, walking naturally.',
-    '街路樹のある通りやカフェテラスの近くで、さりげなく立っている姿を偶然見かけた場面':'A chance sighting on a tree-lined street or near a café terrace, standing casually.',
-    '広場やスポーツコートの近くで、活動的で親しみやすい雰囲気の姿を偶然見かけた場面':'A chance sighting near a plaza or sports court, with an active and friendly vibe.',
-    'にぎやかな通りや屋外カフェの近くで、軽やかな私服姿を偶然見かけた場面':'A chance sighting near a lively street or outdoor café, wearing light casual clothes.',
-    '東南アジアの都市部の街角や屋外カフェの近くで、軽やかな私服姿を偶然見かけた場面':'A chance sighting near an urban street corner or outdoor café in Southeast Asia, wearing light casual clothes.',
-    '日常の街中で、自然体の姿を偶然見かけた場面':'A chance sighting in an everyday urban setting, looking natural and at ease.',
-    '出勤前の静かな駅前やオフィス街で、落ち着いた雰囲気で歩いているところを偶然見かけた場面':'A chance sighting near a quiet station or office district before work, walking with a calm presence.',
-    '夕方の街角やスポーツ施設帰りに、活動的な雰囲気で友人と合流する前の姿を偶然見かけた場面':'A chance sighting at an evening street corner or after leaving a sports facility, before meeting friends with an active vibe.',
-    'カフェ前や古着屋、小さなギャラリーの近くで、自然体の私服姿を偶然見かけた場面':'A chance sighting near a café, thrift shop, or small gallery, wearing natural casual clothes.',
-    'にぎやかな通りや商業施設周辺で、明るい雰囲気で友人を待つ姿を偶然見かけた場面':'A chance sighting on a lively street or near a shopping complex, waiting for friends with a bright vibe.',
-    '大学施設や静かな作業スペースの近くで、考え込むように歩く姿を偶然見かけた場面':'A chance sighting near a university facility or quiet workspace, walking as if deep in thought.'
-  };
   function displayValue(key, value){
     if(value===undefined || value===null) return value;
     if(key==='captionMode') return captionModeDisplay(value);
@@ -510,15 +169,6 @@
     else if(items.length) selectEl.value = String(items[0]);
   }
 
-  const captionFieldLabelMap = {
-    name:{ja:'氏名',en:'Name'}, age:{ja:'年齢',en:'Age'}, era:{ja:'年代',en:'Era'}, height:{ja:'身長',en:'Height'}, weight:{ja:'体重',en:'Weight'}, footSize:{ja:'足のサイズ',en:'Foot Size'}, mbti:{ja:'MBTI・性格',en:'MBTI / Personality'}, nationality:{ja:'国籍',en:'Nationality'}, role:{ja:'職業',en:'Occupation'}
-  };
-  const cardFieldLabelMap = {
-    name:{ja:'氏名',en:'Name'}, age:{ja:'年齢',en:'Age'}, era:{ja:'年代',en:'Era'}, height:{ja:'身長',en:'Height'}, weight:{ja:'体重',en:'Weight'}, footSize:{ja:'足サイズ',en:'Foot Size'}, nationality:{ja:'国籍',en:'Nationality'}, ethnicity:{ja:'人種',en:'Ethnicity'}, role:{ja:'職業',en:'Occupation'}, vibe:{ja:'雰囲気',en:'Vibe'}, mbti:{ja:'MBTI',en:'MBTI'}, facePreset:{ja:'顔立ち',en:'Face Type'}, bodyType:{ja:'体型',en:'Body Type'}, footShape:{ja:'足の形',en:'Foot Shape'}, bodyHairOverall:{ja:'体毛',en:'Body Hair'}, outfitType:{ja:'提案服装',en:'Outfit'}, scene:{ja:'場面',en:'Scene'}, rarity:{ja:'レアリティ',en:'Rarity'}
-  };
-  const uiCardTitles = {
-    initialBasic:{ja:'基本設定',en:'Basic Settings'}, initialOutput:{ja:'出力設定',en:'Output Settings'}, initialProfileText:{ja:'画像内プロフィール表記',en:'Profile Text in Image'}, initialCard:{ja:'カード差分プロンプト設定',en:'Trading Card Variation Settings'}, manualOutput:{ja:'出力設定',en:'Output Settings'}, manualProfileText:{ja:'画像内プロフィール表記',en:'Profile Text in Image'}, manualCard:{ja:'カード差分プロンプト設定',en:'Trading Card Variation Settings'}
-  };
   function mbtiDescription(code, english=false){
     const ja = {
       INTJ:'戦略的で独立心が強い', INTP:'論理的で探究心が強い', ENTJ:'決断力がありリーダー気質', ENTP:'発想力豊かで刺激を好む',
@@ -1030,7 +680,6 @@
     return pick(pools.ethnicities);
   }
 
-  const NAMES_BY_YEAR = {"2000":["翔","翔太","大輝","拓海","海斗","蓮","大樹","健太","匠","悠斗","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2001":["大輝","翔","海斗","陸","拓海","翔太","蓮","大和","駿","亮太","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2002":["蓮","大輝","翔","海斗","拓海","陸","颯太","大和","翔太","悠斗","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2003":["大輝","蓮","翔","颯太","海斗","陸","悠斗","拓海","大和","優太","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2004":["蓮","颯太","大輝","翔","悠斗","海斗","陸","大和","悠人","拓海","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2005":["翔","大翔","拓海","翔太","颯太","蓮","悠斗","海斗","陸","大和","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2006":["陸","大翔","蓮","悠斗","颯太","翔","悠人","大和","海斗","優斗","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2007":["大翔","蓮","悠斗","颯太","翔","悠人","陽向","大和","陸","海翔","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2008":["大翔","悠斗","陽向","翔太","悠人","蓮","颯太","大和","悠真","陸","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2009":["大翔","翔太","悠斗","瑛太","悠人","蓮","陽向","悠真","颯太","大和","駿","大地","直人","拓也","翔真","和真","悠","奏太","太陽","大輔","亮","光","怜","蒼空","琉生","悠翔","陽太","陽斗","大貴","智也","雄大","海翔","優","旭","慶","要","丈","航","啓太","慎之介","俊介","光希","一真","歩","遼","洸","司","龍之介","昊","蒼太"],"2010":["大翔","悠真","翔","颯太","歩夢","悠人","陽向","蓮","悠斗","陸","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2011":["大翔","蓮","悠真","颯太","陽向","悠人","悠斗","陽翔","大和","陸","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2012":["蓮","大翔","颯真","悠真","陽向","悠人","陽翔","悠斗","大和","颯太","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2013":["悠真","陸","大翔","蓮","陽翔","悠人","颯真","大和","陽向","湊","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2014":["蓮","大翔","陽翔","悠真","湊","悠人","陸","大和","颯真","樹","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2015":["悠真","悠人","陽翔","蓮","大翔","湊","大和","樹","颯真","陸","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2016":["大翔","蓮","陽翔","悠真","湊","悠人","大和","樹","蒼","律","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2017":["悠真","悠人","陽翔","湊","蓮","大翔","樹","大和","蒼","律","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2018":["蓮","湊","大翔","大和","陽翔","悠真","樹","律","蒼","朝陽","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2019":["蓮","湊","陽翔","律","樹","大和","悠真","朝陽","蒼","新","結翔","湊斗","奏","颯","晴","葵","伊吹","大雅","怜","悠翔","陽斗","琉生","煌","旭","蒼空","悠生","陽大","慶","昊","洸","律希","翔琉","岳","奏太","悠陽","晄","慧","湊翔","蒼真","悠月","絢斗","陽路","旬","凌","塁","律人","丞","暖","晴翔","新太"],"2020":["蒼","樹","蓮","陽翔","湊","朝陽","律","悠真","大和","新","凪","翠","暖","晴","葵","伊吹","奏","颯","怜","悠","旭","慶","昊","湊斗","結翔","蒼真","悠月","絢斗","律希","岳","丞","旬","凌","塁","暁","晄","慧","洸","要","司","新太","晴翔","悠生","煌","蒼空","陽大","翔琉","悠陽","律人","和樹"],"2021":["蓮","陽翔","湊","蒼","樹","朝陽","律","悠真","碧","大和","伊織","結翔","琉生","朔","陽向","藍","蒼空","晴","大翔","暖","凪","湊斗","仁","陽","颯真","想","空","蒼真","蒼大","陽太","颯","一颯","翠","大晴","陽斗","律希","颯太","千颯","奏翔","琉翔","世凪","柊","遥斗","櫂","葵","海斗","叶翔","新","蒼翔","太陽"],"2022":["蒼","凪","蓮","陽翔","湊","碧","律","朝陽","樹","悠真","伊織","結翔","琉生","朔","陽向","藍","大和","蒼空","晴","大翔","暖","湊斗","仁","陽","颯真","想","空","蒼真","蒼大","陽太","颯","一颯","翠","大晴","陽斗","律希","颯太","千颯","奏翔","琉翔","世凪","柊","遥斗","櫂","葵","海斗","叶翔","新","蒼翔","太陽"],"2023":["碧","陽翔","湊","蒼","凪","蓮","朝陽","律","樹","翠","伊織","結翔","琉生","朔","陽向","藍","大和","蒼空","晴","大翔","暖","湊斗","仁","陽","颯真","想","悠真","空","蒼真","蒼大","陽太","颯","一颯","大晴","陽斗","律希","颯太","千颯","奏翔","琉翔","世凪","柊","遥斗","櫂","葵","海斗","叶翔","新","蒼翔","太陽"],"2024":["碧","陽翔","湊","蒼","凪","朝陽","蓮","律","伊織","樹","結翔","琉生","朔","陽向","藍","大和","蒼空","晴","大翔","暖","湊斗","仁","陽","颯真","想","悠真","空","蒼真","蒼大","陽太","颯","一颯","翠","大晴","陽斗","律希","颯太","千颯","奏翔","琉翔","世凪","柊","遥斗","櫂","葵","海斗","叶翔","新","蒼翔","太陽"],"2025":["湊","伊織","結翔","琉生","蓮","朔","碧","陽向","陽翔","藍","大和","朝陽","蒼空","晴","大翔","暖","凪","湊斗","仁","陽","律","颯真","想","悠真","空","蒼真","蒼大","陽太","颯","一颯","翠","大晴","陽斗","律希","颯太","千颯","奏翔","琉翔","樹","世凪","蒼","柊","遥斗","櫂","葵","海斗","叶翔","新","蒼翔","太陽","楓","楓真","碧杜","湊音","悠翔","琥珀","岳","慧","結斗","千隼","優","悠陽","陽大","琉斗","響","善","奏太","想空","想太","唯斗","悠","陽奏","理玖","理仁","玲","翔空","愛翔","旭","一桜","薫","結仁","光","周","晴斗","晴翔","然","禅","碧斗","悠人","悠仁","悠晴","颯斗","絢翔","夏向","海翔","光希","瑞己","晴琉","奏多","奏汰","蒼和","大雅","燈弥","悠希","悠月","陽葵","陽琉","琉維","漣","蓮翔","昴","翔","颯汰"]};
   function chooseSurname(){
     if(Math.random() < 0.05) return pick(pools.surnamesRare);
     const n = pools.surnames.length;
@@ -1059,31 +708,6 @@
     if(by < 2010) return pick(g.s2000);
     return pick(g.s2010);
   }
-  const NATION_NAMES = {
-    'ロシア':{order:'W', given:[['Сергей','セルゲイ'],['Дмитрий','ドミトリー'],['Алексей','アレクセイ'],['Иван','イワン'],['Михаил','ミハイル'],['Николай','ニコライ'],['Андрей','アンドレイ'],['Владимир','ウラジーミル'],['Павел','パーヴェル'],['Юрий','ユーリー'],['Артём','アルチョム'],['Максим','マクシム'],['Егор','エゴール'],['Кирилл','キリル']], old:[['Борис','ボリス'],['Виктор','ヴィクトル'],['Григорий','グリゴリー'],['Пётр','ピョートル']], family:[['Иванов','イワノフ'],['Петров','ペトロフ'],['Смирнов','スミルノフ'],['Соколов','ソコロフ'],['Попов','ポポフ'],['Козлов','コズロフ'],['Новиков','ノヴィコフ'],['Волков','ヴォルコフ'],['Морозов','モロゾフ'],['Фёдоров','フョードロフ']]},
-    '韓国':{order:'E', sep:'', given:[['민준','ミンジュン'],['서준','ソジュン'],['도윤','ドユン'],['예준','イェジュン'],['시우','シウ'],['하준','ハジュン'],['지호','ジホ'],['준우','ジュヌ'],['현우','ヒョヌ'],['우진','ウジン']], old:[['성호','ソンホ'],['영수','ヨンス'],['정훈','ジョンフン'],['상철','サンチョル'],['재석','ジェソク']], family:[['김','キム'],['이','イ'],['박','パク'],['최','チェ'],['정','チョン'],['강','カン'],['조','チョ'],['윤','ユン']]},
-    '中国':{order:'E', sep:'', given:[['偉','ウェイ'],['磊','レイ'],['軍','ジュン'],['勇','ヨン'],['浩','ハオ'],['傑','ジエ'],['鵬','ポン'],['宇軒','ユーシュエン'],['子豪','ズーハオ'],['浩然','ハオラン']], old:[['建国','ジエングオ'],['国強','グオチャン'],['志明','ジーミン']], family:[['王','ワン'],['李','リー'],['張','チャン'],['劉','リウ'],['陳','チェン'],['楊','ヤン'],['趙','チャオ'],['黄','ホァン']]},
-    '台湾':{order:'E', sep:'', given:[['志豪','ジーハオ'],['家豪','ジアハオ'],['冠宇','グァンユー'],['承翰','チェンハン'],['宗翰','ゾンハン'],['彦廷','イェンティン'],['俊傑','ジュンジエ'],['子軒','ズーシュエン']], family:[['陳','チェン'],['林','リン'],['黄','ホァン'],['張','チャン'],['李','リー'],['王','ワン'],['呉','ウー'],['劉','リウ']]},
-    'アメリカ':{order:'W', given:[['Liam','リアム'],['Noah','ノア'],['Oliver','オリバー'],['James','ジェームズ'],['Ethan','イーサン'],['Lucas','ルーカス'],['Mason','メイソン'],['Henry','ヘンリー'],['Jack','ジャック'],['Daniel','ダニエル'],['Alex','アレックス'],['Ryan','ライアン']], old:[['Harold','ハロルド'],['Walter','ウォルター'],['Frank','フランク'],['George','ジョージ'],['Arthur','アーサー'],['Albert','アルバート']], family:[['Smith','スミス'],['Johnson','ジョンソン'],['Brown','ブラウン'],['Taylor','テイラー'],['Wilson','ウィルソン'],['Davis','デイヴィス'],['Clark','クラーク'],['Walker','ウォーカー'],['Harris','ハリス'],['Lewis','ルイス']]},
-    'フランス':{order:'W', given:[['Louis','ルイ'],['Gabriel','ガブリエル'],['Raphaël','ラファエル'],['Léo','レオ'],['Hugo','ユーゴ'],['Arthur','アルテュール'],['Jules','ジュール'],['Lucas','リュカ'],['Antoine','アントワーヌ'],['Nicolas','ニコラ']], old:[['Pierre','ピエール'],['Jean','ジャン'],['Michel','ミシェル'],['André','アンドレ']], family:[['Martin','マルタン'],['Bernard','ベルナール'],['Dubois','デュボワ'],['Moreau','モロー'],['Laurent','ローラン'],['Lefebvre','ルフェーブル'],['Girard','ジラール'],['Rousseau','ルソー']]},
-    'ドイツ':{order:'W', given:[['Leon','レオン'],['Finn','フィン'],['Paul','パウル'],['Lukas','ルーカス'],['Felix','フェリックス'],['Maximilian','マクシミリアン'],['Jonas','ヨナス'],['Elias','エリアス'],['Noah','ノア'],['Tim','ティム']], old:[['Hans','ハンス'],['Karl','カール'],['Werner','ヴェルナー'],['Klaus','クラウス']], family:[['Müller','ミュラー'],['Schmidt','シュミット'],['Schneider','シュナイダー'],['Fischer','フィッシャー'],['Weber','ヴェーバー'],['Wagner','ワーグナー'],['Becker','ベッカー'],['Hoffmann','ホフマン']]},
-    'イタリア':{order:'W', given:[['Leonardo','レオナルド'],['Francesco','フランチェスコ'],['Alessandro','アレッサンドロ'],['Lorenzo','ロレンツォ'],['Matteo','マッテオ'],['Andrea','アンドレア'],['Gabriele','ガブリエーレ'],['Riccardo','リッカルド'],['Marco','マルコ'],['Luca','ルカ']], old:[['Giuseppe','ジュゼッペ'],['Antonio','アントニオ'],['Giovanni','ジョヴァンニ']], family:[['Rossi','ロッシ'],['Russo','ルッソ'],['Ferrari','フェラーリ'],['Esposito','エスポジト'],['Bianchi','ビアンキ'],['Romano','ロマーノ'],['Colombo','コロンボ'],['Ricci','リッチ']]},
-    'スペイン':{order:'W', given:[['Hugo','ウーゴ'],['Martín','マルティン'],['Pablo','パブロ'],['Alejandro','アレハンドロ'],['Daniel','ダニエル'],['Adrián','アドリアン'],['Álvaro','アルバロ'],['Diego','ディエゴ'],['Mario','マリオ'],['Carlos','カルロス']], old:[['José','ホセ'],['Antonio','アントニオ'],['Manuel','マヌエル'],['Francisco','フランシスコ']], family:[['García','ガルシア'],['Rodríguez','ロドリゲス'],['Fernández','フェルナンデス'],['López','ロペス'],['Martínez','マルティネス'],['Sánchez','サンチェス'],['Pérez','ペレス'],['Gómez','ゴメス']]},
-    'スウェーデン':{order:'W', given:[['Erik','エリック'],['Lars','ラーシュ'],['Karl','カール'],['Oskar','オスカル'],['Axel','アクセル'],['Nils','ニルス'],['Gustav','グスタフ'],['Elias','エリアス'],['Hugo','ヒューゴ'],['Viktor','ヴィクトル']], family:[['Andersson','アンデション'],['Johansson','ヨハンソン'],['Karlsson','カールソン'],['Nilsson','ニルソン'],['Eriksson','エリクソン'],['Larsson','ラーション'],['Lindberg','リンドベリ']]},
-    'ポーランド':{order:'W', given:[['Jakub','ヤクブ'],['Jan','ヤン'],['Piotr','ピョートル'],['Marek','マレク'],['Tomasz','トマシュ'],['Krzysztof','クシシュトフ'],['Andrzej','アンジェイ'],['Paweł','パヴェウ'],['Michał','ミハウ'],['Wojciech','ヴォイチェフ']], family:[['Nowak','ノヴァク'],['Kowalski','コヴァルスキ'],['Wiśniewski','ヴィシニェフスキ'],['Wójcik','ヴイチク'],['Kowalczyk','コヴァルチク'],['Kamiński','カミンスキ'],['Lewandowski','レヴァンドフスキ'],['Zieliński','ジェリンスキ']]},
-    'トルコ':{order:'W', given:[['Mehmet','メフメト'],['Mustafa','ムスタファ'],['Ahmet','アフメト'],['Ali','アリ'],['Hüseyin','ヒュセイン'],['Hasan','ハサン'],['Emre','エムレ'],['Murat','ムラト'],['Kemal','ケマル'],['Burak','ブラク']], family:[['Yılmaz','ユルマズ'],['Kaya','カヤ'],['Demir','デミル'],['Şahin','シャヒン'],['Çelik','チェリク'],['Öztürk','オズテュルク'],['Aydın','アイドゥン']]},
-    'ブラジル':{order:'W', given:[['Miguel','ミゲル'],['Arthur','アルトゥール'],['Gabriel','ガブリエル'],['Bernardo','ベルナルド'],['Lucas','ルーカス'],['Pedro','ペドロ'],['Matheus','マテウス'],['Rafael','ハファエル'],['João','ジョアン'],['Thiago','チアゴ']], family:[['Silva','シルバ'],['Santos','サントス'],['Oliveira','オリベイラ'],['Souza','ソウザ'],['Pereira','ペレイラ'],['Costa','コスタ'],['Almeida','アルメイダ']]},
-    'メキシコ':{order:'W', given:[['Santiago','サンティアゴ'],['Mateo','マテオ'],['Sebastián','セバスティアン'],['Leonardo','レオナルド'],['Emiliano','エミリアーノ'],['Diego','ディエゴ'],['Miguel','ミゲル'],['Alejandro','アレハンドロ']], family:[['Hernández','エルナンデス'],['García','ガルシア'],['Martínez','マルティネス'],['González','ゴンサレス'],['Rodríguez','ロドリゲス'],['Ramírez','ラミレス']]},
-    'アルゼンチン':{order:'W', given:[['Mateo','マテオ'],['Santiago','サンティアゴ'],['Joaquín','ホアキン'],['Valentino','バレンティーノ'],['Tomás','トマス'],['Franco','フランコ'],['Bruno','ブルーノ'],['Nicolás','ニコラス']], family:[['Fernández','フェルナンデス'],['González','ゴンサレス'],['Rodríguez','ロドリゲス'],['López','ロペス'],['Martínez','マルティネス'],['Díaz','ディアス']]},
-    'タイ':{order:'W', given:[['Somchai','ソムチャイ'],['Anan','アナン'],['Kittisak','キッティサック'],['Nattapong','ナッタポン'],['Prasert','プラサート'],['Thanawat','タナワット'],['Chaiwat','チャイワット'],['Somsak','ソムサック']], family:[['Jaidee','ジャイディー'],['Srisuk','スリスック'],['Boonmee','ブンミー'],['Chaiyasit','チャイヤシット'],['Wattana','ワッタナー']]},
-    'ベトナム':{order:'E', sep:' ', given:[['Minh','ミン'],['Anh','アイン'],['Huy','フイ'],['Khang','カン'],['Bảo','バオ'],['Đức','ドゥック'],['Quân','クアン'],['Hùng','フン']], family:[['Nguyễn','グエン'],['Trần','チャン'],['Lê','レ'],['Phạm','ファム'],['Hoàng','ホアン']]},
-    'フィリピン':{order:'W', given:[['Jose','ホセ'],['Juan','フアン'],['Miguel','ミゲル'],['Angelo','アンジェロ'],['Marco','マルコ'],['Paolo','パオロ'],['Rafael','ラファエル'],['Christian','クリスチャン']], family:[['Santos','サントス'],['Reyes','レイエス'],['Cruz','クルス'],['Bautista','バウティスタ'],['Garcia','ガルシア'],['Mendoza','メンドーサ']]},
-    'インドネシア':{order:'W', given:[['Budi','ブディ'],['Agus','アグス'],['Andi','アンディ'],['Rizky','リズキ'],['Dimas','ディマス'],['Eko','エコ'],['Fajar','ファジャル'],['Putra','プトラ']], family:[['Santoso','サントソ'],['Wijaya','ウィジャヤ'],['Saputra','サプトラ'],['Pratama','プラタマ'],['Hidayat','ヒダヤット']]},
-    'マレーシア':{order:'W', given:[['Ahmad','アフマド'],['Muhammad','ムハマド'],['Amir','アミル'],['Faiz','ファイズ'],['Hafiz','ハフィズ'],['Iqbal','イクバル'],['Syafiq','シャフィク']], family:[['bin Abdullah','ビン・アブドゥラ'],['bin Ismail','ビン・イスマイル'],['bin Hassan','ビン・ハッサン'],['Tan','タン'],['Lim','リム'],['Wong','ウォン']]},
-    'インド':{order:'W', given:[['Arjun','アルジュン'],['Rohan','ローハン'],['Aditya','アディティヤ'],['Rahul','ラーフル'],['Vikram','ヴィクラム'],['Sanjay','サンジャイ'],['Amit','アミット'],['Raj','ラージ']], family:[['Sharma','シャルマ'],['Patel','パテル'],['Singh','シン'],['Kumar','クマール'],['Gupta','グプタ'],['Reddy','レッディ']]},
-    'モンゴル':{order:'S', given:[['Бат','バト'],['Болд','ボルド'],['Ганбаатар','ガンバータル'],['Батбаяр','バトバヤル'],['Мөнх','ムンフ'],['Төмөр','トゥムル'],['Эрдэнэ','エルデネ'],['Сүх','スフ']]},
-    'ナイジェリア':{order:'W', given:[['Chinedu','チネドゥ'],['Emeka','エメカ'],['Oluwaseun','オルワセウン'],['Ade','アデ'],['Ifeanyi','イフェアニ'],['Tunde','トゥンデ'],['Kelechi','ケレチ'],['Chukwuma','チュクマ']], family:[['Okafor','オカフォル'],['Adeyemi','アデイェミ'],['Okeke','オケケ'],['Balogun','バログン'],['Eze','エゼ'],['Nwachukwu','ンワチュク']]}
-  };
   NATION_NAMES['カナダ'] = NATION_NAMES['アメリカ'];
   NATION_NAMES['イギリス'] = NATION_NAMES['アメリカ'];
   NATION_NAMES['オーストラリア'] = NATION_NAMES['アメリカ'];
@@ -1291,123 +915,6 @@
     return weighted([[facePreset,7],['普通顔',2],['真面目系',1],['清潔感のある若手俳優風',1]]);
   }
   /* ===== V2.8 職業別「偶然見かけた場面」大幅拡充 ===== */
-  const OCC_SCENES = {
-    '大学生':['講義棟から出てきてキャンパスの並木道を歩く姿を偶然見かけた場面','学食の窓際の席でトレーを持って席を探す姿を偶然見かけた場面','図書館の返却ポストに本を入れている姿を偶然見かけた場面','サークル棟の前で仲間と笑い合う姿を偶然見かけた場面','履修相談の掲示板の前で腕を組んで考え込む姿を偶然見かけた場面','大学近くの安い定食屋ののれんをくぐる姿を偶然見かけた場面','試験期間の夜、コンビニコーヒー片手に自習室へ向かう姿を偶然見かけた場面'],
-    '大学1年生':['入学したてで慣れないキャンパスの案内図を見上げる姿を偶然見かけた場面','真新しい学生証を首から下げて教科書販売の列に並ぶ姿を偶然見かけた場面','サークルの新歓ビラを何枚も抱えて歩く姿を偶然見かけた場面','初めての履修登録に苦戦してスマホと掲示板を見比べる姿を偶然見かけた場面','高校の制服が抜けきらない雰囲気で通学電車を降りる姿を偶然見かけた場面'],
-    '高校卒業直後（進路準備中）':['卒業したばかりの解放感で昼の街をぶらぶら歩く姿を偶然見かけた場面','本屋の資格コーナーで進路の本を立ち読みする姿を偶然見かけた場面','運転免許の教習所から出てくる姿を偶然見かけた場面','バイトの面接帰りらしい少し緊張の残る姿を偶然見かけた場面','同級生と最後の制服姿で写真を撮り合う姿を偶然見かけた場面'],
-    '浪人生（予備校生）':['予備校の自習室から夜遅くに出てくる姿を偶然見かけた場面','単語帳を片手に電車を待つ姿を偶然見かけた場面','模試の結果の封筒を持って複雑な表情で歩く姿を偶然見かけた場面','昼休みに予備校近くの公園で気分転換に伸びをする姿を偶然見かけた場面','リュックに参考書を詰め込んで朝の駅へ急ぐ姿を偶然見かけた場面'],
-    '大学院生':['実験帰りの深夜、研究棟から自転車で出てくる姿を偶然見かけた場面','学会発表のポスター筒を抱えて新幹線ホームに立つ姿を偶然見かけた場面','ゼミ資料の束を抱えてコピー室から出てくる姿を偶然見かけた場面','研究室の窓から夕日を眺めて一息つく姿を偶然見かけた場面','指導教員との面談を終えて廊下で深呼吸する姿を偶然見かけた場面'],
-    '専門学校生':['実習用の道具ケースを提げて登校する姿を偶然見かけた場面','課題の作品を大事そうに抱えて電車に乗る姿を偶然見かけた場面','放課後に同級生と実技の練習を続ける姿を偶然見かけた場面','資格試験の願書を郵便局で出す姿を偶然見かけた場面'],
-    '就活中の大学生':['リクルートスーツで会社説明会の会場ビルを見上げる姿を偶然見かけた場面','面接を終えてネクタイを少し緩めながら駅へ歩く姿を偶然見かけた場面','カフェで履歴書を丁寧に書いている姿を偶然見かけた場面','証明写真機のカーテンから出てきて仕上がりを確認する姿を偶然見かけた場面','最終面接の結果待ちでスマホを何度も確認する姿を偶然見かけた場面','内定式帰りらしい晴れやかな表情の姿を偶然見かけた場面'],
-    '営業職':['外回りの合間に公園のベンチで午後の準備をする姿を偶然見かけた場面','客先ビルの前で身だしなみを整えてから入っていく姿を偶然見かけた場面','夕方の駅で営業鞄を提げて帰社の電車を待つ姿を偶然見かけた場面','喫茶店で見積書を広げて電話する姿を偶然見かけた場面','大きな契約が決まったのか晴れやかな顔で社に戻る姿を偶然見かけた場面','朝礼前にコンビニで栄養ドリンクを買う姿を偶然見かけた場面'],
-    '経理・事務職':['月末の残業帰り、オフィスの明かりを背に駅へ向かう姿を偶然見かけた場面','昼休みにオフィス街の弁当屋の列に並ぶ姿を偶然見かけた場面','銀行の窓口で会社の手続きをする姿を偶然見かけた場面','文房具店で付箋と電卓を選んでいる姿を偶然見かけた場面','定時で上がれた日の少し軽い足取りを偶然見かけた場面'],
-    '企画職':['ホワイトボードマーカーの束を持って会議室へ急ぐ姿を偶然見かけた場面','サンプル品の入った紙袋を提げて社に戻る姿を偶然見かけた場面','カフェの窓際で企画書にペンを走らせる姿を偶然見かけた場面','市場調査らしく店頭の商品を熱心に観察する姿を偶然見かけた場面','プレゼン直前にビルの外で深呼吸する姿を偶然見かけた場面'],
-    '公務員':['庁舎の通用口から昼休みに出てくる姿を偶然見かけた場面','窓口業務を終えた夕方、疲れた肩を回しながら歩く姿を偶然見かけた場面','地域の掲示板にお知らせを貼っている姿を偶然見かけた場面','防災訓練の会場設営を手伝う姿を偶然見かけた場面','異動の内示が出たのか同僚と立ち話をする姿を偶然見かけた場面'],
-    '銀行員':['支店のシャッターが閉まった後も中で働く姿を偶然見かけた場面','取引先へ向かう途中、書類鞄を大事そうに抱えて歩く姿を偶然見かけた場面','昼休みに支店近くの蕎麦屋へ小走りで向かう姿を偶然見かけた場面','ATMコーナーの点検に立ち会う姿を偶然見かけた場面','決算期の夜、最後に支店の明かりを消して出てくる姿を偶然見かけた場面'],
-    '商社勤務':['オフィス街の交差点で書類鞄を持って颯爽と歩く姿を偶然見かけた場面','空港の出発ロビーでスーツケースを引いて歩く出張姿を偶然見かけた場面','会食帰りの夜、タクシーを拾う姿を偶然見かけた場面','海外との電話らしく英語で話しながらビルの外を歩く姿を偶然見かけた場面','朝一番の新幹線ホームでコーヒーを飲む姿を偶然見かけた場面'],
-    'コンサルタント':['ノートPCを開いたままタクシーに乗り込む姿を偶然見かけた場面','ホテルのラウンジで資料を挟んで打ち合わせる姿を偶然見かけた場面','終電間際のオフィス街を足早に歩く姿を偶然見かけた場面','クライアント先のビルから晴れやかな顔で出てくる姿を偶然見かけた場面'],
-    '不動産営業':['物件の鍵の束を持ってマンションの前に立つ姿を偶然見かけた場面','のぼり旗を店先に立てている姿を偶然見かけた場面','内見のお客を案内して部屋の明かりを点ける姿を偶然見かけた場面','契約が決まったのか店の前でガッツポーズをする姿を偶然見かけた場面','週末のモデルルームの前で呼び込みをする姿を偶然見かけた場面'],
-    'ITエンジニア':['ノートPCの入ったリュックでコワーキングスペースから出てくる姿を偶然見かけた場面','深夜のリリース作業を終えて朝焼けの街を歩く姿を偶然見かけた場面','カフェの隅でイヤホンをしてコードを書く姿を偶然見かけた場面','勉強会の会場ビルへノベルティの袋を提げて入る姿を偶然見かけた場面','在宅勤務の昼休みに近所へ散歩に出た姿を偶然見かけた場面'],
-    'Webデザイナー':['液晶タブレットの箱を抱えて家電量販店から出てくる姿を偶然見かけた場面','カフェで配色見本を並べて悩む姿を偶然見かけた場面','街の看板やポスターを立ち止まって観察する姿を偶然見かけた場面','納品直前の深夜、コンビニへ夜食を買いに出た姿を偶然見かけた場面'],
-    'ゲーム開発者':['ゲームショウの会場から社員パスを下げて出てくる姿を偶然見かけた場面','深夜のデバッグ明けに眠そうに始発を待つ姿を偶然見かけた場面','ゲームセンターで他社タイトルを研究するように遊ぶ姿を偶然見かけた場面','発売日の朝、自社タイトルが並ぶ店頭をそっと見に来た姿を偶然見かけた場面'],
-    '動画クリエイター':['ジンバル付きカメラで街の風景を撮り歩く姿を偶然見かけた場面','機材ケースを両手に抱えてロケ現場へ向かう姿を偶然見かけた場面','カフェで編集画面とにらめっこする姿を偶然見かけた場面','夕焼けのタイミングを待ってカメラを構え続ける姿を偶然見かけた場面'],
-    'アプリ開発者':['リリース審査の通知を見てガッツポーズする姿を偶然見かけた場面','モバイル端末を何台も並べてカフェで動作確認する姿を偶然見かけた場面','ハッカソン帰りに疲れ切った顔で夜の駅に立つ姿を偶然見かけた場面'],
-    '看護師':['夜勤明けの朝、病院の通用口からマスクを外しながら出てくる姿を偶然見かけた場面','日勤前にコンビニでゼリー飲料を買い込む姿を偶然見かけた場面','病院前のバス停で患者の家族に道を教えている親切な姿を偶然見かけた場面','休憩時間に非常階段で夜景を眺めて一息つく姿を偶然見かけた場面','ナースシューズのまま売店へ急ぐ姿を偶然見かけた場面'],
-    '理学療法士':['リハビリ室の窓越しに患者を励ます姿を偶然見かけた場面','病院の中庭で歩行訓練に付き添う姿を偶然見かけた場面','勤務後にジムで自分のトレーニングをする姿を偶然見かけた場面','学会資料の入ったバッグを提げて帰る姿を偶然見かけた場面'],
-    '薬剤師':['調剤薬局の白衣のまま外の花に水をやる姿を偶然見かけた場面','閉店後の薬局で在庫棚を整理する姿を偶然見かけた場面','ドラッグストアの棚で高齢の客に丁寧に説明する姿を偶然見かけた場面','薬局前の自販機でコーヒーを買って一息つく姿を偶然見かけた場面'],
-    '研修医':['当直明けの朝、病院前でストレッチをする姿を偶然見かけた場面','白衣のポケットに手帳を差して院内を早足で歩く姿を偶然見かけた場面','医局の窓際で医学書を積み上げて勉強する姿を偶然見かけた場面','コンビニで栄養ドリンクとおにぎりをまとめ買いする姿を偶然見かけた場面'],
-    '介護士':['送迎車から利用者の車椅子を丁寧に降ろす姿を偶然見かけた場面','夜勤明けにコインランドリーで制服を洗う姿を偶然見かけた場面','施設の庭で利用者と一緒に体操する姿を偶然見かけた場面','散歩の付き添いで公園をゆっくり歩く姿を偶然見かけた場面'],
-    '高校教師':['部活の朝練を見守るためにグラウンドへ向かう姿を偶然見かけた場面','放課後の職員室の窓際で採点の山と向き合う姿を偶然見かけた場面','文化祭の準備で生徒と一緒に看板を運ぶ姿を偶然見かけた場面','進路面談を終えて廊下で生徒の肩を叩く姿を偶然見かけた場面','日曜の模試監督帰りに参考書を抱えて歩く姿を偶然見かけた場面'],
-    '塾講師':['授業前に教室の白板を丁寧に消して準備する姿を偶然見かけた場面','夜10時過ぎ、生徒を見送ってから教室の鍵を閉める姿を偶然見かけた場面','ファミレスで赤ペンを持って答案を採点する姿を偶然見かけた場面','合格発表の日に生徒と一緒に掲示板を見上げる姿を偶然見かけた場面'],
-    '保育士':['お散歩カートを押して園児の列を引率する姿を偶然見かけた場面','園庭の遊具を閉園後に消毒して回る姿を偶然見かけた場面','壁面飾りの画用紙を大量に抱えて100円ショップから出てくる姿を偶然見かけた場面','運動会の予行練習で誰より大きな声で応援する姿を偶然見かけた場面'],
-    '大学研究員':['資料の詰まったキャリーを引いて研究棟へ向かう姿を偶然見かけた場面','学会のネームホルダーを付けたまま昼食に出てきた姿を偶然見かけた場面','図書館の書庫から古い文献を抱えて出てくる姿を偶然見かけた場面','深夜の研究室でひとりホワイトボードに数式を書く姿を偶然見かけた場面'],
-    '体育教師':['ジャージ姿で朝のグラウンドにライン引きをする姿を偶然見かけた場面','ホイッスルを首に下げて持久走の生徒を並走して励ます姿を偶然見かけた場面','体育倉庫からマットを軽々と運び出す姿を偶然見かけた場面','球技大会の審判を汗だくでこなす姿を偶然見かけた場面'],
-    'アパレル店員':['開店前の店でトルソーの服を整える姿を偶然見かけた場面','ショップ袋を両手に提げて倉庫と店を往復する姿を偶然見かけた場面','休憩中も服のシワを気にして鏡を見る姿を偶然見かけた場面','セール初日の朝、気合いを入れてシャッターを開ける姿を偶然見かけた場面'],
-    'カフェ店員':['開店前の店先で黒板メニューを書く姿を偶然見かけた場面','テラス席を拭き上げて椅子を並べる姿を偶然見かけた場面','焙煎豆の袋を抱えて搬入する姿を偶然見かけた場面','閉店後にエスプレッソマシンを丁寧に磨く姿を偶然見かけた場面','ラテアートの練習をカウンターの隅で続ける姿を偶然見かけた場面'],
-    '美容師':['閉店後のサロンの前で店の明かりを落とす姿を偶然見かけた場面','朝一番にサロンの鏡を磨き上げる姿を偶然見かけた場面','ウィッグで新しいカットの練習をする姿を窓越しに偶然見かけた場面','講習会帰りにシザーケースを提げて歩く姿を偶然見かけた場面','カラー剤の箱を抱えて美容材料店から出てくる姿を偶然見かけた場面'],
-    'バーテンダー':['開店前のバーの前で、仕込みの合間に外に出た姿を偶然見かけた場面','氷屋から大きな氷塊を受け取る姿を偶然見かけた場面','閉店後の明け方、ネクタイを緩めて夜明けの街を歩く姿を偶然見かけた場面','市場で今夜のフルーツを吟味する姿を偶然見かけた場面'],
-    'ホテルスタッフ':['車寄せでゲストの荷物をスマートに受け取る姿を偶然見かけた場面','ロビーの花を活け替える姿を偶然見かけた場面','夜勤明けにホテルの裏口から私服で出てくる姿を偶然見かけた場面','宴会場の設営でテーブルクロスを一気に広げる姿を偶然見かけた場面'],
-    '飲食店店長':['開店前に店の前を隅々まで掃き清める姿を偶然見かけた場面','市場帰りの軽バンから食材の箱を降ろす姿を偶然見かけた場面','ランチのピークを終えて店先で腰を伸ばす姿を偶然見かけた場面','新メニューの試作を従業員に振る舞う姿を偶然見かけた場面'],
-    '書店員':['新刊の段ボールを台車で運ぶ姿を偶然見かけた場面','手書きPOPを真剣な顔で書いている姿を偶然見かけた場面','閉店後に平積みの本を綺麗に揃え直す姿を偶然見かけた場面','返品する本の束を丁寧に紐で縛る姿を偶然見かけた場面'],
-    'コンビニ店長':['早朝のコンビニの前で納品を受け取る姿を偶然見かけた場面','廃棄チェックをしながら発注端末を睨む姿を偶然見かけた場面','店の前の駐車場を深夜にひとり掃除する姿を偶然見かけた場面','新人バイトにレジ操作を丁寧に教える姿を偶然見かけた場面'],
-    '自動車整備士':['リフトアップした車の下から顔を出す姿を偶然見かけた場面','工場の前で洗い立ての代車を拭き上げる姿を偶然見かけた場面','油で汚れたつなぎのまま自販機でコーヒーを買う姿を偶然見かけた場面','客の車を大事そうにゆっくり車庫入れする姿を偶然見かけた場面'],
-    '電気工事士':['電柱の高所作業車から地上に降りてヘルメットを脱ぐ姿を偶然見かけた場面','工具ベルトを腰に巻いて現場ビルへ入っていく姿を偶然見かけた場面','昼休みにワゴン車の荷台に腰掛けて弁当を食べる姿を偶然見かけた場面','夕方、ケーブルドラムを片付けて現場を後にする姿を偶然見かけた場面'],
-    '大工':['朝の現場で木材を担いで足場を上がる姿を偶然見かけた場面','昼休みに材木の上に座って弁当を広げる姿を偶然見かけた場面','鉋くずまみれのまま夕方の現場を掃き清める姿を偶然見かけた場面','棟上げを終えて仲間と屋根の上で一息つく姿を偶然見かけた場面'],
-    '建築士':['図面ケースを肩に掛けて現場事務所へ入る姿を偶然見かけた場面','ヘルメット姿で建設中のビルを見上げて確認する姿を偶然見かけた場面','カフェで方眼紙にスケッチを描き続ける姿を偶然見かけた場面','完成した建物を少し離れた歩道からじっと眺める姿を偶然見かけた場面'],
-    '工場勤務':['交替勤務明けの朝、工場の門から自転車で出てくる姿を偶然見かけた場面','作業服のまま工場前の食堂へ向かう姿を偶然見かけた場面','安全帽を小脇に抱えて朝礼の輪に加わる姿を偶然見かけた場面','夜勤前に駐車場で仮眠から起きて伸びをする姿を偶然見かけた場面'],
-    '配送ドライバー':['台車に荷物を山積みにしてマンションへ小走りする姿を偶然見かけた場面','トラックの荷台で汗を拭いながら伝票を確認する姿を偶然見かけた場面','昼下がりにトラックの運転席で束の間の休憩をとる姿を偶然見かけた場面','再配達の階段を駆け上がる姿を偶然見かけた場面'],
-    '農家':['直売所の近くで、軽トラックのそばに立つ姿を偶然見かけた場面','朝もやの畑でトマトを収穫する姿を偶然見かけた場面','出荷用の段ボールを軽トラに積み上げる姿を偶然見かけた場面','夕立の前に慌ててビニールハウスを閉めて回る姿を偶然見かけた場面','農協の帰りに長靴のまま自販機で一服する姿を偶然見かけた場面'],
-    '漁師':['朝の漁を終えた港の近くで、日に焼けた姿を偶然見かけた場面','水揚げした魚を市場の競り場へ運ぶ姿を偶然見かけた場面','防波堤で網の修繕を黙々と続ける姿を偶然見かけた場面','出港前の暗い港で船のエンジンを確かめる姿を偶然見かけた場面','時化で休漁の日、港の食堂でゆっくり定食を食べる姿を偶然見かけた場面'],
-    'グラフィックデザイナー':['刷り上がったポスターの色味を屋外の光で確認する姿を偶然見かけた場面','画材店で紙見本を何枚も見比べる姿を偶然見かけた場面','納品データを送り終えて深夜のオフィスで伸びをする姿を偶然見かけた場面','街の看板の書体を写真に撮って回る姿を偶然見かけた場面'],
-    'カメラマン':['大きな機材バッグと三脚を担いでロケへ向かう姿を偶然見かけた場面','夕暮れの一瞬の光を逃すまいと連写する姿を偶然見かけた場面','撮影スタジオの搬入口で機材を積み降ろす姿を偶然見かけた場面','現像所から仕上がりを受け取って中身を確かめる姿を偶然見かけた場面'],
-    'ミュージシャン':['ギターケースを背負ってライブハウスの搬入口に立つ姿を偶然見かけた場面','スタジオ練習の帰りに機材を担いで終電に乗る姿を偶然見かけた場面','昼の公園でアコギの弾き語りを試す姿を偶然見かけた場面','レコーディング明けの朝、達成感のある顔で外へ出てきた姿を偶然見かけた場面'],
-    '編集者':['ゲラの束を抱えて印刷所へ駆け込む姿を偶然見かけた場面','著者との打ち合わせでカフェの隅に陣取る姿を偶然見かけた場面','校了明けの朝、燃え尽きた顔で会社から出てくる姿を偶然見かけた場面','書店で自分の担当書の並びをそっと直す姿を偶然見かけた場面'],
-    'イラストレーター':['画材店の新色マーカーの棚で長考する姿を偶然見かけた場面','原画の入った大きな平箱を慎重に運ぶ姿を偶然見かけた場面','喫茶店の窓際でスケッチブックに街ゆく人を描く姿を偶然見かけた場面','個展の搬入で額装した絵を壁に掛ける姿を偶然見かけた場面'],
-    '映像ディレクター':['ロケハンで街角を何度もフレームに見立てて確認する姿を偶然見かけた場面','香盤表を丸めて手に持ち現場を仕切る姿を偶然見かけた場面','編集室に差し入れの袋を提げて入っていく姿を偶然見かけた場面','完成披露試写の会場前で深呼吸する姿を偶然見かけた場面'],
-    '消防士':['非番の日、消防署の近くで私服姿を偶然見かけた場面','当直明けの朝、少し眠そうに消防署から出てくる姿を偶然見かけた場面','消防署の前で車両点検を終えて一息つく姿を偶然見かけた場面','署の前でホースを干して整備する姿を偶然見かけた場面','ロープ訓練の合間にヘルメットを脱いで汗を拭う姿を偶然見かけた場面','小学生の署見学で子どもたちに囲まれて照れる姿を偶然見かけた場面','出動から戻った車両を丁寧に洗車する姿を偶然見かけた場面'],
-    '警察官':['非番の日、交番の前を私服で通り過ぎる姿を偶然見かけた場面','当直明けの朝、警察署から私服で出てくる姿を偶然見かけた場面','独身寮の近くのコンビニで買い物をする私服姿を偶然見かけた場面','交番の前で道を尋ねる観光客に地図を広げて説明する姿を偶然見かけた場面','朝の通学路で子どもたちに挨拶しながら立哨する姿を偶然見かけた場面','自転車で坂道を上りながら巡回する姿を偶然見かけた場面','落とし物の子ども用の靴を大事そうに交番へ持ち帰る姿を偶然見かけた場面'],
-    '自衛官':['非番の日、駐屯地近くの街で私服姿を偶然見かけた場面','外出日に、駐屯地の門から私服で出てくる姿を偶然見かけた場面','駐屯地近くのコインランドリーで、洗濯物を抱えて歩く姿を偶然見かけた場面','駐屯地前のバス停で、外出のバスを待つ私服姿を偶然見かけた場面','朝の駆け足訓練で隊列を組んで走る姿を偶然見かけた場面','災害派遣帰りらしい泥のついた作業服で装備を降ろす姿を偶然見かけた場面','駐屯地祭の準備で装備品を丁寧に並べる姿を偶然見かけた場面'],
-    '救急隊員':['非番に消防署の近くで同僚と談笑している姿を偶然見かけた場面','当直明けの朝、コンビニのコーヒーを手に歩く姿を偶然見かけた場面','救急車の資器材を点検して積み直す姿を偶然見かけた場面','出動明けに署の前でストレッチする姿を偶然見かけた場面','応急手当講習会で市民に胸骨圧迫を教える姿を偶然見かけた場面'],
-    '防衛大学校学生':['休日に学校近くの坂道を歩いている姿を偶然見かけた場面','外出許可の土曜に、私服で横須賀の街を歩く姿を偶然見かけた場面','学校近くの売店の袋を提げて坂を上る姿を偶然見かけた場面','外出日に駅前で同期と待ち合わせている私服姿を偶然見かけた場面','朝の点呼前に廊下を早足で歩く制服姿を偶然見かけた場面','棒倒しの練習で泥だらけになって笑う姿を偶然見かけた場面'],
-    'ジムトレーナー':['開店前のジムでマシンを1台ずつ拭き上げる姿を偶然見かけた場面','会員に丁寧にフォームを指導する姿をガラス越しに偶然見かけた場面','閉店後にひとりで黙々と自分のトレーニングをする姿を偶然見かけた場面','プロテインの箱を両手に抱えて搬入する姿を偶然見かけた場面'],
-    'スポーツインストラクター':['スタジオレッスン前に音響とマイクを確認する姿を偶然見かけた場面','キッズクラスの子どもたちとハイタッチする姿を偶然見かけた場面','プールサイドでレッスンの準備体操を先導する姿を偶然見かけた場面','レッスン後に汗だくでタオルを首にかけて出てくる姿を偶然見かけた場面'],
-    'モデル':['街中で撮影や移動の合間に、ふと立ち止まった瞬間を偶然見かけた場面','撮影スタジオの前で衣装のガーメントバッグを持って立つ姿を偶然見かけた場面','オーディション会場の前でコンポジを確認する姿を偶然見かけた場面','ショーの帰りにメイクを落とした素の表情で歩く姿を偶然見かけた場面'],
-    '俳優':['稽古場の入り口で台本を読み込みながら立つ姿を偶然見かけた場面','ロケバスから降りて現場へ向かう姿を偶然見かけた場面','劇場の楽屋口から公演後に出てくる姿を偶然見かけた場面','セリフを小声で繰り返しながら川沿いを歩く姿を偶然見かけた場面'],
-    'プロスポーツ選手':['朝練へ向かう大きなスポーツバッグ姿を偶然見かけた場面','練習後のクールダウンでグラウンドを流す姿を偶然見かけた場面','ファンの子どもにサインをして頭を撫でる姿を偶然見かけた場面','遠征のバスにチームジャージで乗り込む姿を偶然見かけた場面','オフの日に静かなカフェで体をケアしながら過ごす姿を偶然見かけた場面'],
-    '喫茶店マスター':['モーニングの仕込みを終えた喫茶店の前で、一息つく姿を偶然見かけた場面','サイフォンの火加減をじっと見つめる姿を窓越しに偶然見かけた場面','常連の席の新聞を丁寧に取り替える姿を偶然見かけた場面','閉店後にカウンターを磨きながらレコードを聴く姿を偶然見かけた場面'],
-    '新聞記者':['取材ノートを片手に事件現場の周辺を歩き回る姿を偶然見かけた場面','締切前に公衆電話から原稿を吹き込む姿を偶然見かけた場面','記者クラブの前で他社の記者と情報交換する姿を偶然見かけた場面','夜討ち朝駆けで住宅街の角に立ち続ける姿を偶然見かけた場面'],
-    '国鉄職員':['ホームの端で列車の到着を指差確認する姿を偶然見かけた場面','改札で切符に鋏を入れる手つきを偶然見かけた場面','駅事務室の前で制帽を被り直して持ち場へ向かう姿を偶然見かけた場面','終電後のホームを点検して回る姿を偶然見かけた場面'],
-    'お笑い芸人':['劇場や事務所の近くで、出番前にネタ合わせをしている姿を偶然見かけた場面','相方と公園でネタ合わせを繰り返す姿を偶然見かけた場面','バイト先から劇場へ衣装の入った紙袋を提げて急ぐ姿を偶然見かけた場面','出番を終えて楽屋口から充実した顔で出てくる姿を偶然見かけた場面','単独ライブのチラシを手配りする姿を偶然見かけた場面'],
-    '声優':['収録スタジオの近くで、台本を持って歩く姿を偶然見かけた場面','スタジオ前でのど飴を口に入れて発声を整える姿を偶然見かけた場面','マネージャーと台本の束を抱えて移動する姿を偶然見かけた場面','夜の帰り道、マフラーで喉元をしっかり守って歩く姿を偶然見かけた場面'],
-    'YouTuber':['撮影機材を持って街中でロケをしている姿を偶然見かけた場面','自撮り棒に向かって話しながら歩く姿を偶然見かけた場面','企画用の大量の買い物袋を両手に提げて出てくる姿を偶然見かけた場面','コラボ撮影の待ち合わせで機材を確認し合う姿を偶然見かけた場面'],
-    'プロゲーマー':['イベント会場の近くを、デバイスの入ったバッグを持って歩く姿を偶然見かけた場面','大会前にゲーミングチェアの箱を抱えて搬入する姿を偶然見かけた場面','夜通しの練習明けに朝日を眩しそうに見る姿を偶然見かけた場面','ファンミーティング会場でサイン入りマウスパッドを渡す姿を偶然見かけた場面'],
-    '書道家':['書道教室の近くで、道具箱を持って歩く姿を偶然見かけた場面','表具店から仕上がった掛軸を受け取る姿を偶然見かけた場面','展覧会の搬入で大きな作品を慎重に運ぶ姿を偶然見かけた場面','和紙の専門店で紙質を指先で確かめる姿を偶然見かけた場面'],
-    'パティシエ':['開店前のパティスリーの前で、仕込みの合間に外へ出た姿を偶然見かけた場面','市場で苺の箱を吟味して仕入れる姿を偶然見かけた場面','ショーケースにケーキを一列に並べていく姿を窓越しに偶然見かけた場面','クリスマス前の徹夜仕込み明けに粉だらけで外へ出た姿を偶然見かけた場面'],
-    '寿司職人':['早朝の市場帰りに、仕入れの箱を持って歩く姿を偶然見かけた場面','店先に打ち水をして暖簾を掛ける姿を偶然見かけた場面','仕込みの合間に店の前で白衣のまま伸びをする姿を偶然見かけた場面','市場の競りで真剣な目でマグロを見極める姿を偶然見かけた場面'],
-    'ラーメン店店主':['仕込み中のラーメン店の前で、腕組みをして立つ姿を偶然見かけた場面','寸胴からスープの香りが漂う店先で味見を繰り返す姿を偶然見かけた場面','製麺所から麺箱を受け取って店に運び込む姿を偶然見かけた場面','行列の客に「もう少しです」と声をかけて回る姿を偶然見かけた場面'],
-    '僧侶':['寺の門前を私服で歩く、穏やかな姿を偶然見かけた場面','朝の境内を竹箒で掃き清める姿を偶然見かけた場面','托鉢で商店街を静かに歩く姿を偶然見かけた場面','法要を終えて袈裟のまま檀家を見送る姿を偶然見かけた場面','夕暮れの鐘楼で鐘を撞く姿を偶然見かけた場面'],
-    '古着屋店主':['古着屋の店先で商品を整えている姿を偶然見かけた場面','買い付けたばかりの大きな袋を担いで店に戻る姿を偶然見かけた場面','店先のラックを日差しに合わせて動かす姿を偶然見かけた場面','ヴィンテージのタグを虫眼鏡で確かめる姿を偶然見かけた場面'],
-    '悠々自適（定年後）':['朝の公園をゆったり散歩している穏やかな姿を偶然見かけた場面','図書館の新聞コーナーで一日を始める姿を偶然見かけた場面','孫を迎えに小学校の門の前で待つ姿を偶然見かけた場面','園芸店で花の苗を選ぶ姿を偶然見かけた場面','昔の勤め先の近くを懐かしそうに歩く姿を偶然見かけた場面'],
-    'アナウンサー':['本番前にテレビ局の玄関で原稿を読み込む姿を偶然見かけた場面','早朝番組を終えて朝日の中を局から出てくる姿を偶然見かけた場面','街頭中継のリハーサルでマイクの高さを確かめる姿を偶然見かけた場面','ロケ先で通行人に丁寧に頭を下げて協力を頼む姿を偶然見かけた場面','局の廊下で滑舌練習をつぶやきながら歩く姿を偶然見かけた場面','ニュース原稿の束を抱えて報道フロアへ急ぐ姿を偶然見かけた場面'],
-    '小学校教員':['朝の校門で児童一人ひとりに挨拶して迎える姿を偶然見かけた場面','ジャージ姿で児童と一緒に校庭で鬼ごっこをする姿を偶然見かけた場面','放課後の教室でひとり明日の授業準備をする姿を窓越しに偶然見かけた場面','下校の列に付き添って横断歩道で旗を持つ姿を偶然見かけた場面','運動会の準備で万国旗を張る姿を偶然見かけた場面','家庭訪問の地図を片手に住宅街を自転車で回る姿を偶然見かけた場面','図工の作品を大事そうに抱えて職員室へ運ぶ姿を偶然見かけた場面'],
-    '中学校教員':['部活の朝練でノックのバットを振る姿を偶然見かけた場面','放課後の廊下で生徒の相談に真剣に耳を傾ける姿を偶然見かけた場面','定期試験の問題用紙を抱えて印刷室から出てくる姿を偶然見かけた場面','合唱コンクールの練習でピアノの横に立って指揮する姿を偶然見かけた場面','夜の職員室でひとり学級通信を書く姿を偶然見かけた場面'],
-    'ライフガード':['監視タワーの上から海全体を見渡す姿を偶然見かけた場面','朝のビーチをパトロールしながら遊泳区域のブイを確認する姿を偶然見かけた場面','レスキューボードを担いで砂浜を走るトレーニング姿を偶然見かけた場面','迷子の子どもの手を引いて本部テントへ連れて行く姿を偶然見かけた場面','夕方、遊泳終了の旗を降ろして片付ける姿を偶然見かけた場面','シーズン前の救助訓練で沖へ力強く泳ぎ出す姿を偶然見かけた場面','日焼け止めを塗り直しながら交代の時間を待つ姿を偶然見かけた場面'],
-    'プール監視員（バイト）':['監視台の上で姿勢よくプール全体を見渡す姿を偶然見かけた場面','開場前にコースロープを張り直す姿を偶然見かけた場面','休憩時間の笛を吹いて子どもたちをプールサイドへ誘導する姿を偶然見かけた場面','閉場後にプールサイドをデッキブラシで磨く姿を偶然見かけた場面','塩素の測定キットで水質をチェックする姿を偶然見かけた場面','夏休み最終日、バイト仲間と夕暮れのプールサイドで一息つく姿を偶然見かけた場面'],
-    '医師':['白衣のまま院内のコンビニで昼食を急いで買う姿を偶然見かけた場面','夜間当直明けに病院の玄関で朝日を浴びる姿を偶然見かけた場面','外来の合間に廊下で患者の家族へ丁寧に説明する姿を偶然見かけた場面','学会発表のスライドをカフェで直す姿を偶然見かけた場面','往診バッグを提げて住宅街を歩く姿を偶然見かけた場面'],
-    '歯科医師':['診療後にクリニックの外で首と肩を回してほぐす姿を偶然見かけた場面','小児の患者を怖がらせないよう膝をついて話しかける姿を偶然見かけた場面','技工物の箱を歯科技工所から受け取る姿を偶然見かけた場面','休診日に学会のハンズオンセミナーへ向かう姿を偶然見かけた場面'],
-    '弁護士':['裁判所の門を書類鞄を提げて足早に入る姿を偶然見かけた場面','法廷を終えてバッジを外し一息つく姿を偶然見かけた場面','事務所の窓際で六法をめくりながら夜遅くまで働く姿を偶然見かけた場面','依頼者を事務所の玄関まで丁寧に見送る姿を偶然見かけた場面'],
-    '公認会計士':['決算期にクライアント先へ監査調書のキャリーを引いて向かう姿を偶然見かけた場面','電卓を叩きながらオフィスの窓際で残業する姿を偶然見かけた場面','繁忙期明けに晴れやかな顔で定時に退社する姿を偶然見かけた場面'],
-    '警備員':['ビルの入口で来訪者に丁寧に敬礼する姿を偶然見かけた場面','深夜の巡回で懐中電灯を手に廊下を確認する姿を偶然見かけた場面','工事現場の前で歩行者を誘導する姿を偶然見かけた場面','夜勤明けの朝、詰所から出て大きく伸びをする姿を偶然見かけた場面','イベント会場の入場列を落ち着いた声で整理する姿を偶然見かけた場面'],
-    'タクシー運転手':['駅前のタクシープールで洗車したての車を拭き上げる姿を偶然見かけた場面','高齢の乗客の荷物をトランクへ丁寧に積む姿を偶然見かけた場面','深夜の営業所で日報を書く姿を偶然見かけた場面','客待ちの合間に地図帳で新しい道を確認する姿を偶然見かけた場面'],
-    'バス運転手':['始発前の営業所でバスの車体を点検する姿を偶然見かけた場面','終点で車内の忘れ物を確認して回る姿を偶然見かけた場面','バス停で車椅子のスロープを手際よく設置する姿を偶然見かけた場面','折り返しの待機時間に運転席でお茶を飲む姿を偶然見かけた場面'],
-    '電車運転士':['ホームの端で指差喚呼して発車させる姿を偶然見かけた場面','乗務行路表を手に詰所から出てくる姿を偶然見かけた場面','終着駅で運転台から降りて制帽を被り直す姿を偶然見かけた場面','早朝の一番列車に乗務するため暗い駅構内を歩く姿を偶然見かけた場面'],
-    'パイロット':['フライトケースを引いて空港の職員通路を歩く姿を偶然見かけた場面','出発前の機体を外部点検して回る姿を偶然見かけた場面','フライトを終えて夕暮れのターミナルを歩く姿を偶然見かけた場面','クルーと合流してホテルのロビーを出発する姿を偶然見かけた場面'],
-    '郵便配達員':['赤いバイクで住宅街の細い路地を丁寧に回る姿を偶然見かけた場面','雨の日にカッパ姿で郵便物を濡らさないよう配る姿を偶然見かけた場面','年賀状シーズンにバイクの荷台いっぱいの束を積む姿を偶然見かけた場面','ポストの取集で鍵を開けて郵便物を回収する姿を偶然見かけた場面'],
-    '引越しスタッフ':['大型トラックの荷台で家具を毛布で手際よく養生する姿を偶然見かけた場面','冷蔵庫を背負ってマンションの階段を上る姿を偶然見かけた場面','搬入を終えて新居の前でお客に深々と頭を下げる姿を偶然見かけた場面','昼休みにトラックの日陰で仲間とスポーツドリンクを回す姿を偶然見かけた場面'],
-    'スーパー店員':['開店前に青果コーナーへ野菜を山積みに陳列する姿を偶然見かけた場面','夕方の値引きシールを手早く貼って回る姿を偶然見かけた場面','台車で飲料ケースを何段も運ぶ姿を偶然見かけた場面','閉店後に売場の床をモップがけする姿を偶然見かけた場面'],
-    '家電量販店店員':['新製品の展示台を開店前に整える姿を偶然見かけた場面','大型テレビを同僚と慎重に運ぶ姿を偶然見かけた場面','お年寄りの客にスマホの使い方を根気強く教える姿を偶然見かけた場面','決算セールの日に気合いの入った声で呼び込みをする姿を偶然見かけた場面'],
-    '花屋店員':['開店前に店先のバケツへ切り花を並べていく姿を偶然見かけた場面','市場で仕入れた花の束を軽バンから降ろす姿を偶然見かけた場面','花束のラッピングを真剣な手つきで仕上げる姿を窓越しに偶然見かけた場面','閉店間際に売れ残りの花の水を替えてやる姿を偶然見かけた場面'],
-    '図書館司書':['返却本を積んだブックトラックを押して書架を回る姿を偶然見かけた場面','閉館後に本の背をきれいに揃え直す姿を偶然見かけた場面','子ども向けの読み聞かせ会で絵本を掲げる姿を偶然見かけた場面','新着図書にフィルムカバーを丁寧に掛ける姿を偶然見かけた場面'],
-    'シェフ（洋食）':['市場で仕入れた食材の箱を店へ運び込む姿を偶然見かけた場面','ランチ営業前に店先の黒板へ本日のメニューを書く姿を偶然見かけた場面','ディナーの仕込み中に味見のスプーンを口に運ぶ姿を窓越しに偶然見かけた場面','営業後にコックコートのまま店の前で夜風にあたる姿を偶然見かけた場面'],
-    '理容師':['開店前にサインポールを回して店を開ける姿を偶然見かけた場面','剃刀を革砥で丁寧に仕上げる姿を窓越しに偶然見かけた場面','常連の老紳士を店の外まで見送る姿を偶然見かけた場面','閉店後に鏡と椅子を磨き上げる姿を偶然見かけた場面'],
-    '自動車教習所教官':['教習車の助手席から降りて生徒に丁寧に講評する姿を偶然見かけた場面','コースのパイロンを並べ直す姿を偶然見かけた場面','卒業検定に合格した生徒と握手する姿を偶然見かけた場面','雨の日の路上教習で落ち着いた声で指示する姿を偶然見かけた場面'],
-    '銭湯・サウナ店スタッフ':['開店前に暖簾を掛けて湯温を確かめる姿を偶然見かけた場面','薪をくべて釜の火加減を調整する姿を偶然見かけた場面','サウナ室の熱波イベントでタオルを振るう姿を偶然見かけた場面','閉店後に浴場のタイルをデッキブラシで磨く姿を偶然見かけた場面','番台で常連客と楽しそうに世間話をする姿を偶然見かけた場面']
-  };
-  const OCC_CAT_SCENES = {
-    student:['講義帰りのキャンパス周辺で、リュックを背負って歩く姿を偶然見かけた場面','学食の券売機の前でメニューを迷う姿を偶然見かけた場面','キャンパスの芝生で友人と昼を過ごす姿を偶然見かけた場面','図書館の閉館音楽と共に出てくる姿を偶然見かけた場面','バイト先へ急ぐ学生らしい姿を偶然見かけた場面'],
-    office:['仕事帰りのオフィス街で、少し力の抜けた表情で歩く姿を偶然見かけた場面','昼休みにオフィス街の弁当屋の列に並ぶ姿を偶然見かけた場面','朝のエレベーターホールでネクタイを直す姿を偶然見かけた場面','退勤後に同僚と居酒屋の暖簾をくぐる姿を偶然見かけた場面','金曜の夜、心なしか軽い足取りで駅へ向かう姿を偶然見かけた場面'],
-    it:['ノートPCの入ったバッグを持って、コワーキングスペースやオフィス近くを歩く姿を偶然見かけた場面','昼下がりのカフェでイヤホンをして作業に没頭する姿を偶然見かけた場面','技術書を数冊抱えて書店から出てくる姿を偶然見かけた場面','リモート会議を終えてベランダで伸びをする姿を偶然見かけた場面'],
-    medical:['病院や薬局の近くで、勤務を終えて私服で帰る姿を偶然見かけた場面','夜勤明けの朝、まぶしそうに空を見上げる姿を偶然見かけた場面','院内の売店で栄養ドリンクを買い込む姿を偶然見かけた場面','休憩時間に病院の中庭で深呼吸する姿を偶然見かけた場面'],
-    edu:['学校や塾の近くで、授業を終えて帰る姿を偶然見かけた場面','教材の束を抱えて職員玄関から出てくる姿を偶然見かけた場面','放課後の校庭で生徒たちと片付けをする姿を偶然見かけた場面','朝の通学路で子どもたちに挨拶する姿を偶然見かけた場面'],
-    service:['閉店後の店の前で、看板の明かりを落とす姿を偶然見かけた場面','開店前の店先を掃き清める姿を偶然見かけた場面','搬入の段ボールを抱えて店に運び込む姿を偶然見かけた場面','休憩中に店の裏でまかないを食べる姿を偶然見かけた場面','ピークを乗り切って店先で腰を伸ばす姿を偶然見かけた場面'],
-    trade:['作業を終えて道具を片付け、私服に着替えて帰る姿を偶然見かけた場面','朝の現場で仲間とラジオ体操をする姿を偶然見かけた場面','昼休みに車の日陰で弁当を広げる姿を偶然見かけた場面','夕方、汚れた作業着のまま自販機で一服する姿を偶然見かけた場面'],
-    creative:['撮影機材や作品の入ったバッグを持って、スタジオ近くを歩く姿を偶然見かけた場面','ギャラリーの搬入口で作品を慎重に運ぶ姿を偶然見かけた場面','喫茶店の隅でアイデアをノートに書き付ける姿を偶然見かけた場面','納品明けの解放感で昼の街をゆっくり歩く姿を偶然見かけた場面'],
-    uniform:['非番の日に、私服でリラックスして街を歩く姿を偶然見かけた場面','制服から私服に着替えて勤務先の裏口から出てくる姿を偶然見かけた場面','勤務前に持ち場へ向かうきびきびした姿を偶然見かけた場面','夜勤明けの朝、まぶしい光の中を帰る姿を偶然見かけた場面'],
-    showa:['昔ながらの職場の近くで、仕事を終えた姿を偶然見かけた場面','夕刊を小脇に抱えて帰路につく姿を偶然見かけた場面','赤提灯の暖簾をくぐって一日の疲れを癒やしに行く姿を偶然見かけた場面'],
-    enta:['出番や収録を終えて会場の裏口から出てくる姿を偶然見かけた場面','機材や台本の入ったバッグを提げて移動する姿を偶然見かけた場面','ファンに気づかれないよう帽子を目深に被って歩く姿を偶然見かけた場面'],
-    other:['静かな街並みを落ち着いた足取りで歩く姿を偶然見かけた場面'],
-    retired:['朝の公園でラジオ体操の輪に加わる姿を偶然見かけた場面','平日の昼間に悠々と図書館へ向かう姿を偶然見かけた場面']
-  };
   function buildEncounterScene(c){
     const scenes = [];
     const nat = c.nationality || '';    if(['ISTJ','ISFJ','ESTJ','ESFJ'].includes(c.mbti)) scenes.push('出勤前の静かな駅前やオフィス街で、落ち着いた雰囲気で歩いているところを偶然見かけた場面');
@@ -1678,7 +1185,6 @@
     if(groups.social.includes(code)) return {vibes:[['やりらふぃー系',3],['陽キャ大学生系',3],['スポーツ系',3],['爽やか系',2],['ワイルド系',2],['ギャル男系',1],['アウトドア系',1]], roles:[['販売員風',3],['モデル風',3],['インストラクター風',3],['スポーツ経験者',3],['俳優風',2]], outfits:[['ストリート系',4],['スポーツ練習着',3],['大学生カジュアル',3],['私服通学風',2]]};
     return {vibes:[['中性系',3],['塩顔系',3],['サブカル系',3],['古着系',2],['カジュアル系',2],['バンドマン系',2],['レトロ系',2]], roles:[['クリエイター風',4],['フリーランス風',3],['大学生風の成人男性',3],['モデル風',2],['販売員風',1]], outfits:[['大学生カジュアル',3],['社会人カジュアル',3],['ジャケットスタイル',2],['ストリート系',2],['私服通学風',2]]};
   }
-  const VIBE_AGE_MAX = {'陽キャ大学生系':26,'やりらふぃー系':30,'ギャル男系':35,'韓国風':40,'中性系':40,'ホスト系':45,'ヤンキー系':45,'ストリート系':50,'バンドマン系':60};
   function chooseVibeByMbti(mbti, age){
     let entries = mbtiProfile(mbti).vibes.map(([v,w])=>[v,w]);
     if(age !== undefined){
@@ -1695,30 +1201,7 @@
     return chooseOutfit(age, rareMode, vibe);
   }
   // ===== V1.9.1: 職業システム =====
-  const OCCUPATIONS = [
-    ['大学生','student',0,0,18,24],['大学1年生','student',0,0,18,19],['高校卒業直後（進路準備中）','student',1950,0,18,19],['浪人生（予備校生）','student',1950,0,18,21],['大学院生','student',0,0,22,29],['専門学校生','student',0,0,18,23],['就活中の大学生','student',0,0,20,24],
-    ['営業職','office',0,0,22,65],['経理・事務職','office',0,0,20,65],['企画職','office',0,0,23,65],['公務員','office',0,0,22,64],['銀行員','office',0,0,22,60],['商社勤務','office',0,0,22,65],['コンサルタント','office',1985,0,24,70],['不動産営業','office',0,0,22,70],
-    ['ITエンジニア','it',1995,0,20,65],['Webデザイナー','it',2000,0,20,65],['ゲーム開発者','it',1985,0,20,65],['動画クリエイター','it',2012,0,18,70],['アプリ開発者','it',2010,0,20,65],
-    ['看護師','medical',0,0,21,68],['理学療法士','medical',1990,0,22,68],['薬剤師','medical',0,0,24,70],['研修医','medical',0,0,24,32],['介護士','medical',1990,0,18,68],
-    ['高校教師','edu',0,0,23,65],['塾講師','edu',0,0,20,75],['保育士','edu',0,0,20,65],['大学研究員','edu',0,0,24,75],['体育教師','edu',0,0,23,60],
-    ['アパレル店員','service',0,0,18,55],['カフェ店員','service',0,0,18,65],['美容師','service',0,0,19,70],['バーテンダー','service',0,0,20,70],['ホテルスタッフ','service',0,0,19,68],['飲食店店長','service',0,0,28,70],['書店員','service',0,0,18,75],['コンビニ店長','service',1980,0,25,70],
-    ['自動車整備士','trade',0,0,18,68],['電気工事士','trade',0,0,18,68],['大工','trade',0,0,18,72],['建築士','trade',0,0,24,75],['工場勤務','trade',0,0,18,65],['配送ドライバー','trade',0,0,20,68],['農家','trade',0,0,18,80],['漁師','trade',0,0,18,75],
-    ['グラフィックデザイナー','creative',1975,0,20,70],['カメラマン','creative',0,0,20,75],['ミュージシャン','creative',0,0,18,75],['編集者','creative',0,0,22,70],['イラストレーター','creative',0,0,18,75],['映像ディレクター','creative',1985,0,24,72],
-    ['消防士','uniform',0,0,18,59],['警察官','uniform',0,0,18,59],['自衛官','uniform',0,0,18,54],['救急隊員','uniform',0,0,20,59],['防衛大学校学生','uniform',1953,0,18,24],['ジムトレーナー','uniform',1995,0,18,60],['スポーツインストラクター','uniform',1990,0,18,62],['モデル','uniform',0,0,18,55],['俳優','uniform',0,0,18,80],['プロスポーツ選手','uniform',0,0,18,42],
-    ['喫茶店マスター','showa',0,0,30,80],['新聞記者','showa',0,0,22,65],['国鉄職員','showa',0,1987,18,60],
-    ['お笑い芸人','enta',0,0,18,75],['声優','enta',1980,0,18,75],['YouTuber','enta',2008,0,18,60],['プロゲーマー','enta',2010,0,18,40],
-    ['書道家','creative',0,0,20,80],['パティシエ','service',1990,0,18,70],['寿司職人','service',0,0,18,80],['ラーメン店店主','service',0,0,25,75],['僧侶','other',0,0,20,80],['古着屋店主','service',1985,0,24,70],
-    ['悠々自適（定年後）','retired',0,0,62,80],
-    ['アナウンサー','office',1953,0,22,60],['弁護士','office',0,0,25,75],['公認会計士','office',0,0,24,70],
-    ['小学校教員','edu',0,0,23,65],['中学校教員','edu',0,0,23,65],['図書館司書','edu',0,0,22,68],['自動車教習所教官','edu',0,0,25,65],
-    ['ライフガード','uniform',0,0,18,45],['プール監視員（バイト）','uniform',0,0,18,25],['警備員','uniform',0,0,18,75],['電車運転士','uniform',0,0,21,60],['パイロット','uniform',1955,0,26,64],
-    ['医師','medical',0,0,26,75],['歯科医師','medical',0,0,26,75],
-    ['タクシー運転手','trade',1950,0,25,78],['バス運転手','trade',0,0,24,70],['郵便配達員','trade',0,0,18,65],['引越しスタッフ','trade',0,0,18,45],
-    ['スーパー店員','service',0,0,18,70],['家電量販店店員','service',1975,0,18,60],['花屋店員','service',0,0,18,65],['シェフ（洋食）','service',0,0,20,75],['理容師','service',0,0,19,75],['銭湯・サウナ店スタッフ','service',0,0,18,70]
-  ];
   const OCC_CAT = {}; OCCUPATIONS.forEach(([n,c])=>OCC_CAT[n]=c);
-  const OCC_CAT_LABELS = {student:{ja:'学生',en:'Students'}, office:{ja:'オフィス・専門職',en:'Office / Professional'}, it:{ja:'IT・Web',en:'IT / Web'}, medical:{ja:'医療・福祉',en:'Medical / Care'}, edu:{ja:'教育',en:'Education'}, service:{ja:'接客・飲食・販売',en:'Service / Retail'}, trade:{ja:'技能・現場・運輸',en:'Trade / Transport'}, creative:{ja:'クリエイティブ',en:'Creative'}, uniform:{ja:'制服・スポーツ・保安',en:'Uniform / Sports / Safety'}, enta:{ja:'エンタメ',en:'Entertainment'}, showa:{ja:'昭和・レトロ',en:'Showa / Retro'}, other:{ja:'その他',en:'Other'}, retired:{ja:'リタイア',en:'Retired'}};
-  const OCC_CAT_ORDER = ['student','office','it','medical','edu','service','trade','creative','uniform','enta','showa','other','retired'];
   function occupationOptionsHTML(selected, includeRandom=true){
     const en = (typeof uiLang!=='undefined' && uiLang==='en');
     const esc = v=>String(v).replace(/"/g,'&quot;');
@@ -1732,13 +1215,6 @@
     }
     return h;
   }
-  const OCC_MBTI_CAT = {
-    guardian:{enta:1, office:3, medical:2, edu:2, trade:2, uniform:2, showa:2, service:1, it:1, creative:1, student:1},
-    analyst:{enta:1, it:3, edu:2, creative:2, office:2, medical:1, trade:1, uniform:1, service:1, showa:1, student:1},
-    social:{enta:3, uniform:3, service:3, trade:2, student:2, office:1, edu:2, medical:1, it:1, creative:1, showa:1},
-    creative:{enta:2, creative:3, service:2, it:2, student:1, office:1, edu:1, medical:1, trade:1, uniform:1, showa:1}
-  };
-  const ATHLETIC_OCC = ['消防士','警察官','自衛官','プロスポーツ選手','体育教師','ジムトレーナー','スポーツインストラクター','漁師','大工'];
   const SUIT_TYPES = ['紺スーツ','黒スーツ','グレースーツ'];
   const SCHOOL_TYPES = ['学生服（学ラン）','学生服（ブレザー）','制服風コーデ'];
   function occOutfitBlocklist(occ){
@@ -1752,86 +1228,6 @@
     else if(occ==='プロゲーマー' || occ==='YouTuber' || occ==='古着屋店主' || occ==='悠々自適（定年後）') block = block.concat(SUIT_TYPES);
     return block;
   }
-  const UNIFORM_WORKWEAR = {
-    '消防士':['消防署の活動服（紺の作業服スタイル）','a firefighter station duty uniform (navy work-wear style)','紺の活動服上衣','紺の活動服パンツ','編み上げの作業ブーツ'],
-    '警察官':['警察官の勤務制服風（濃紺）','a police-style duty uniform (dark navy)','濃紺の制服シャツ','濃紺の制服スラックス','黒の革靴'],
-    '自衛官':['迷彩柄の作業服風制服','a camouflage work-uniform style','迷彩の作業服上衣','迷彩の作業服パンツ','ミリタリーブーツ'],
-    '看護師':['医療用スクラブ','medical scrubs','スクラブトップス','スクラブパンツ','白のナースシューズ'],
-    '研修医':['白衣＋スクラブ','a white coat over scrubs','白衣＋スクラブ','スクラブパンツ','白のスニーカー'],
-    '薬剤師':['白衣スタイル','a pharmacist white coat','白衣＋シャツ','スラックス','黒の革靴'],
-    '理学療法士':['ケーシー白衣（医療ユニフォーム）','a medical tunic uniform','ケーシー白衣','白の医療用パンツ','白のスニーカー'],
-    '介護士':['介護スタッフのポロシャツユニフォーム','a caregiver polo uniform','ユニフォームポロシャツ','動きやすいチノパン','白のスニーカー'],
-    'ホテルスタッフ':['ホテルの制服（ベスト＋ネクタイ）','a hotel staff uniform with vest and tie','白シャツ＋ベスト＋ネクタイ','黒スラックス','黒の革靴'],
-    'カフェ店員':['シャツ＋カフェエプロン','a shirt with a cafe apron','シャツ＋ロングエプロン','黒パンツ','黒のプレーントゥ'],
-    'コンビニ店長':['コンビニの店員ユニフォーム','a convenience store staff uniform','店舗ユニフォームシャツ','黒パンツ','黒のスニーカー'],
-    'バーテンダー':['ベスト＋蝶ネクタイのバーテンダースタイル','a bartender style with vest and bow tie','白シャツ＋ベスト＋蝶ネクタイ','黒スラックス','黒の革靴'],
-    '自動車整備士':['つなぎの作業服','mechanic coveralls','つなぎ（上）','つなぎ（下）','安全靴'],
-    '電気工事士':['電気工事の作業服','an electrician work uniform','作業服上衣','作業服パンツ','安全靴'],
-    '大工':['大工の作業着','carpenter work clothes','作業シャツ','ニッカポッカ風の作業ズボン','足袋風の作業靴'],
-    '工場勤務':['工場の作業服','a factory work uniform','作業服上衣','作業服パンツ','安全靴'],
-    '配送ドライバー':['配送業の制服','a delivery company uniform','制服ポロシャツ','制服パンツ','黒のスニーカー'],
-    '農家':['農作業着','farm work clothes','作業シャツ','作業ズボン','長靴'],
-    '漁師':['漁師の作業着（防水前掛け）','fisherman work gear with a waterproof apron','作業ジャンパー','防水パンツ','長靴'],
-    'ジムトレーナー':['ジムスタッフのトレーニングウェア','gym staff training wear','スタッフTシャツ','トレーニングパンツ','トレーニングシューズ'],
-    'スポーツインストラクター':['スタッフジャージ上下','a staff track suit','スタッフジャージ上','スタッフジャージ下','トレーニングシューズ'],
-    '体育教師':['ジャージ上下','a track suit','ジャージ上','ジャージ下','運動靴'],
-    'パティシエ':['白のコックコート','a white chef coat','コックコート','コックパンツ','厨房用シューズ'],
-    '寿司職人':['白衣＋和帽子の板前スタイル','a sushi chef white uniform with a traditional hat','板前白衣','白の調理パンツ','厨房用サンダルではなく作業靴'],
-    'ラーメン店店主':['作務衣風の調理着＋タオル鉢巻','a samue-style cooking outfit with a towel headband','作務衣風上衣','作務衣風パンツ','厨房用の作業靴'],
-    '僧侶':['作務衣','a samue (monk work clothes)','作務衣上衣','作務衣パンツ','雪駄ではなく作業用の履物'],
-    '国鉄職員':['国鉄の駅員制服風','a national-railway station staff uniform style','制服上衣＋制帽','制服スラックス','黒の革靴'],
-    'プロスポーツ選手':['チームのトレーニングウェア（実在チームのロゴなし）','team training wear (no real team logos)','トレーニングトップ','トレーニングパンツ','スポーツシューズ'],
-    'ライフガード':['ライフガードの監視ユニフォーム（赤×黄）','a lifeguard patrol uniform (red and yellow)','GUARDと書かれた赤のタンクトップ（実在団体ロゴなし）','赤のサーフパンツ','ビーチサンダルまたは素足＋ホイッスルを首から下げる'],
-    'プール監視員（バイト）':['プール監視員のスタッフウェア','a pool-attendant staff outfit','スタッフTシャツ（STAFF表記・実在ロゴなし）','スイムハーフパンツ','プールサンダル＋ホイッスル'],
-    '警備員':['警備会社の制服風（グレー系）','a security-guard uniform style (gray tones)','グレーの制服シャツ＋肩章','濃紺の制服スラックス','黒の革靴＋白手袋を携行'],
-    '電車運転士':['鉄道乗務員の制服風（濃紺）','a railway train-driver uniform style (dark navy)','濃紺の制服上衣＋ネクタイ','濃紺の制服スラックス','黒の革靴'],
-    'パイロット':['エアラインパイロットの制服風','an airline-pilot uniform style','白の制服シャツ＋黒ネクタイ＋袖に金線の入った濃紺ジャケット（実在会社ロゴなし）','濃紺の制服スラックス','黒の革靴'],
-    '医師':['白衣＋スクラブの医師スタイル','a doctor style with a white coat over scrubs','白衣＋スクラブ','スクラブパンツ','白のスニーカー・聴診器を首に掛ける'],
-    '歯科医師':['歯科用スクラブスタイル','dental scrubs','半袖スクラブトップス','スクラブパンツ','白のクリニックシューズ'],
-    'タクシー運転手':['タクシー乗務員の制服風','a taxi-driver uniform style','白の制服シャツ＋ネクタイ','黒の制服スラックス','黒の革靴＋白手袋'],
-    'バス運転手':['バス乗務員の制服風','a bus-driver uniform style','水色の制服シャツ','濃紺の制服スラックス','黒の革靴'],
-    '郵便配達員':['配達員の制服風（実在事業者ロゴなし）','a mail-carrier uniform style (no real logos)','配達用ポロシャツ','配達用パンツ','黒のスニーカー'],
-    '引越しスタッフ':['引越し会社のスタッフウェア','a moving-company staff outfit','スタッフポロシャツ（実在会社ロゴなし）','動きやすい作業パンツ','滑りにくいスニーカー＋腰にタオル'],
-    'スーパー店員':['スーパーの店員ユニフォーム＋エプロン','a supermarket staff uniform with an apron','店舗ポロシャツ＋エプロン','黒パンツ','黒のスニーカー'],
-    '家電量販店店員':['量販店の店員ユニフォーム','an electronics-store staff uniform','店舗カラーのユニフォームシャツ（実在店ロゴなし）','黒スラックス','黒のスニーカー'],
-    'シェフ（洋食）':['白のコックコート＋ソムリエエプロン','a white chef coat with a bistro apron','白のコックコート','黒のソムリエエプロン＋コックパンツ','厨房用シューズ'],
-    '理容師':['理容師のバーバースタイル','a barber work style','黒のバーバーエプロン＋白シャツ','黒パンツ','黒の革靴'],
-    '自動車教習所教官':['教習所指導員の制服風','a driving-school instructor uniform style','水色の制服シャツ＋ネクタイ','グレーの制服スラックス','黒の革靴'],
-    '銭湯・サウナ店スタッフ':['銭湯スタッフの作務衣スタイル','a bathhouse staff samue style','作務衣風の上衣（店名ロゴなし）','作務衣風パンツ','サンダル'],
-    '図書館司書':['司書のエプロンスタイル','a librarian apron style','シャツ＋無地エプロン','チノパン','歩きやすい革靴'],
-    '小学校教員':['小学校の先生スタイル（ジャージ＋ポロシャツ）','an elementary-school teacher style (track pants with a polo shirt)','ポロシャツ＋ジャージ上着','ジャージパンツ','上履き用の白スニーカー'],
-    '中学校教員':['中学校の先生スタイル（シャツ＋ジャージ）','a junior-high teacher style','ワイシャツ（腕まくり）','ジャージパンツまたはスラックス','白スニーカー']
-  };
-  const UNIFORM_VARIANTS = {
-    '消防士': [
-      ['消防署の活動服（紺の作業服スタイル）','a firefighter station duty uniform (navy work-wear style)','紺の活動服上衣','紺の活動服パンツ','編み上げの作業ブーツ',5,'','紺のキャップ型活動帽'],
-      ['救助服（オレンジのレスキュー隊服）','an orange rescue-squad duty uniform','オレンジの救助服上衣','オレンジの救助服パンツ','編み上げの救助ブーツ',2,'','紺のキャップ型活動帽'],
-      ['防火衣（訓練場面向けの耐火装備スタイル）','protective fire gear in a training-style setting','防火衣の上衣','防火衣のズボン','防火用ブーツ',1,'','防火用ヘルメット']
-    ],
-    '警察官': [
-      ['警察官の冬制服風（濃紺の長袖＋ネクタイ）','a winter police-style uniform (dark navy long sleeves with tie)','濃紺の長袖制服シャツ＋ネクタイ','濃紺の制服スラックス','黒の革靴',4,'winter','濃紺の制帽（黒つば・顎ひも・金色の帽章風エンブレム）'],
-      ['警察官の夏制服風（薄青の半袖シャツ）','a summer police-style uniform (light-blue short-sleeve shirt)','薄青の半袖制服シャツ','濃紺の制服スラックス','黒の革靴',3,'summer','濃紺の制帽（黒つば・顎ひも・金色の帽章風エンブレム）'],
-      ['警察官の活動服風（出動服スタイル）','a police field-duty uniform style','紺の活動服上衣','紺の活動服パンツ','編み上げブーツ',2,'','紺のキャップ型活動帽'],
-      ['交通機動隊風の乗車服（白ヘルメット着用）','a traffic-motorcycle-unit rider uniform (white riding helmet worn)','乗車服の上衣','乗車用パンツ','ライディングブーツ',1,'','白のライディングヘルメット'],
-      ['機動隊の出動服風（ヘルメット携行）','a riot-unit duty uniform style (helmet carried)','紺の出動服上衣','紺の出動服パンツ','半長靴',1,'','紺のキャップ型活動帽（出動ヘルメットは携行）']
-    ],
-    '自衛官': [
-      ['陸上自衛隊風の迷彩作業服','a JGSDF-style camouflage work uniform','迷彩の作業服上衣','迷彩の作業服パンツ','ミリタリーブーツ',5,'','迷彩柄のキャップ型作業帽'],
-      ['陸自の常装制服風（紫紺）','a JGSDF-style dress uniform (dark purplish navy)','常装制服の上衣','常装制服のスラックス','黒の革靴',2,'','紫紺色の制帽（金色の帽章風エンブレム）'],
-      ['海自の夏制服風（白）','a JMSDF-style white summer uniform','白の制服上衣','白の制服スラックス','黒の革靴',1,'summer','白の制帽（黒つば・金色の帽章風エンブレム）'],
-      ['空自の制服風（青）','a JASDF-style blue uniform','青の制服上衣','青の制服スラックス','黒の革靴',1,'','濃い青系の制帽（金色の帽章風エンブレム）']
-    ],
-    '救急隊員': [
-      ['救急隊の活動服（白シャツ＋紺パンツ）','an ambulance-crew duty uniform (white shirt with navy pants)','白の活動シャツ','紺の活動パンツ','白系の活動シューズ',1,'','紺のキャップ型活動帽']
-    ],
-    '防衛大学校学生': [
-      ['防衛大学校の常装冬服風（花紺色の詰襟型短ジャケット）','an NDA-style winter dress uniform — a very dark navy (near-black) waist-length stand-collar short jacket with a concealed zip front and no visible buttons, a single black braid line down the center front, black braid trim on the hem, lower sides, and lower sleeves, a thin white collar liner showing inside the stand collar and cuffs, gold collar-badge-style emblems on both collar tips, small gold star-shaped ornaments above the sleeve braid, and no front pockets','花紺色（黒に近い濃紺）の詰襟型短ジャケット（腰丈・立襟、前面はボタンの見えないファスナー留めの比翼仕立てで前中央に黒の飾線が縦に1本、裾まわり・両脇下部・袖下部にも黒の飾線、襟と袖口の内側から白いカラーが細く覗く、両襟に金色の襟章風エンブレム、袖の飾線の上に小さな金色の星形飾り、前面ポケットなし）','濃紺の制服スラックス','黒のプレーントゥ外羽根の短靴（履き込んだ使用感はあるが、つま先だけ鏡面のように磨き上げてある）',3,'winter','花紺色の制帽（黒つば・黒の帽体バンド・顎ひも・金色の帽章風エンブレム）'],
-      ['防衛大学校の第1種夏服風（白の詰襟上下）','an NDA-style Type-1 white summer uniform — a white waist-length stand-collar short jacket, hook-fastened at the throat, with a concealed button-free all-white front, gold collar-badge-style emblems on both collar tips, small gold buttons at the cuffs, no front pockets, worn with white trousers','白の詰襟型短ジャケット（腰丈・立襟、襟元はホック留め、前面はボタンの見えない比翼仕立てで装飾のない白一色、両襟に金色の襟章風エンブレム、袖口に小さな金色ボタン、前面ポケットなし）','白の制服ズボン','黒のプレーントゥ外羽根の短靴（履き込んだ使用感はあるが、つま先だけ鏡面のように磨き上げてある）',2,'summer','白覆いの制帽（黒つば・黒の帽体バンド・金色の帽章風エンブレム）'],
-      ['防衛大学校の第3種夏服風（白の半袖開襟シャツ）','an NDA-style Type-3 summer uniform — a white short-sleeve open-collar shirt with an open collar and no tie, white front buttons, two white-buttoned flap chest pockets and shoulder straps, tucked into white trousers with a silver-buckled white belt','白の半袖開襟シャツ（開いた襟元・ノーネクタイ、前面に白ボタン、両胸に白ボタン留めのフラップ付きポケット、肩章、裾はズボンにタックイン）','白の制服ズボン（銀色バックルの白ベルト）','黒のプレーントゥ外羽根の短靴（履き込んだ使用感はあるが、つま先だけ鏡面のように磨き上げてある）',2,'summer','白覆いの制帽（黒つば・金色の帽章風エンブレム）'],
-      ['防衛大学校の校内服装（水色シャツ＋ネクタイ）','an NDA-style on-campus uniform — a light-blue long-sleeve shirt with a pointed collar, buttoned front placket, two buttoned-flap chest pockets, shoulder straps, and buttoned cuffs, worn with a plain navy necktie held by a tie bar, tucked into dark blue trousers with a black belt','水色の長袖制服シャツ（尖った通常襟、前立てにボタン、両胸にボタン留めフラップ付きポケット、肩章、袖口はボタン留め、裾はスラックスにタックイン）＋紺の無地ネクタイ（タイピンで留める）','青紺色の制服スラックス（黒ベルト）','黒のプレーントゥ外羽根の短靴（履き込んだ使用感はあるが、つま先だけ鏡面のように磨き上げてある）',3,'','青紺色のキャップ型略帽（帽章風エンブレム）','ブルーのMA-1型ジャンパー（オレンジ色の裏地、リブ編みの襟・袖口・裾、ファスナー留め）'],
-      ['防衛大学校の作業服装（65式作業服と同型・OD色）','an NDA work uniform of the same pattern as the Type-65 fatigues (olive-drab / moss-green cotton work clothes with chest pockets)','モスグリーン（OD色）の綿作業服上衣（胸ポケット付き）','モスグリーン（OD色）の作業服パンツ','黒のベルクロ（面ファスナー）留めトレーニングシューズ型の作業靴',2,'','OD色のキャップ型作業帽']
-    ]
-  };
   function chooseUniformVariant(role, season){
     const list = UNIFORM_VARIANTS[role];
     if(!list) return null;
@@ -1890,23 +1286,6 @@
     };
     return byCat[cat] || null;
   }
-  const SPORTS = ['野球','サッカー','バスケットボール','バレーボール','ラグビー','柔道','剣道','陸上短距離','陸上長距離','水泳','テニス','卓球','ボクシング','ゴルフ','自転車ロード','体操'];
-  const SPORT_BODY = {
-    'ラグビー':[['ラグビー選手体型',6],['がっしり体型',2]], '水泳':[['水泳選手体型',6]], '柔道':[['柔道家体型',6],['がっしり体型',2]],
-    'バスケットボール':[['バスケットボール選手体型',6],['高身長モデル体型',2]], 'サッカー':[['サッカー選手体型',6]],
-    '陸上短距離':[['陸上短距離選手体型',6]], '陸上長距離':[['陸上長距離選手体型',6],['細身',3]],
-    '体操':[['細マッチョ',5],['痩せマッチョ',2]], 'ボクシング':[['細マッチョ',4],['引き締まったスポーツ体型',3]],
-    '野球':[['がっしり体型',3],['引き締まったスポーツ体型',3]], 'バレーボール':[['高身長モデル体型',4],['引き締まったスポーツ体型',3]],
-    '卓球':[['引き締まったスポーツ体型',4],['細身',3]], 'テニス':[['引き締まったスポーツ体型',4],['細マッチョ',2]],
-    'ソフトテニス':[['引き締まったスポーツ体型',3],['細身',3]], 'バドミントン':[['引き締まったスポーツ体型',4],['細身',2]],
-    '剣道':[['引き締まったスポーツ体型',3],['細マッチョ',3]], '空手':[['細マッチョ',4],['引き締まったスポーツ体型',3]],
-    '相撲':[['がっしり体型',4],['柔道家体型',4],['ぽっちゃり',2]], 'ハンドボール':[['引き締まったスポーツ体型',4],['がっしり体型',2]],
-    'レスリング':[['柔道家体型',4],['細マッチョ',3],['がっしり体型',2]], 'スキー':[['引き締まったスポーツ体型',3],['がっしり体型',2]],
-    'スケート':[['引き締まったスポーツ体型',3],['細マッチョ',2]], '自転車競技':[['細マッチョ',3],['引き締まったスポーツ体型',3]],
-    'ボート':[['がっしり体型',4],['逆三角形体型',3]], 'アメリカンフットボール':[['ラグビー選手体型',5],['がっしり体型',3]],
-    'ダンス':[['細マッチョ',4],['痩せマッチョ',3]], 'クライミング':[['クライマー体型',5],['細マッチョ',3]],
-    'ゴルフ':[['標準体型',3],['引き締まったスポーツ体型',2]]
-  };
   SPORT_BODY['陸上（短距離）'] = SPORT_BODY['陸上短距離'];
   SPORT_BODY['陸上（長距離）'] = SPORT_BODY['陸上長距離'];
   SPORT_BODY['自転車ロード'] = SPORT_BODY['自転車競技'];
@@ -1928,22 +1307,6 @@
     }
     return hasSport ? `${c.role}（${c.sportName}）` : (c.role || '');
   }
-  const VIBE_OCC = {
-    'ギャル男系':{good:['アパレル店員','美容師','古着屋店主','YouTuber'], bad:['銀行員','公務員','僧侶','高校教師','自衛官','研修医','経理・事務職','警察官','消防士','救急隊員','防衛大学校学生']},
-    'ヤンキー系':{good:['大工','自動車整備士','配送ドライバー','漁師','電気工事士'], bad:['銀行員','公務員','高校教師','塾講師','僧侶','薬剤師','研修医','看護師']},
-    'ホスト系':{good:['バーテンダー','美容師','アパレル店員'], bad:['消防士','警察官','自衛官','僧侶','農家','漁師']},
-    '清楚系':{good:['ホテルスタッフ','薬剤師','書店員','経理・事務職','看護師'], bad:['漁師','工場勤務','ラーメン店店主','大工']},
-    '紳士系':{good:['ホテルスタッフ','銀行員','商社勤務','コンサルタント','バーテンダー'], bad:['大工','自動車整備士','電気工事士','工場勤務','配送ドライバー','農家','漁師']},
-    'オタク系':{good:['ITエンジニア','アプリ開発者','ゲーム開発者','書店員','プロゲーマー','声優'], bad:['モデル','アパレル店員']},
-    'おじさん系':{good:['喫茶店マスター','ラーメン店店主','農家','新聞記者','国鉄職員','寿司職人'], bad:['モデル']},
-    'メガネ知的系':{good:['大学研究員','編集者','塾講師','薬剤師','建築士'], bad:[]},
-    'ワイルド系':{good:['大工','漁師','自衛官','消防士'], bad:['経理・事務職']},
-    'きれいめ系':{good:['アパレル店員','美容師','ホテルスタッフ'], bad:['漁師','工場勤務']},
-    'ストリート系':{good:['古着屋店主','YouTuber','ミュージシャン'], bad:['銀行員','公務員','ホテルスタッフ']},
-    'バンドマン系':{good:['ミュージシャン','古着屋店主','バーテンダー'], bad:['銀行員','公務員','自衛官']},
-    '陽キャ大学生系':{good:['大学生','大学1年生','高校卒業直後（進路準備中）','浪人生（予備校生）','バイト? none'], bad:[]},
-    '清潔系ダミー':{good:[], bad:[]}
-  };
   function chooseRoleByMbti(age, vibe, mbti, eraYear='2026', gapMode=false){
     const y = Number(eraYear) || 2026;
     const g = {guardian:['ISTJ','ISFJ','ESTJ','ESFJ'], analyst:['INTJ','INTP','ENTJ','ENTP'], social:['ESTP','ESFP','ENFP','ENFJ']};
@@ -1979,26 +1342,6 @@
     });
     return weighted(entries) || '営業職';
   }
-  const ETHNIC_HAIR_WEIGHTS = {
-    '日本人':[['黒',6],['黒に近いダークブラウン',1]],
-    '中国系':[['黒',6],['黒に近いダークブラウン',1]],
-    '東アジア系':[['黒',6],['ブルーブラック',1]],
-    '中央アジア系':[['黒',5],['黒に近いダークブラウン',2]],
-    'ミックス':[['黒',4],['黒に近いダークブラウン',2],['自然な茶髪',1]],
-    'スラブ系':[['ダークブロンド',6],['自然な茶髪',5],['ナチュラルブロンド',4],['黒に近いダークブラウン',3],['黒',1]],
-    '北欧系':[['ナチュラルブロンド',7],['ダークブロンド',5],['自然な茶髪',3]],
-    '南欧系':[['黒に近いダークブラウン',4],['黒',3],['チョコレートブラウン',2]],
-    '韓国系':[['黒',6],['ブルーブラック',1]],
-    '東南アジア系':[['黒',6],['黒に近いダークブラウン',1]],
-    '南アジア系':[['黒',7]],
-    '黒人系':[['黒',8]],
-    '中東系':[['黒',7]],
-    'ラテン系':[['黒に近いダークブラウン',5],['黒',3]],
-    '白人系':[['自然な茶髪',4],['アッシュブラウン',3],['グレージュ',2],['黒',1]],
-    'ミックス系':[['黒',4],['黒に近いダークブラウン',2],['自然な茶髪',1]]
-  };
-  const STRICT_HAIR_OCC = ['銀行員','公務員','警察官','消防士','自衛官','救急隊員','防衛大学校学生','ホテルスタッフ','商社勤務','研修医','看護師','高校教師','僧侶','新聞記者','国鉄職員','経理・事務職'];
-  const FREE_HAIR_OCC = ['美容師','アパレル店員','ミュージシャン','YouTuber','お笑い芸人','古着屋店主','モデル','俳優','バーテンダー','プロゲーマー','動画クリエイター'];
   function occupationHairWeights(occ){
     if(STRICT_HAIR_OCC.includes(occ)) return [['黒',4],['黒に近いダークブラウン',1]];
     if(FREE_HAIR_OCC.includes(occ)) return [['明るめブラウン',3],['アッシュブラウン',3],['グレージュ',2],['自然な茶髪',2],['ハイトーンアッシュ',1]];
@@ -2029,7 +1372,6 @@
     return byCat[cat] || null;
   }
 
-  const SPORT_EXP_POOL = ['野球','サッカー','バスケットボール','バレーボール','卓球','テニス','ソフトテニス','バドミントン','陸上（短距離）','陸上（長距離）','水泳','柔道','剣道','空手','相撲','ラグビー','ハンドボール','体操','ボクシング','レスリング','スキー','スケート','自転車競技','ボート','アメリカンフットボール','ダンス','クライミング'];
   const SPORT_STAGES = ['幼稚園','小学校','中学校','高校','大学','社会人'];
   function maxStageForAge(age){ if(age>=23) return 5; if(age>=19) return 4; if(age>=16) return 3; if(age>=13) return 2; if(age>=7) return 1; return 0; }
   function chooseSkin(role, season, sportName, hist, ethnicSkin){
@@ -2058,7 +1400,6 @@
     return weighted(entries);
   }
   // 成人男性の運動部・クラブ経験率 約78.9%／種目シェアは公的統計を参考にした重み
-  const SPORT_EXP_WEIGHTS = [['野球',22],['サッカー',17],['バスケットボール',9],['水泳',6.5],['ソフトテニス',3.6],['テニス',3.4],['卓球',4.5],['バドミントン',4],['陸上（短距離）',3],['陸上（長距離）',2.5],['剣道',2],['柔道',1.8],['バレーボール',3],['ラグビー',1.2],['ハンドボール',1],['空手',0.8],['体操',0.8],['ボクシング',0.5],['スキー',0.5],['ダンス',0.5],['アメリカンフットボール',0.4],['自転車競技',0.4],['レスリング',0.3],['スケート',0.3],['ボート',0.3],['クライミング',0.3],['相撲',0.15]];
   function sportExpPick(age, exclude){
     const a = Number(age)||25;
     let list = SPORT_EXP_WEIGHTS.map(x=>x.slice());
@@ -2111,49 +1452,6 @@
     if(!h.length) return english ? 'None (non-athletic)' : 'なし（文化系・帰宅部）';
     return h.map(x=>`${x.name}（${SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+SPORT_STAGES[x.to]}）`).join('／');
   }
-  const SPORT_MUSCLE = {
-    '野球':['前腕と体幹の回旋筋、粘りのある下半身','forearms, rotational core, and a grounded lower body','体幹まわり'],
-    'サッカー':['大腿とふくらはぎ、切り返しに強い下半身','thighs and calves built for quick cuts','脚まわり'],
-    'バスケットボール':['ふくらはぎと跳躍系の脚力、アキレス腱まわりの引き締まり','calves and jump-trained legs with taut ankles','脚まわり'],
-    'バレーボール':['ふくらはぎと跳躍系の脚力、肩まわりのしなやかさ','jump-trained calves and supple shoulders','脚と肩まわり'],
-    '卓球':['前腕と踏み込む脚の俊敏な締まり','quick forearms and springy legs','前腕'],
-    'テニス':['利き腕の前腕が反対側よりやや太く、フットワークの脚','a dominant forearm slightly thicker than the other, with footwork-trained legs','前腕'],
-    'ソフトテニス':['利き腕の前腕とフットワークの脚','a stronger dominant forearm and agile legs','前腕'],
-    'バドミントン':['利き腕の前腕と俊敏なふくらはぎ','a stronger dominant forearm and quick calves','前腕'],
-    '陸上（短距離）':['ハムストリング・臀部・ふくらはぎの瞬発系の張り','sprint-built hamstrings, glutes, and calves','腿裏とふくらはぎ'],
-    '陸上（長距離）':['全身が絞れて脚は細く締まり、ふくらはぎに持久系の筋','a lean frame with slim, endurance-trained calves','引き締まった脚'],
-    '水泳':['広背筋と肩まわりが発達した逆三角形のシルエット','swimmer lats and shoulders forming a V-taper','肩まわり'],
-    '柔道':['僧帽筋・首まわり・前腕・体幹の厚み','thick traps, neck, forearms, and core from grappling','上背と首まわり'],
-    '剣道':['前腕・体幹・踏み込む脚の無駄のない締まり','lean forearms, core, and lunging legs','前腕と体幹'],
-    '空手':['前腕・体幹・踏み込む脚の締まり','tight forearms, core, and driving legs','体幹'],
-    '相撲':['首まわり・体幹・下半身の圧倒的な厚み','a massive neck, core, and lower body','体幹と下半身'],
-    'ラグビー':['首・肩・大腿の全体的な厚み、当たり負けしない幹の太さ','a thick neck, shoulders, and thighs built for contact','首と肩まわり'],
-    'ハンドボール':['肩まわりと跳躍系の脚、投げ込む腕','throwing shoulders and jump-trained legs','肩まわり'],
-    '体操':['上半身全体の密度の高い筋肉と肩・上腕のライン','densely muscled upper body with defined shoulders and arms','上半身'],
-    'ボクシング':['前腕・肩・体幹の絞れた締まり','lean, punched-in forearms, shoulders, and core','肩と前腕'],
-    'レスリング':['首・僧帽筋・前腕・体幹の組み技の厚み','a grappler neck, traps, forearms, and core','首と上背'],
-    'スキー':['大腿と体幹の粘り強い筋力','enduring thighs and core','大腿'],
-    'スケート':['大腿と臀部の滑走系の発達','skating-built thighs and glutes','大腿'],
-    '自転車競技':['大腿四頭筋の顕著な発達、上半身は比較的細身のまま','notably developed quads with a relatively slim upper body','大腿'],
-    'ボート':['背中全体と脚の押す力、厚い体幹','a rowing back, driving legs, and a thick core','背中'],
-    'アメリカンフットボール':['首・肩・大腿の全体的な厚み','a thick neck, shoulders, and thighs','首と肩まわり'],
-    'ダンス':['体幹とふくらはぎのしなやかな筋、姿勢の良さ','a supple core and calves with excellent posture','体幹'],
-    'クライミング':['前腕と背中の引く筋肉、指の付け根の厚み','climbing forearms, pulling back muscles, and thick finger bases','前腕と背中']
-  };
-  const SPORT_SKELETON = {
-    '水泳':['肩甲帯と鎖骨まわりが横に広く発達した骨格','a skeleton with a broadened shoulder girdle and clavicles'],
-    '柔道':['首から肩にかけての骨格が太く、手足の骨もがっしりした造り','a thick neck-to-shoulder frame with sturdy limb bones'],
-    'レスリング':['首と肩甲帯の詰まった太い骨格','a compact, thick neck and shoulder-girdle frame'],
-    '相撲':['全身の骨格そのものが大きくどっしりした造り','a large, heavyset skeletal frame overall'],
-    'ラグビー':['鎖骨・肩幅・肋郭の広いぶ厚い骨格','a broad, deep frame through the clavicles, shoulders and ribcage'],
-    'アメリカンフットボール':['肩幅と肋郭の広い頑丈な骨格','a wide-shouldered, robust frame'],
-    '陸上（短距離）':['骨盤まわりと大腿骨のしっかりした下半身骨格','a strong pelvic and femoral lower-body structure'],
-    'バスケットボール':['手足が長く、手の骨格も大きめの造り','long limbs with largish hand structure'],
-    'バレーボール':['腕が長く肩甲帯の可動の大きい骨格','long arms with a mobile shoulder girdle'],
-    '体操':['肩と上腕の関節まわりが発達した密度の高い骨格','a dense frame with developed shoulder and upper-arm joints'],
-    'ボート':['肋郭が深く背中の広い骨格','a deep ribcage and broad-backed frame'],
-    '自転車競技':['骨盤と大腿骨のしっかりした下半身骨格','a solid pelvis-and-femur lower structure']
-  };
   (function(){
     const alias = (map, pairs)=>pairs.forEach(([a,b])=>{ if(map[b] && !map[a]) map[a] = map[b]; });
     alias(SPORT_MUSCLE, [['陸上短距離','陸上（短距離）'],['陸上長距離','陸上（長距離）'],['自転車ロード','自転車競技']]);
@@ -2207,23 +1505,6 @@
     if(english) return ` Muscle development: ${coreEn}.${subEn}${guardEn}`;
     return `発達部位：${core}。${subJa}${guardJa}`;
   }
-  const TRAINING_LEVELS = [
-    ['なし', 38], ['昔は鍛えていた（今は中断）', 6], ['自宅で軽く（自重・腕立て腹筋）', 12],
-    ['週1〜2のジム習慣（健康維持）', 14], ['しっかり鍛えている（中級）', 10], ['細マッチョ仕上げ（絞り重視）', 8],
-    ['機能系（クロスフィット・自重上級）', 4], ['フィジーク級（大会レベルの絞りと逆三角形）', 3],
-    ['パワー系（厚み重視の剛力体型）', 3], ['ボディビル級（過剰な筋肥大）', 2]
-  ];
-  const TRAINING_DESC = {
-    '昔は鍛えていた（今は中断）':['かつて鍛えた名残の厚みが胸と肩に残っている','traces of past training remain as thickness in his chest and shoulders'],
-    '自宅で軽く（自重・腕立て腹筋）':['腹まわりが締まっている程度の、軽い運動習慣がうかがえる体','a lightly kept body — a trim waist that hints at simple home workouts'],
-    '週1〜2のジム習慣（健康維持）':['全体に引き締まり、胸と腕にジム習慣らしい軽い張りがある','an overall toned body with light gym-built firmness in the chest and arms'],
-    'しっかり鍛えている（中級）':['胸・肩・腕の筋肉が明確に発達し、日常着の上からも体つきが分かる','clearly developed chest, shoulders and arms, readable even through everyday clothes'],
-    '細マッチョ仕上げ（絞り重視）':['体脂肪が少なく腹筋のラインが見える、厚みより輪郭の美しさを重視した絞れた体','a lean, defined physique with visible ab lines — sculpted outline over sheer mass'],
-    '機能系（クロスフィット・自重上級）':['肩・背中・体幹が満遍なく発達した、見せ筋ではなく動ける体の質感','functionally developed shoulders, back and core — a body built to move, not to pose'],
-    'フィジーク級（大会レベルの絞りと逆三角形）':['肩から広がる逆三角形と腹筋のセパレーションが見える、大会レベルに仕上がった体。ただし日常の生活場面として描き、ステージポーズ・オイル肌・タンニング・過剰なパンプ表現はしない','a competition-level physique — a V-taper from the shoulders with visible ab separation. Depict him in everyday life: no stage posing, oiled skin, tanning, or exaggerated pump'],
-    'パワー系（厚み重視の剛力体型）':['胸板・僧帽筋・大腿が分厚く、腹は絞れていない、持ち上げるための剛力の体','a powerlifter build — thick chest, traps and thighs with an unshredded midsection: a body made for lifting'],
-    'ボディビル級（過剰な筋肥大）':['全身の筋肉が服のシルエットを変えるほど肥大し、腕は袖を張らせ、首から肩が盛り上がっている。血管の浮きや筋腹の丸みも自然な範囲で描いてよい','bodybuilder-level hypertrophy — muscles that reshape his clothing silhouette, sleeves stretched by his arms, neck-to-shoulder mass. Natural vascularity and full muscle bellies are welcome']
-  };
   function chooseTrainingLevel(c){
     const y = Number(c.eraYear) || 2026;
     const age = Number(c.age) || 30;
@@ -2244,21 +1525,6 @@
     }).filter(([,w])=>w > 0);
     return weighted(list);
   }
-  const TRAINING_BODY = {
-    'しっかり鍛えている（中級）':[['筋肉質',3],['引き締まったスポーツ体型',3]],
-    '細マッチョ仕上げ（絞り重視）':[['細マッチョ',5],['痩せマッチョ',3]],
-    '機能系（クロスフィット・自重上級）':[['細マッチョ',3],['引き締まったスポーツ体型',3],['逆三角形体型',2]],
-    'フィジーク級（大会レベルの絞りと逆三角形）':[['逆三角形体型',5],['細マッチョ',3]],
-    'パワー系（厚み重視の剛力体型）':[['がっしり体型',5],['骨太体型',2],['柔道家体型',2]],
-    'ボディビル級（過剰な筋肥大）':[['筋肉質',5],['逆三角形体型',3],['がっしり体型',2]]
-  };
-  const TRAINING_EXCL = {
-    'フィジーク級（大会レベルの絞りと逆三角形）':['やせ型','華奢な体型','ぽっちゃり','腹だけぽっちゃり','ビール腹'],
-    'ボディビル級（過剰な筋肥大）':['やせ型','華奢な体型','細身','ぽっちゃり','腹だけぽっちゃり','ビール腹'],
-    'パワー系（厚み重視の剛力体型）':['やせ型','華奢な体型','細身'],
-    'しっかり鍛えている（中級）':['ぽっちゃり','腹だけぽっちゃり'],
-    '細マッチョ仕上げ（絞り重視）':['ぽっちゃり','腹だけぽっちゃり','ビール腹']
-  };
   function trainingWeightAdj(level){
     if(level === 'ボディビル級（過剰な筋肥大）') return 4.5;
     if(level === 'パワー系（厚み重視の剛力体型）') return 5.5;
@@ -2266,10 +1532,6 @@
     if(level === 'しっかり鍛えている（中級）') return 1;
     return 0;
   }
-  const BODY_ASYMS = [['なし',60],['右肩がごくわずかに下がっている',6],['左肩がごくわずかに下がっている',6],['軽いなで肩',7],['利き腕側の肩がわずかに前に出る',5],['骨盤がごくわずかに傾き、重心が片脚寄り',5],['首がわずかに利き手側へ傾く癖',4]];
-  const POSTURES = [['自然な立ち姿',52],['背筋の伸びた立ち姿',12],['やや猫背気味',10],['軽く胸を張った立ち姿',8],['リラックスして重心を片脚に預けた立ち方',9],['肩の力が抜けた立ち姿',9]];
-  const BODY_ASYM_EN = {'右肩がごくわずかに下がっている':'his right shoulder sits a touch lower','左肩がごくわずかに下がっている':'his left shoulder sits a touch lower','軽いなで肩':'gently sloped shoulders','利き腕側の肩がわずかに前に出る':'his dominant-side shoulder rolls slightly forward','骨盤がごくわずかに傾き、重心が片脚寄り':'a barely-tilted pelvis with weight favoring one leg','首がわずかに利き手側へ傾く癖':'a habit of tilting his head slightly toward his dominant side'};
-  const POSTURE_EN = {'自然な立ち姿':'a natural stance','背筋の伸びた立ち姿':'an upright, straight-backed stance','やや猫背気味':'slightly rounded, hunched posture','軽く胸を張った立ち姿':'a lightly chest-out stance','リラックスして重心を片脚に預けた立ち方':'a relaxed stance with weight on one leg','肩の力が抜けた立ち姿':'a loose-shouldered, easy stance'};
   function bodyRealismLine(c, english=false){
     const parts = [];
     if(c.posture && c.posture !== '自然な立ち姿') parts.push(english ? POSTURE_EN[c.posture] : c.posture);
@@ -2327,119 +1589,6 @@
     }
     return english ? `A ${age}-year-old ${role} who spent his school years outside the sports clubs.` : `運動部とは縁のない学生時代を過ごした、${role}の${age}歳。`;
   }
-  const SPORT_MEM = {
-    '野球':{sc:['夏の球場の匂い','朝5時のグラウンドの白線','雨で流れた決勝の日','ロジンの白い粉'],ro:['エースで4番','ブルペンで一番声を出す係','スコアブック係の補欠','背番号のない最後の夏','代打の切り札','守備固め専門','声だけ甲子園レベル']},
-    'サッカー':{sc:['雨の土のグラウンド','ナイター練習の帰り道','すり減ったスパイクの底'],ro:['背番号10','ゴールを守り続けたキーパー','ベンチから誰より声を出す係','PK戦で外した夜','壁パスの職人','走行距離だけはエース級']},
-    'バスケットボール':{sc:['体育館のシューズの音','朝練のシュート1000本','夕暮れの公園のリング'],ro:['スタメンの司令塔','ベンチ外から声を枯らした控え','リバウンドだけは負けなかった男','スリーポイント専門','ディフェンスの要']},
-    'バレーボール':{sc:['体育館のワックスの匂い','夏合宿のレシーブ練習'],ro:['エーススパイカー','守備専門のリベロ','声出しとモップがけの一年']},
-    '卓球':{sc:['卓球場の蛍光灯','ラバーを貼り替える夜'],ro:['カットマン','前陣速攻のエース','ダブルス専門']},
-    'テニス':{sc:['オムニコートの砂','炎天下の球拾い'],ro:['シングルスのエース','ダブルス巧者','壁打ちから始めた初心者上がり']},
-    'ソフトテニス':{sc:['放課後のコートの西日','ガットを張り替える部室'],ro:['前衛のポーチ職人','後衛の粘り屋']},
-    'バドミントン':{sc:['シャトルの羽音','風のない体育館'],ro:['スマッシュ自慢のエース','ダブルスの堅守担当']},
-    '陸上（短距離）':{sc:['スターティングブロックの感触','タータンの照り返し'],ro:['リレーのアンカー','0.1秒を削り続けた男']},
-    '陸上（長距離）':{sc:['夜明けのロード','冬の駅伝コース'],ro:['駅伝の山登り区間','ペースメーカー役の縁の下']},
-    '水泳':{sc:['朝6時のプールの塩素の匂い','ゴーグルの跡がとれない夏','冬の温水プールの湯気'],ro:['自由形のエース','リレーのアンカー','息継ぎから教わった初心者上がり','飛び込みだけ褒められた','タイムより フォームの美しさで語られた']},
-    '柔道':{sc:['冬の道場の畳の冷たさ','擦り切れた道着の襟','帯を締め直す一呼吸'],ro:['団体戦の大将','受け身だけ褒められた白帯時代','先鋒で流れを作る役','寝技専門の職人','組んだ瞬間に強さが分かると言われた']},
-    '剣道':{sc:['面の中の自分の呼吸音','早朝の素振り'],ro:['大将','小手が得意な先鋒','声だけは道場一']},
-    '空手':{sc:['裸足の道場の床','帯の色が変わった日'],ro:['組手のエース','型を極めた求道者']},
-    '相撲':{sc:['土俵の砂の感触','朝稽古のぶつかり合い'],ro:['大将格','食べるのも稽古だと教わった日々']},
-    'ラグビー':{sc:['泥まみれのジャージ','スクラムの土の匂い'],ro:['フォワードの最前列','俊足のウイング','声でチームを動かすスクラムハーフ']},
-    'ハンドボール':{sc:['松やにの匂い','狭い体育館の攻防'],ro:['エースの左腕','キーパーで顔面も止めた男']},
-    '体操':{sc:['炭酸マグネシウムの白い手','鉄棒のマメ'],ro:['床のエース','補助から始めた努力型']},
-    'ボクシング':{sc:['ミットの乾いた音','減量最終日の水の味'],ro:['アウトボクサー','打たれ強さだけは天下一品']},
-    'レスリング':{sc:['マットの消毒の匂い','耳が擦れる組み合い'],ro:['タックルの鬼','粘りのグラウンド職人']},
-    'スキー':{sc:['朝一番の圧雪の音','ナイターの照明'],ro:['アルペンの直滑降屋','基礎から積み上げた技術屋']},
-    'スケート':{sc:['リンクの冷気','エッジを研ぐ夜'],ro:['スピード勝負の短距離屋','転んだ数なら誰にも負けない']},
-    '自転車競技':{sc:['夜明けの峠道','ロードのタイヤの音'],ro:['ヒルクライム職人','平地の牽引役']},
-    'ボート':{sc:['夜明けの川面','オールのマメ'],ro:['エイトの漕手','コックスとして声で漕いだ男']},
-    'アメリカンフットボール':{sc:['防具を締める音','芝のグラウンドの熱'],ro:['ラインの最前線','俊足のランナー']},
-    'ダンス':{sc:['スタジオの鏡と汗','文化祭のステージ照明'],ro:['センターを張った男','振り付け係の裏方']},
-    'クライミング':{sc:['チョークの白い粉','指先の皮がむける週末'],ro:['スラブの職人','パワー系の豪腕']},
-    'ゴルフ':{sc:['朝露の打ちっぱなし','グリーンの読み合い'],ro:['ドライバー自慢','小技で稼ぐ職人']}
-  };
-  const CULT_MEM = {
-    '吹奏楽':['コンクール前日の音楽室の残響','リードを削り続けた放課後','金賞の瞬間の静寂'],
-    '軽音':['文化祭の3分間のために半年かけた','部室のアンプの匂い','初ライブの手の震え'],
-    '美術':['絵の具で汚れた制服の袖','締切前の美術室の夜'],
-    '図書室':['昼休みの図書室の指定席','貸出カードの常連'],
-    'ゲーム':['閉店までいたゲームセンター','対戦台の向こうの知らない強敵'],
-    'バイト':['放課後のレジ打ちの達人','週5でシフトに入った高校時代'],
-    '生徒会':['文化祭を仕切った生徒会の裏方','朝の挨拶運動の常連'],
-    '帰宅部':['チャイムと同時に校門を出た帰宅部のエース','寄り道だけは誰より詳しい'],
-    '鉄道':['時刻表を読み物にしていた','始発で行く撮影地'],
-    '釣り':['夜明けの堤防','クーラーボックスと自転車の日々'],
-    '将棋':['詰将棋を解きながら登校した','大会の対局時計の音'],
-    'パソコン':['部室のパソコンを組み直した','深夜のキーボードの音']
-  };
-  const MBTI_INTRO = {
-    INTJ:['5年後の話を一番真顔でする','計画表がないと旅行できない'], INTP:['気づくと辞書を読んでいる','「なぜ」が口癖の'],
-    ENTJ:['飲み会の幹事を気づけば任されている','決断が早すぎて驚かれる'], ENTP:['会議で一番「逆に」と言う','思いつきで動いて成功させる'],
-    INFJ:['相談されがちな','人の変化に一番先に気づく'], INFP:['雨の日が嫌いじゃない','ノートの端に詩を書いていた'],
-    ENFJ:['後輩の誕生日を全部覚えている','送別会で一番泣く'], ENFP:['初対面の店員と友達になって帰ってくる','思い立ったら夜行バスに乗る'],
-    ISTJ:['頼んだことを忘れられたことがない','同じ定食を10年頼み続ける'], ISFJ:['差し入れのセンスに定評がある','席替えでも荷物が一番きれい'],
-    ESTJ:['集合時間の10分前にいる','段取りで生きている'], ESFJ:['ご近所さんに一番挨拶される','困っている人を放っておけない'],
-    ISTP:['説明書を読まずに直せる','無口だが手が動く'], ISFP:['気に入った服を色違いで買う','写真フォルダが空ばかり'],
-    ESTP:['とりあえずやってみる側の','じゃんけんが強い'], ESFP:['カラオケの一曲目を任される','その場を明るくして帰る']
-  };
-  const OCC_HOOK = {
-    '消防士':['仮眠中でも靴下だけは履いている','非番の日も駅の階段を2段で上る'],
-    '救急隊員':['当直明けのコンビニコーヒーがいちばんうまいと言う','サイレンの音で目が覚める体になった'],
-    '警察官':['非番でも交差点で周囲を見てしまう','落とし物を届けた回数なら負けない'],
-    '自衛官':['アイロンのかけ方だけは誰にも負けない','5分で食事を終える癖が抜けない'],
-    '防衛大学校学生':['朝6時の坂道ダッシュで一日が始まる','ベッドの角は毎朝直角'],
-    '寿司職人':['休日も指先だけは乾かさない','シャリの温度を手が覚えている'],
-    'ラーメン店店主':['寸胴の湯気で夜が明ける','スープの味見だけで腹が膨れる'],
-    'パティシエ':['オーブンの前が一番落ち着くと言う','砂糖の計量は目分量でも外さない'],
-    '美容師':['他人の襟足が気になって仕方ない','ハサミだけは誰にも触らせない'],
-    'バーテンダー':['氷を丸く削る夜','終電後の街をいちばん知っている'],
-    '喫茶店マスター':['サイフォンの音で時間が分かる','常連の「いつもの」を50通り覚えている'],
-    '農家':['天気予報を3つ見比べて寝る','朝露の匂いで目が覚める'],
-    '漁師':['海を見れば明日の風が分かる','日焼けの境目が年輪になっている'],
-    '大工':['ミリ単位のズレが気になって眠れない','手の豆が名刺代わり'],
-    'ITエンジニア':['キーボードは持ち込み派','障害対応の夜に強い'],
-    '看護師':['夜勤明けの朝日をいちばん浴びている','歩くのが速いと言われ続けている'],
-    'モデル':['姿勢だけで職業を当てられる','撮影前日は塩分と戦う'],
-    'YouTuber':['日常の全部がネタに見える','サムネイルの表情だけ3割増し']
-  };
-  const OCC_CAT_HOOK = {
-    office:['月曜の朝礼で一番声が出る','エクセルのショートカットで生きている'],
-    it:['納期前だけ早起きになる','椅子にはこだわる派'],
-    medical:['白衣のポケットが四次元','人の顔色を見るのが仕事'],
-    edu:['チョークの持ち方に年季がある','生徒の名前を1週間で覚える'],
-    service:['閉店後の店がいちばん好き','いらっしゃいませの声で目が覚める'],
-    trade:['道具箱の中だけは几帳面','軍手の消費量が半端ではない'],
-    creative:['締切の3日前から本気を出す','メモ帳がアイデアで埋まっている'],
-    uniform:['制服より私服が難しいと言う','姿勢の良さで職業がバレる'],
-    showa:['固定電話の番号を諳んじられる','新聞は紙で読む派'],
-    student:['単位の計算だけは得意','学食の裏メニューに詳しい'],
-    retired:['朝の公園のラジオ体操の常連','孫の話になると止まらない']
-  };
-  const ERA_HOOK = {
-    1946:['配給の列に並んだ記憶を持つ','ラジオが家の真ん中にあった'],
-    1970:['長嶋の引退をラジオで聴いた','歌謡曲を口ずさむ'],
-    1980:['レコードをすり切れるまで聴いた','喫茶店のナポリタンで育った'],
-    1990:['ポケベルの返事を待った夜がある','レンタルビデオの延滞王'],
-    2000:['ガラケーの着メロを自作した','CDをMDに録音した世代'],
-    2010:['ガラケーからスマホへの移行を覚えている','動画は倍速で見ない派'],
-    2020:['配信で試合を追う','サブスクの解約を忘れがち'],
-    2030:['AIとの付き合い方を心得ている','紙の本をあえて選ぶ']
-  };
-  const BRIDGE_HOOK = {
-    '柔道uniform':'受け身は現場でこそ役に立つと知った','水泳uniform':'息の長さには自信がある',
-    'ラグビーuniform':'当たり負けしない体は職場でも頼られる','野球trade':'肩の強さは現場で重宝されている',
-    '柔道medical':'畳で覚えた体の使い方が患者を支える','ダンスservice':'立ち姿の美しさは踊りで身につけた',
-    '陸上（長距離）office':'営業の外回りは駅伝で鍛えた脚で','ボクシングservice':'減量で覚えた自制心で生きている',
-    '剣道edu':'道場の礼法をそのまま教室に持ち込んだ','水泳student':'朝練で身につけた早起きだけが残った'
-  };
-  const TRAIN_HOOK = {
-    '細マッチョ仕上げ（絞り重視）':['鏡の前の腹筋チェックが日課','揚げ物は週1と決めている'],
-    '機能系（クロスフィット・自重上級）':['公園の鉄棒が遊具に見えない','エレベーターを使わない主義'],
-    'フィジーク級（大会レベルの絞りと逆三角形）':['大会前だけ米を測って食べる','肩幅でドアを測る癖がある'],
-    'パワー系（厚み重視の剛力体型）':['引っ越しのたびに友人から連絡が来る','握手で驚かれるのが日常'],
-    'ボディビル級（過剰な筋肥大）':['袖のあるTシャツ選びに時間がかかる','鶏むね肉の調理法なら本が書ける'],
-    'しっかり鍛えている（中級）':['ジムの常連に名前を覚えられている','プロテインの味にうるさい'],
-    '昔は鍛えていた（今は中断）':['ジムの会員証だけは財布にある','ベンチのマックス値だけは覚えている']
-  };
   (function(){
     const A=(k,sc,ro)=>{const m=SPORT_MEM[k]; if(m){m.sc.push(...sc); m.ro.push(...ro);}};
     A('卓球',['ラリーの音だけの放課後'],['サーブの魔術師','守備型カットマンの忍耐','ダブルスの相方に恵まれた']);
@@ -2601,14 +1750,6 @@
     const tierTxt = ((c.role === 'プロスポーツ選手' && m.name === c.sportName) || m.strength >= 2) ? (english ? 'well developed' : 'しっかり') : m.strength >= 0.8 ? (english ? 'moderate' : 'ほどよく') : (english ? 'faint traces' : '名残程度');
     return `${m.name}：${SPORT_MUSCLE[m.name][2]}（${tierTxt}）${hist[1] && hist[1].strength > 0 ? `／${hist[1].name}` : ''}`;
   }
-  const EYE_MIGRATION = {
-    '二重風・親しみやすい目元':{eyelid:'平行二重', eyeShape:'標準的な目の形', eyes:'親しみやすい目元'},
-    '奥二重風・クールな目元':{eyelid:'奥二重', eyeShape:'切れ長の目', eyes:'涼しげな目元'},
-    '切れ長で知的':{eyelid:'一重', eyeShape:'切れ長の目', eyes:'知的な目元'},
-    '丸みのある優しい目元':{eyelid:'末広二重', eyeShape:'丸みのある目', eyes:'優しい目元'},
-    '力強い目元':{eyelid:'末広二重', eyeShape:'アーモンド形の目', eyes:'力強い目元'},
-    '伏し目がちで落ち着いた目元':{eyelid:'奥二重', eyeShape:'たれ目気味の目', eyes:'落ち着いた目元'}
-  };
   function isEastAsianLike(nationality, ethnicity){
     return /日本|韓国|中国|台湾|東アジア|アジア/.test(String(nationality||'') + String(ethnicity||''));
   }
@@ -2725,28 +1866,6 @@
   }
 
   // ===== V1.6.2: 時代設定の反映（顔立ち・体型・髪型・ブランド） =====
-  const BRAND_SINCE = {
-    'UNIQLO':1984,'GU':2006,'無印良品':1980,'MUJI':1980,'ZARA':1998,'H&M':2008,
-    'BEAMS':1976,'UNITED ARROWS':1989,'SHIPS':1977,'GLOBAL WORK':1994,'nano・universe':1999,'URBAN RESEARCH':1989,'JOURNAL STANDARD':1997,
-    'Calvin Klein':1980,'POLO RALPH LAUREN':1972,'TOMMY HILFIGER':1985,'AOKI':1958,'ORIHICA':2000,'SUIT SELECT':1999,'THE SUIT COMPANY':2000,'P.S.FA':1994,
-    'EAST BOY':1989,'OLIVE des OLIVE School':1999,'NIKE':1972,'UNDER ARMOUR':1996,'THE NORTH FACE':1968,
-    'EMPORIO ARMANI':1981,'TOM FORD':2006,'BODY WILD':1993,'DIESEL':1978,'Tabio':2000,'靴下屋':1982,'Paul Smith':1984,
-    'WEGO':1994,'niko and...':2007,'coen':2008,"FREAK'S STORE":1986,'green label relaxing':1999,'RAGEBLUE':1997,'HARE':2001,"Lui's":2008,'STUDIOUS':2008,'SENSE OF PLACE':2016,'BEAUTY&YOUTH':2006,'UNITED TOKYO':2015,
-    'NEIGHBORHOOD':1994,'WTAPS':1996,'visvim':2000,'nonnative':1999,'Supreme':1998,'X-LARGE':1991,'FR2':2016,'HUMAN MADE':2019,'Carhartt WIP':1997,
-    'COMOLI':2011,'AURALEE':2015,'kolor':2004,'sacai':1999,'N.HOOLYWOOD':2000,'White Mountaineering':2006,
-    'mont-bell':1975,'Patagonia':1988,'GRAMICCI':1995,'EDWIN':1961,"Levi's":1971,'BIG JOHN':1968,'KONAKA':1973,'五大陸':1992,'DESCENTE':1961,'le coq sportif':1980,
-    'MUSINSA STANDARD':2017,'TOPTEN':2012,'Covernat':2008,'ADER error':2014,
-    '李寧':1990,'ANTA':1994,'Bosideng':1976,'HLA':2002,'Semir':1996,
-    "O'STIN":2003,'Gloria Jeans':1988,'Sela':1991,
-    'Gap':1969,'Old Navy':1994,'Carhartt':1889,'Dickies':1922,'L.L.Bean':1912,
-    'Marks & Spencer':1884,'Next':1982,'Fred Perry':1952,'Barbour':1894,'Ben Sherman':1963,
-    'A.P.C.':1987,'agnès b.':1975,'SAINT JAMES':1889,
-    'Hugo Boss':1924,'Jack Wolfskin':1981,'s.Oliver':1969,
-    'Diesel':1978,'Benetton':1965,'Stone Island':1982,'Fila':1911,
-    'Massimo Dutti':1985,'Pull&Bear':1991,'Mango':1984,'Desigual':1984,
-    'Havaianas':1962,'Osklen':1989,'Hering':1880,'8seconds':2012,'SPAO':2009,'ANDERSSON BELL':2014,'thisisneverthat':2010,'GXG':2007,'SELECTED':1997,
-    'VAN':1954,'JUN':1958,'D\'URBAN':1970,'TAKEO KIKUCHI':1984,'MEN\'S BIGI':1975,'COMME des GARÇONS HOMME':1978,'A BATHING APE':1993,'UNDERCOVER':1990,'Stüssy':1991,'GAP':1995,'洋服の青山':1964,'はるやま':1955
-  };
   function brandAvailableInEra(brand, year){
     const since = BRAND_SINCE[brand];
     return since === undefined ? true : Number(year) >= since;
@@ -2951,7 +2070,6 @@
     else color = pick(pools.boxerColors);
     return {type, color};
   }
-  const UNDERWEAR_COLOR_EN = {'白':'white','ライトブルー':'light blue','グレー':'gray','ネイビー':'navy','チェック柄':'plaid','ストライプ柄':'striped','無地ネイビー':'plain navy','無地グレー':'plain gray','小紋柄':'subtly patterned','ライトグレー':'light gray','黒':'black','チャコール':'charcoal','ダークグレー':'dark gray'};
   function underwearDesc(c, english=false){
     const mode = c?.mainWearMode || 'ボクサーパンツのみ';
     const brandJa = c?.boxerBrand && c.boxerBrand !== '指定しない' ? `${c.boxerBrand}の` : '';
@@ -2981,69 +2099,12 @@
       : 'ビール腹（張りのあるお腹だけが前に出ている。顔・腕・脚・胸まわりは標準的なままで、全身は太らせない）';
     return v;
   }
-  const FOOT_CFG_AXES = [['scene','場面','Scene'],['posture','座り方','Posture'],['shoeState','靴の状態','Shoes'],['wear','服装','Outfit'],['fabric','靴下の生地状態','Sock Fabric'],['sockState','靴下の着脱','Sock State'],['angle','カメラアングル','Camera Angle'],['prop','足元まわりの小物','Props']];
-  const FOOT_SCENES = [
-    ['玄関で靴を脱ぐ場面','stand','玄関のたたき'],['座敷・和室でくつろぐ','floor','畳'],['自室でくつろぐ','floor','フローリング'],['リビングのソファー周り','chair','カーペット'],['オフィスの椅子まわり（休憩中）','chair','オフィスの床'],['更衣室・ロッカールーム','chair','更衣室の床'],['スリッパに履き替える場面','stand','フローリング'],['ベッドの上でくつろぐ','bed',''],['縁側で休む','floor','縁側の木板'],['小上がりの飲食店','floor','畳'],['畳の休憩室（職場の仮眠室）','floor','畳'],['こたつのある部屋','floor','カーペットとこたつ布団'],['足湯上がりに靴下を履き直した後','chair','ベンチのある床'],['新幹線の座席（靴を脱いでくつろぐ）','chair','車内の床']
-  ];
-  const FOOT_COZY = ['座敷・和室でくつろぐ','自室でくつろぐ','ベッドの上でくつろぐ','縁側で休む','こたつのある部屋','リビングのソファー周り','畳の休憩室（職場の仮眠室）'];
-  const FOOT_POSTURES = [
-    ['床・座敷にあぐらをかく',['floor']],['椅子の上であぐらをかく',['chair']],['足を伸ばして座る',['floor','bed','chair']],['椅子・ソファーで足を組む',['chair']],['普通に椅子・ソファーに座る',['chair']],['足首を交差させて座る',['chair']],['軽くストレッチをしている',['floor','bed']],['正座で座る',['floor']],['横座り（足を崩した正座）',['floor']],['体育座りをする',['floor','bed']],['片膝を立てて座る',['floor']],['立ったまま片足ずつ履き替え中',['stand']],['ソファーに浅く腰掛けて足を投げ出す',['chair']]
-  ];
-  const FOOT_SHOE_STATES = ['脱いだ靴をそばにそろえて置いてある','靴は画面に表示しない','靴を完全に履いている','靴を脱いでいるところ','かかとを踏んでサンダル履きのようにしている','つま先だけ靴に入れてかかとを出している','脱いだ靴の上に足をのせている'];
-  const FOOT_FABRICS = [
-    ['軽い使用感',[1,3],'数回の洗濯を経た柔らかな風合いで、ごくわずかな毛玉がある'],
-    ['日常使いの使用感',[3,4],'生地が少しくたびれ、かかととつま先の色がうっすら薄れている'],
-    ['しっかり履き込んだ状態',[2,2],'毛玉と生地の伸びがあり、かかと部分の生地が薄くなり始めている'],
-    ['履き古した状態',[0.7,0.7],'かかとと親指部分の生地が薄く透け気味で、履き口のゴムがゆるみ、全体に色あせている'],
-    ['長時間履いた後の状態',[4,1.5],'一日履いた後の自然なしわが寄り、足裏にうっすらした踏み跡とくすみがある']
-  ];
-  const FOOT_SOCK_STATES = [
-    ['靴下を履いたまま',12],['片足だけ靴下を脱いでいる途中',0.8],['両足とも靴下を脱いでいる途中',0.4],['靴下を脱いだ直後（素足）',0.4]
-  ];
-  const FOOT_ANGLES = ['自然な目線の高さ','やや低めのアングル','床・座面レベルの低アングル'];
-  const FOOT_OCC_SCENES = {
-    '自衛官':[
-      ['駐屯地の営内居室（白いパイプの2段ベッドが整然と並ぶ明るい大部屋）','chair','明るいリノリウムの床',['きっちり角を揃えて畳んだ布団と毛布','水色のプラスチック収納ボックス','窓際の共用机と椅子','ベッド下につま先を揃えて並べた半長靴','磨き途中の半長靴と靴磨きセット'],true],
-      ['営内の2段ベッドの下段に腰掛けて休む','bed','',['ベッド下の貴重品引き出し','きっちり畳んだ毛布','ロッカーに掛けた迷彩服'],true],
-      ['隊舎の乾燥室・靴磨きスペース','floor','リノリウムの床',['並んだ半長靴と靴墨','手入れ用の布'],false]
-    ],
-    '防衛大学校学生':[
-      ['防衛大学校の学生舎居室（クリーム色の金属パイプ2段ベッドと縞柄マットレス、きっちり畳まれた寝具が並ぶ8人部屋）','bed','木目調のタイルカーペット',['角を揃えて畳んだ毛布と布団','ベッド下のプラスチック収納ボックス','ベッドに隣接したクリーム色のロッカー','2段ベッドの白いはしご','大きな窓から差し込む光'],true],
-      ['学生舎の自習室（壁沿いに机と吊り棚が並び、白いパーティションで区切られた部屋）','chair','ベージュのタイルカーペット',['本棚に並んだ教科書と専門書','緑のデスクマットと卓上スタンド','青い事務椅子','壁掛け時計'],false],
-      ['学生舎の長い廊下で短靴を磨く（白い壁に窓が続く、グレーの石目調の床の直線廊下）','floor','グレーの石目調の床',['靴磨きセット','新聞紙の上に並べた短靴','壁のフックと掲示物','廊下のデジタル時計'],false]
-    ],
-    '警察官':[
-      ['警察の独身寮の自室','floor','フローリング',['ハンガーに掛けた制服','小さなテレビ','湯のみとお茶'],true],
-      ['交番の休憩スペース','chair','事務室の床',['書類とボールペン','支給のお茶'],false]
-    ],
-    '消防士':[
-      ['消防署の仮眠室（青いパーティションで仕切られた個別のベッド区画）','bed','',['天井レールから吊られた薄緑のカーテン','白いシーツのパイプベッド','壁掛け時計','壁に掛けた活動服'],true],
-      ['消防署の食堂・休憩室','chair','リノリウムの床',['大きなやかんと湯のみ','当番表'],false]
-    ],
-    '救急隊員':[
-      ['消防署の仮眠室（青いパーティションで仕切られた個別のベッド区画）','bed','',['天井レールから吊られた薄緑のカーテン','白いシーツのパイプベッド','壁掛け時計','壁に掛けた活動服'],true]
-    ]
-  };
-  const FOOT_SCENE_MIGRATION = {
-    '駐屯地の営内居室（ベッドとスチールロッカーが整然と並ぶ部屋）':'駐屯地の営内居室（白いパイプの2段ベッドが整然と並ぶ明るい大部屋）',
-    '営内のベッドに腰掛けて休む':'営内の2段ベッドの下段に腰掛けて休む',
-    '防衛大学校の学生舎居室（ベッドとロッカーが並ぶ8人部屋）':'防衛大学校の学生舎居室（クリーム色の金属パイプ2段ベッドと縞柄マットレス、きっちり畳まれた寝具が並ぶ8人部屋）',
-    '学生舎の自習室（壁沿いに机と本棚が並ぶパーティション区切りの部屋）':'学生舎の自習室（壁沿いに机と吊り棚が並び、白いパーティションで区切られた部屋）',
-    '学生舎の廊下で短靴を磨く':'学生舎の長い廊下で短靴を磨く（白い壁に窓が続く、グレーの石目調の床の直線廊下）',
-    '消防署の仮眠室':'消防署の仮眠室（青いパーティションで仕切られた個別のベッド区画）'
-  };
-  const FOOT_OCC_CAT_SCENES = {
-    office:[['オフィスのリフレッシュスペース','chair','カーペット',['コーヒーカップ','観葉植物'],false]],
-    it:[['オフィスの仮眠スペース','bed','',['ノートPC','ワイヤレスイヤホン'],true]],
-    student:[['大学のサークル部室','floor','古いカーペット',['マンガ雑誌','部室のポット'],true]]
-  };
   function footOccScenes(role){
     if(!role) return [];
     let rows = (FOOT_OCC_SCENES[role] || []).slice();
     if(!rows.length && typeof OCC_CAT !== 'undefined' && FOOT_OCC_CAT_SCENES[OCC_CAT[role]]) rows = FOOT_OCC_CAT_SCENES[OCC_CAT[role]].slice();
     return rows;
   }
-  const FOOT_PROPS = { generic:['湯のみとお茶','読みかけの本','スマートフォン','クッション','脱いだ上着','そばで丸まる猫'], '新幹線の座席（靴を脱いでくつろぐ）':['駅弁とお茶','車窓を流れる景色','膝の上のバッグ'], 'こたつのある部屋':['みかんと湯のみ','こたつ布団'] };
   function footCfg(c){ const base={scene:'ランダム',posture:'ランダム',shoeState:'ランダム',wear:'ランダム',fabric:'ランダム',sockState:'ランダム',angle:'ランダム',prop:'ランダム'}; const out = Object.assign(base, (c && c.footScene) || {}); if(FOOT_SCENE_MIGRATION[out.scene]) out.scene = FOOT_SCENE_MIGRATION[out.scene]; return out; }
   function footAxisOptions(axis){
     if(axis==='scene') return FOOT_SCENES.map(x=>x[0]).concat(footOccScenes(current && current.role).map(x=>x[0]));
@@ -3093,15 +2154,6 @@
     if(english) return c.workUniform ? `Work outfit for the outfit panels: ${c.workUniformEn} — top: ${c.top}${uniformJacketPhrase(c, true)}, bottom: ${c.bottom}${uniformHatPhrase(c, true)}, socks: ${c.sockBrand} ${c.sockType} (${c.sockColor}), shoes (only where allowed): ${c.shoes}. Do not reproduce real organizations' insignia or logos.` : `Suggested outfit for the outfit panels: ${c.outfitBrand} ${c.outfitType} — outerwear: ${c.jacket}, top: ${c.top}, bottom: ${c.bottom}, socks: ${c.sockBrand} ${c.sockType} (${c.sockColor}), shoes (only where allowed): ${c.shoes}.`;
     return c.workUniform ? `服装パネルの内容：${c.workUniform}。トップスは${c.top}${uniformJacketPhrase(c, false)}、ボトムスは${c.bottom}${uniformHatPhrase(c, false)}、靴下は${c.sockBrand}の${c.sockType}（${c.sockColor}）、靴（許可されたパネルのみ）は${c.shoes}。実在組織の記章・ロゴは正確に再現しない。` : `提案服装パネルの内容：${c.outfitBrand}の${c.outfitType}。上着は${c.jacket}、トップスは${c.top}、ボトムスは${c.bottom}、靴下は${c.sockBrand}の${c.sockType}（${c.sockColor}）、靴（許可されたパネルのみ）は${c.shoes}。`;
   }
-  const POSTER_FOOT = {
-    '僧侶':['寺内や和室の場面なら素足や足袋・雪駄が自然。屋外なら雪駄や作業用の履物を選ぶ','in a temple or tatami setting, bare feet or tabi/setta sandals are natural; outdoors, setta or work footwear'],
-    '書道家':['和室で揮毫する構図なら素足または足袋が自然','bare feet or tabi are natural if he is writing in a tatami room'],
-    '寿司職人':['カウンター内の板前姿なら白衣に雪駄や厨房履きが自然','setta sandals or kitchen footwear suit his whites behind the counter'],
-    '漁師':['船上や浜の場面では長靴のほか、素足やサンダルが自然な場合もある','on a boat or beach, bare feet or sandals can be as natural as rubber boots'],
-    '農家':['田畑では長靴が基本だが、田植えの場面なら素足も自然','rubber boots are standard in the fields, but bare feet are natural in a rice-planting scene'],
-    '体育教師':['体育館の場面では室内シューズ、道場なら素足が自然','indoor shoes in a gym, or bare feet in a dojo setting'],
-    'ジムトレーナー':['トレーニングシューズが基本だが、ストレッチエリアなら素足も可','training shoes as standard, bare feet acceptable in a stretch area']
-  };
   function posterFootNote(c, english=false){
     const sp = POSTER_FOOT[c.role];
     if(english) return `Footwear should be whatever is most natural for his occupation and the chosen scene${sp ? ` — for him: ${sp[1]}` : ''}. If shoes would look unnatural (tatami rooms, dojos, beaches, etc.), consider bare feet, tabi, setta/geta sandals, or other footwear instead of defaulting to shoes and socks. `;
@@ -3204,12 +2256,6 @@
     if(english) return `Physique guide: about ${hc} heads tall — ${coreEn}.${frameSentence(c, true)}${extraEn}${panel}${guard}`;
     return `体格の目安：約${hc}頭身。${core}。${frameSentence(c, false)}${extra}${panel}${guard}`;
   }
-  const FOOT_WIDTHS = [
-    ['E（やや細め）','すっきりした細めの足幅。甲は薄めで、足の輪郭が直線的','a slim foot width with a low instep and straight outline'],
-    ['2E（標準）','標準的な足幅。甲の厚みも平均的で自然なバランス','a standard foot width with average instep thickness'],
-    ['3E（幅広）','幅広の足。母趾球・小趾球の張りがはっきりし、甲にしっかりした厚み','a wide foot with pronounced ball of the foot and a thick instep'],
-    ['4E（幅広・甲高）','かなり幅広で甲高。足全体にどっしりした量感があり、指の付け根が横に広がる','a very wide, high-instep foot with a solid, weighty volume']
-  ];
   function calcFootWidth(c){
     const bt = String(c.bodyType || '');
     const bmi = bmiOf(c);
@@ -3228,69 +2274,6 @@
     const row = FOOT_WIDTHS.find(x=>x[0]===name) || FOOT_WIDTHS[1];
     return english ? `foot width ${row[0]}: ${row[2]}` : `ワイズ${row[0]}：${row[1]}`;
   }
-  const FOOT_FEATURES = [
-    ['特徴なし・整った足', 10, 0, ''],
-    ['軽度の外反母趾', 2, 35, '親指の付け根がわずかに内側へ張り出しているが、痛々しくならない自然な範囲'],
-    ['軽度の内反小趾', 1.5, 30, '小指が内側へ軽く傾いている'],
-    ['扁平足気味', 2, 0, '土踏まずが浅い'],
-    ['ハイアーチ気味', 1.5, 0, '土踏まずが高く甲が立っている'],
-    ['浮き指気味', 1, 0, '立ったとき指先が床から軽く浮きやすい'],
-    ['足指の間が開きやすい', 1, 0, '指離れのよい健康的な足'],
-    ['かかとが小さめ', 1, 0, 'かかとの丸みがコンパクト'],
-    ['くるぶしがくっきりした足', 1.5, 0, 'くるぶしの骨格が立体的に浮き出ている'],
-    ['指の関節がしっかりした節のある足', 1.5, 0, '指の関節の骨感がはっきりした男性的な足'],
-    ['長時間の立ち仕事の跡', 1.5, 0, '母趾球にうっすらした硬さがある、立ち仕事らしい生活感のある足'],
-    ['アキレス腱がくっきり浮き出た引き締まった足首', 1, 0, 'アキレス腱の輪郭がくっきり浮き出て、足首が引き締まっている'],
-    ['足首が太くしっかりした跳躍系の足', 0.8, 0, '足首まわりが太く安定感があり、跳躍競技らしい力強さがある'],
-    ['母趾球が発達して張り出した足', 0.8, 0, '母趾球が発達して内側にしっかり張り出している'],
-    ['指が長くしなやかな足', 1, 0, '足指が長くしなやかに伸びている'],
-    ['すねから続く腱の筋が浮いた競技者の足首', 0.8, 0, 'すねから足首にかけて腱の筋がうっすら浮いた競技者らしい足'],
-    ['引き締まった細めの足首（ブーツ生活の足）', 0.5, 0, 'ブーツや半長靴での生活を思わせる、引き締まった細めの足首'],
-    ['前足部が扇形にしっかり広がった足', 0.8, 0, '指の付け根から前足部が扇形にしっかり広がっている'],
-    ['第2趾が特に長い足', 1.2, 0, '第2趾（人差し指）が親指より目立って長い'],
-    ['指の長さがほぼ揃った端正な前足部', 1.2, 0, '足指の長さがほぼ揃った端正な前足部'],
-    ['かかとが大きくしっかりした足', 1, 0, 'かかとが大きくどっしりと安定している'],
-    ['甲が丸く盛り上がった肉厚の甲', 1, 0, '甲が丸く盛り上がり、肉厚で量感がある'],
-    ['甲が薄く腱のラインがうっすら見える足', 1, 0, '甲が薄く、伸ばした指の腱のラインがうっすら見える'],
-    ['小指が小さく丸い足', 1, 0, '小指が小さく丸みを帯びている'],
-    ['親指がまっすぐで力強い足', 1.2, 0, '親指がまっすぐ伸びて力強い印象がある']
-  ];
-  const SOLE_TYPES = [
-    ['すっきり細長型', 4, '輪郭が直線的で細長く、かかとは小さめ。足裏はなめらかでしわが少ない', 'a slim, elongated sole with a straight outline, small heel, and smooth skin'],
-    ['幅広肉厚型', 3, '全体に幅広で肉厚。かかとが大きく丸く、足裏に柔らかな量感がある', 'a wide, thick sole with a large round heel and soft volume'],
-    ['内側カーブ型', 2.5, '内側の土踏まず側のくびれが強く、母趾球の張り出しがはっきりした輪郭', 'a sole with a strong inner-arch curve and a pronounced ball of the foot'],
-    ['親指主導型', 2.5, '親指が大きく存在感があり、土踏まずの陰影が深い', 'a sole led by a large, prominent big toe with a deeply shaded arch'],
-    ['しわ深型', 2, '足裏全体に細かいしわが多く寄り、幅広でスクエアな輪郭', 'a wide, squarish sole covered in fine creases'],
-    ['均整なめらか型', 4, '輪郭・パッド・かかとのバランスが取れた、なめらかで標準的な足裏', 'a smooth, well-balanced standard sole'],
-    ['パッド発達型', 2.5, '母趾球・小趾球のパッドが発達して盛り上がり、土踏まずに筋張ったアーチ線が走る', 'developed pads at the ball and outer edge, with taut arch lines across the instep'],
-    ['ハイアーチ型', 2, '土踏まずが深く、前足部パッドとかかとの接地面がはっきり分かれ、中央がくびれる', 'a high-arched sole where forefoot pad and heel are clearly separated by a deep waist'],
-    ['細身指長型', 2.5, '細身で指が長く、かかとも細め。しわは浅く上品な印象', 'a slender sole with long toes, a narrow heel, and shallow refined creasing'],
-    ['コンパクト丸型', 2.5, '全体に丸みがあり、ふっくらしたパッドと丸いかかとのコンパクトな足裏', 'a compact, rounded sole with plump pads and a round heel'],
-    ['指間開き型', 2, '足指の間に隙間があり指離れがよく、甲側から続く腱の線がうっすら見える', 'a sole with naturally spread toes and faint tendon lines continuing from the instep'],
-    ['武骨大判型', 2, '大きくどっしりした足裏で、後半部にしわが多く、働く足らしい武骨な質感', 'a large, sturdy sole with heavy creasing toward the heel — a hardworking foot']
-  ];
-  const SOLE_WRINKLES = [
-    ['しわ少なめ', 'しわは少なく、なめらかな質感', 'few creases; smooth texture'],
-    ['標準的なしわ', '土踏まずと指の付け根に自然な浅いしわ', 'natural shallow creases at the arch and toe bases'],
-    ['しわ多め', '土踏まずと指の付け根に細かいしわがはっきり寄る', 'fine creases gather clearly at the arch and toe bases']
-  ];
-  const TOE_LINES = [
-    ['まっすぐ前を向いたそろった並び', 5, '各指がまっすぐ前を向き、自然に整列している', 'toes point straight ahead in a natural, even row'],
-    ['指先が密着した並び', 3, '指同士がぴったり寄り添い、すき間なく並ぶ', 'toes rest snugly together with no gaps'],
-    ['親指側へゆるやかに流れる並び', 2.5, '第2〜5趾が親指方向へゆるやかに傾く', 'the lesser toes lean gently toward the big toe'],
-    ['小指側へ開き気味の並び', 2, '指全体が外側へ広がるように傾く', 'the toes lean slightly outward toward the little-toe side'],
-    ['扇状に均等に開いた並び', 2.5, '指が扇のように均等な角度で開く', 'the toes spread evenly like a fan'],
-    ['親指と第2趾の間にすき間がある並び', 2, '親指だけ少し独立し、間にはっきりしたすき間がある', 'a clear gap sits between the big toe and second toe'],
-    ['全指の間に軽いすき間のある離れのよい並び', 2, 'どの指の間にも空気の通るすき間がある', 'light, airy gaps between every toe'],
-    ['小指が内側へ丸まり気味の並び', 2, '小指が軽く内へ丸まり、爪が外を向く', 'the little toe curls slightly inward with its nail facing outward'],
-    ['第2趾が少し前へ出て目立つ並び', 2, '第2趾が一歩前に出て存在感がある', 'the second toe steps slightly forward and stands out'],
-    ['指の付け根ラインが強くカーブした並び', 1.5, '指の付け根の並びが弧を描き、指先の高さに段差がつく', 'the toe-base line curves strongly, stepping the toe tips at different heights']
-  ];
-  const TOE_CURLS = [
-    ['指先がわずかに上へ反った自然な状態', 4, 'toe tips lifted in a slight natural upward curl'],
-    ['指がフラットに伸びた状態', 4, 'toes extended flat and relaxed'],
-    ['指を軽く曲げたリラックスした状態', 3, 'toes loosely bent in a relaxed way']
-  ];
   function chooseSoleType(c){
     const fw = String(c.footWidth || '');
     const fs2 = String(c.footShape || '');
@@ -3430,7 +2413,6 @@
     if(english) return detailed ? ` Foot trait: ${name} — ${detail} (depict subtly and anatomically correctly, never exaggerated into deformity).` : ` Foot trait: ${name} (only to the extent naturally visible).`;
     return detailed ? `足の特徴：${name}（${detail}。誇張して変形させず、解剖学的に正確な範囲で控えめに描く）。` : `足の特徴：${name}（自然に分かる範囲で）。`;
   }
-  const FACE_EXTRA_DEFAULTS = {jawChin:'標準的な顎先', jawAngle:'ほどよく張ったエラ', ear:'標準的な耳', forehead:'標準的な広さの額', hairline:'直線的な生え際', cheek:'標準的な頬', dimple:'えくぼなし', mole:'ほくろなし', eyeBags:'クマなし', adamsApple:'標準的なのどぼとけ', lipTone:'標準的な血色の唇', browRidge:'彫りは標準的'};
   function eyeAreaLine(c, english=false){
     const eb = c.eyebrow || '標準的なゆるいアーチ眉', ed = c.eyebrowDensity || '標準的な濃さの眉';
     const el = c.eyelid || '末広二重', esh = c.eyeShape || '標準的な目の形', ei = c.eyes || '親しみやすい目元', ela = c.eyelash || '標準的な長さのまつ毛';
@@ -3814,7 +2796,6 @@
 
   let FRIEND_CTX = null;
   /* ===== V3.2 内面・背景プロフィール（プロンプト非反映） ===== */
-  const INNER_DISPLAY_KEYS = ['dream','desire','weakness','talent','past','pronoun','income','origin','education','complex','blood','love'];
   function innerRoleCat(role){
     const r = String(role||'');
     if(/学生|浪人|進路準備/.test(r)) return 'student';
@@ -3828,49 +2809,7 @@
     return 'office';
   }
   function innerAgeBand(age){ const a=Number(age)||25; return a<26?'y':a<46?'m':a<65?'s':'o'; }
-  const INNER_DREAMS = {
-    y: [['安定した会社に勤め続けること',8],['一人暮らしを軌道に乗せること',7],['貯金100万円',7],['彼女を作ること',6],['車を買うこと（中古でいい）',6],['筋肉をつけてモテること',5],['資格を取ること（簿記・TOEIC）',5],['留学すること',3],['友達と旅行に行くこと',5],['バイクで日本一周',2],['配信で有名になること',2],['全国大会に出ること',2],['起業すること',2],['海外バックパック旅行',2],['推し活を全力で続けること',3],['奨学金を完済すること',4],['実家を出ること',4],['フェス皆勤',2],['ゲームの大会で勝つこと',2],['彼女と長続きさせること',4]],
-    m: [['マイホームを建てること',9],['昇進すること',8],['年収を上げること（+100万）',8],['結婚すること',7],['貯金1000万円',6],['転職を成功させること',6],['子どもとの時間を増やすこと',6],['親孝行すること',5],['独立して店を持つこと',3],['副業を軌道に乗せること',4],['資格を取ること（宅建・中小企業診断士）',4],['フルマラソン完走',3],['富士山に登ること',3],['田舎に移住すること',2],['キャンピングカーを買うこと',2],['英語を話せるようになること',4],['楽器を始めること',3],['腹筋を割ること',4],['住宅ローンを繰り上げ返済すること',4],['家族で海外旅行',4],['単身赴任を終えて家に戻ること',2],['ゴルフでスコア90を切ること',3]],
-    s: [['子どもを無事に独立させること',8],['定年まで勤め上げること',8],['退職金で夫婦旅行',6],['健康診断で引っかからないこと',7],['住宅ローン完済',6],['趣味を持つこと',5],['蕎麦打ちを極めること',2],['地域の役に立つこと',3],['同窓会で恥ずかしくない自分でいること',4],['孫の顔を見ること',4],['山小屋を持つこと',1.5],['釣り三昧の老後の準備',3],['妻ともう一度旅行すること',4],['店を長男に継がせること',2]],
-    o: [['孫の成長を見守ること',9],['夫婦で温泉巡り',7],['家庭菜園を続けること',6],['健康で長生きすること',9],['自分史を書くこと',2],['囲碁・将棋仲間と過ごすこと',4],['お迎えが来るまで人に迷惑をかけないこと',5],['戦友・旧友に会いに行くこと',3],['盆栽を極めること',2]],
-    common: [['特に大きな夢はない（現状維持がいちばん）',7],['宝くじを当てること',3],['世界一周',1.5],['痩せること',4],['よく眠ること',3]]
-  };
-  const INNER_DREAM_CAT = { student:[['内定を取ること',9],['単位を落とさず卒業すること',6],['奨学金を借りずに済ませること',3]], creative:[['自分の作品で食べていくこと',6],['賞を取ること',4],['個展・単独ライブを開くこと',3]], sports:[['大会で結果を出すこと',6],['指導者として独立すること',3]], medical:[['専門資格を極めること',5],['開業すること',3]], trade:[['一人前と呼ばれること',6],['自分の店・工房を持つこと',4]], retired:[['悠々自適を貫くこと',8]] };
-  const INNER_DESIRES = [
-    ['楽して稼ぎたい',7],['誰にも縛られず生きたい',6],['もっとちやほやされたい',5],['有名になりたい',4],['働かずに暮らしたい',6],['すべてリセットして知らない土地で暮らしたい',4],['見返してやりたい相手がいる',4],['一番になりたい',4],['誰かに全部決めてほしい',3],['思い切り甘やかされたい',4],['本音を言える相手が欲しい',5],['嫌いなやつ全員に謝らせたい',2],['責任のない立場に戻りたい',4],['大金を一度でいいから持ってみたい',5],['朝まで誰にも起こされず眠りたい',5],['誰かに必要とされたい',5],['過去の自分をやり直したい',4],
-    ['不倫願望が正直ある',1.2,'d'],['浮気願望を抑えている',1.5,'d'],['割り切った大人の関係を求めている',1.5,'d'],['年の離れた相手に強く惹かれる',1.5,'d'],['人妻・既婚者につい目がいってしまう',1,'d'],['風俗通いがやめられない',1,'d'],['ギャンブルで一発当てたい',2,'d'],['借金をチャラにしたい',1.2,'d'],['他人の不幸を聞くと少し安心してしまう',1.5,'d'],['嫌いな上司の失脚を密かに願っている',2,'d'],['元恋人のSNSを監視するのがやめられない',1.5,'d'],['承認欲求が抑えられずSNSで盛ってしまう',2,'d'],['課金がやめられない',2.5,'d'],['酒に逃げたい夜がある',3,'d'],['復讐したい相手が忘れられない',1,'d'],['兄弟より上に立ちたい',1.5,'d'],['親の遺産を少し当てにしている',1.2,'d'],['友人の恋人に惹かれてしまったことがある',1,'d'],['誰かを支配してみたい',0.8,'d'],['ダメだと分かっていて夜遊びが増えている',1.5,'d'],['仕事を全部投げ出して失踪したい',1.5,'d'],['SNSの裏アカで毒を吐いている',1.5,'d'],['宝石や時計など分不相応な買い物への衝動がある',1.5,'d'],['「自分だけは特別」だと思いたい',2,'d']
-  ];
-  const INNER_WEAK_MIND = [
-    ['優柔不断',7],['見栄っ張り',6],['断れない性格',7],['三日坊主',7],['朝に極端に弱い',6],['締切に弱い',5],['嘘がすぐ顔に出る',5],['打たれ弱い',5],['根に持つタイプ',4],['沸点が低い',3],['女性の前だと挙動不審',4],['心配性で眠れなくなる',4],['優先順位がつけられない',4],['話が長い',4],['自分語りが止まらない',3],['説教くさくなる',3],['マウントを取りがち',2.5],['貧乏ゆすりが出る',3],['緊張すると早口になる',4],['褒められると調子に乗る',5],['LINEの返信を溜める',5],['土壇場で日和る',4],['人の名前が覚えられない',4],['察してほしがる',3],['謝るのが下手',4],['負けを認められない',3],
-    ['酒癖が悪い',2.5,'d'],['酒が入ると説教モードになる',2,'d'],['ギャンブルにのめり込みやすい',1.5,'d'],['浪費癖',2.5,'d'],['虚言癖の気がある',1,'d'],['嫉妬深い',2,'d'],['束縛しがち',2,'d'],['面倒になると音信不通になる',2,'d'],['借りたものを返し忘れる',2.5,'d'],['逃げ癖',2.5,'d'],['時間にルーズ',3,'d'],['二日酔いのまま出勤しがち',2,'d'],['気に入らない相手を露骨に無視してしまう',1.5,'d'],['調子のいいことを言って忘れる',2.5,'d']
-  ];
-  const INNER_WEAK_BODY = [
-    ['腰痛持ち',6],['猫背',6],['花粉症',7],['慢性鼻炎',5],['胃が弱い',5],['酒に弱い（下戸）',4],['乗り物酔いしやすい',4],['汗っかき',5],['冷え性',3],['低血圧',4],['偏頭痛持ち',3],['虫歯になりやすい',4],['古傷の膝が弱い',3],['肩こりがひどい',6],['体力がない',4],['すぐ日焼けで真っ赤になる',3],['アルコールで顔が真っ赤になる',4],['寝相が悪い',4],['いびきがひどい',3],['金縛りにあいやすい',2],['蕁麻疹が出やすい',2],['逆流性食道炎気味',3],['寝つきが悪い',4],['視力が悪い',5],['雨の日に古傷が痛む',2],
-    ['痔と静かに闘っている',2,'d'],['水虫と長期戦をしている',1.5,'d'],['加齢臭を気にしている',2,'d'],['足の臭いに自信がない',2,'d'],['お腹を下しやすい（通勤が怖い）',3,'d'],['健康診断の数値から目を逸らしている',3,'d']
-  ];
-  const INNER_TALENTS = [
-    ['絶対音感がある',1],['味覚が異常に鋭い',1.5],['方向感覚が抜群',2.5],['一度会った人の顔を忘れない',2],['暗算が速い',2],['字が異常にうまい',2],['モノマネが妙に似ている',2.5],['早口言葉を噛まない',1.5],['利きコンビニおにぎりができる',1.5],['どこでも3秒で眠れる',3],['動体視力が良い',2],['一度食べた料理を再現できる',1.5],['機械の故障箇所を音で当てられる',1],['犬に異常に好かれる',2.5],['赤ちゃんを泣き止ませられる',2],['値切りがうまい',2],['嘘を見抜くのが得意',1.5],['円周率を100桁言える',1],['けん玉が上手い',1.5],['ルービックキューブが速い',1.5],['口笛が異常にうまい',2],['絵が描ける',2.5],['即興で詩が作れる',1],['麻雀が強い',2],['ポーカーフェイスが完璧',1.5],['危機察知能力が高い',2],['逃げ足だけは速い',2],['場を白けさせない話術',2.5],['宴会芸のレパートリーが多い',2],['声がとにかく通る',2],['どんな鍵も一発で開け…られそうな器用さ',1],['気配を消すのがうまい',1.5],['写真写りが常に良い',2],['雨男/晴れ男の的中率が高い',1.5],['パンの袋を音を立てずに開けられる',1.5],['自販機の当たりを引きがち',1],['テトリスが異常に強い',1.5],['聞き上手',3],['地図が読める',2.5],['料理の盛り付けセンスがある',2],['筋トレのフォームが完璧',1.5],['カラオケの採点で95点を切らない',1.5],['プレゼンだけは天才的',1.5],['謝罪文を書かせたら右に出る者がいない',1],['競馬の予想がなぜか当たる',1,'d'],['パチンコの台選びの嗅覚',0.8,'d'],['サボっているのがバレない',1.2,'d'],['説得力のある言い訳が即興で作れる',1.2,'d']
-  ];
-  const INNER_UPBRINGINGS = [
-    ['平凡で穏やかな家庭で育つ',12],['厳格な父親のもとで育つ',5],['放任主義の家庭で育つ',5],['過干渉の母に育てられる',3.5],['転校を繰り返した少年時代',3],['部活漬けの学生時代',6],['帰宅部で目立たない学生時代',6],['生徒会長をやらされたことがある',2],['初恋の相手に手ひどく振られた',4],['ゲームばかりの少年時代',5],['本ばかり読んでいた少年時代',4],['祖父母の家で夏を過ごす少年時代',5],['鍵っ子だった',4],['兄の背中を追いかけて育つ',3.5],['妹弟の面倒を見て育つ',3.5],
-    ['いじめられた時期がある',2,'r'],['いじめる側にいた時期がある（今も悔いている）',1,'d'],['不登校の時期がある',1.5,'r'],['荒れていた時期がある（元ヤン）',1.5,'d'],['親の借金で進学を諦めかけた',1,'r'],['大切な人を早くに亡くした',1.5,'r'],['大病で長期入院を経験',1.2,'r'],['交通事故で入院したことがある',1.5],['親の離婚を経験',2.5],['夜逃げ同然の引っ越しを経験',0.8,'d'],['家業の倒産を経験',1,'r'],['学級崩壊のクラスで過ごした',1.5],['児童養護施設で育った時期がある',0.6,'r'],['海外で育った帰国子女',1,'r'],['山村留学を経験',0.6,'r']
-  ];
-  const INNER_TRAUMAS = [
-    ['深い水（溺れかけた経験）',3],['犬（噛まれた経験）',3],['高所',4],['閉所',3],['雷',2],['注射',3],['人前で話すこと',4],['大人数の飲み会',3],['電話の着信音',2],['異性に容姿を笑われた記憶',2.5,'d'],['舞台で頭が真っ白になった記憶',2.5],['告白を公開処刑された記憶',2,'d'],['交通事故の瞬間のフラッシュバック',1.5,'r'],['火事の記憶',1,'r'],['大地震の揺れ',2],['借金取りの電話の記憶',0.8,'d'],['父親の怒鳴り声',1,'r'],['親友に裏切られた記憶',1.5,'d'],['軍隊式の部活合宿',2],['成人式で恥をかいた記憶',1.5],['結婚式のスピーチで滑った記憶',1.5],['SNSで晒された記憶',1,'d'],['職場で吊るし上げられた記憶',1.2,'d'],['満員電車で倒れた記憶',1.5]
-  ];
-  const INNER_PRONOUNS_BASE = [['俺',13],['オレ',5.5],['おれ',3.5],['僕',4.5],['ボク',1],['ぼく',0.7],['私',2.2],['わたくし',0.3,'r'],['自分',2.5],['わし',0.3],['うち',0.4,'r'],['名前呼び',0.2,'r'],['場面で使い分ける（俺⇄僕⇄私）',2],['一人称がまだ確立していない',0.8]];
-  const INNER_LOVE_BASE = [['女性',86],['男性',3.5,'r'],['男女どちらも',2.5,'r'],['まだ揺らいでいて分からない',2,'r'],['恋愛にあまり興味がない',3,'r'],['二次元にしか本気になれない',1,'r'],['恋愛よりも推しがすべて',0.7,'r']];
-  const INNER_LOVE_NOTES = [['年上に惹かれがち',5],['年下が好み',4],['同い年が落ち着く',4],['面食い',4],['性格重視',5],['声フェチ',2.5],['手フェチ',1.5,'d'],['匂いに弱い',1.5,'d'],['うなじに弱い',1.5,'d'],['惚れっぽい',4],['冷めやすい',3],['一途',5],['依存しがち',2,'d'],['束縛強め',1.5,'d'],['尽くしすぎて重いと言われる',2,'d'],['ダメな相手ばかり好きになる',2,'d'],['既婚者に惹かれてしまう悪癖',0.6,'d'],['元カノを引きずっている',2,'d'],['押しに弱い',3],['高嶺の花ばかり狙って玉砕する',2],['笑いのツボが合う人に弱い',4],['ギャップに弱い',4],['メガネに弱い',2],['ショートカットに弱い',2.5],['ポニーテールに弱い',2],['浴衣に弱い',1.5],['母性に弱い',2,'d'],['褒められるとすぐ好きになる',3]];
-  const INNER_ORIGINS = [
-    ['ごく普通のサラリーマン家庭の長男',9],['ごく普通のサラリーマン家庭の次男',8],['共働き家庭の一人っ子',7],['公務員家庭で育つ',5],['教師の家庭で育つ',3.5],['三兄弟の末っ子',4],['四人姉弟の長男（姉3人）',1.5],['農家の長男',3],['漁師町の生まれ',2],['商店街の実家（酒屋）',1.5],['商店街の実家（食堂）',1.5],['町工場の家の生まれ',2],['老舗和菓子屋の息子',0.8,'r'],['開業医の家系',0.7,'r'],['寺の息子',0.8,'r'],['神社の家系',0.6,'r'],['転勤族の家庭で育つ',3.5],['社宅育ち',3],['団地育ち',4],['母子家庭で育つ',3],['父子家庭で育つ',1.5],['祖父母に育てられた',1.5],['再婚家庭で育つ',1.5],['大家族（5人兄弟）の三男',1],['裕福な家庭の生まれ',1.2,'r'],['資産家の家系（本人は普通に勤めている）',0.6,'r'],['元経営者の家（会社は畳んだ）',1],['温泉旅館の息子',0.6,'r'],['離島の生まれ',0.8,'r'],['山間の集落の生まれ',1],['海外駐在帰りの家庭',1,'r'],['移民二世の家庭',0.8,'r'],['政治家の遠い親戚筋（本人は無関係）',0.4,'r'],['生活保護世帯で育った',0.5,'d'],['借金を抱えた家庭で育った',0.8,'d'],['芸能一家の端くれ',0.3,'r']
-  ];
-  const INNER_COMPLEX_GENERIC = [
-    ['声が高いこと',3],['声が低すぎて聞き返されること',2],['滑舌の悪さ',3.5],['方言が抜けないこと',3],['音痴なこと',3.5],['泳げないこと',3],['球技が壊滅的なこと',3],['字が下手なこと',4],['笑い方が独特なこと',2.5],['汗っかきなこと',3],['手が小さいこと',1.5],['指が短いこと',1.5],['太りやすい体質',3.5],['筋肉がつきにくいこと',2.5],['胸板が薄いこと',2.5],['若白髪',2],['天然パーマ',2.5],['癖毛',3],['緊張するとすぐ赤面すること',3],['手汗',2],['名前が古風すぎること',1.5],['名前がキラキラ気味なこと',1],['兄と比べられて育ったこと',2],['学生時代のあだ名',2.5],['涙もろすぎること',2],['歯ぎしり',1.5],['箸の持ち方',2],['絵心のなさ',2.5],['写真写りの悪さ',3],
-    ['女性経験の少なさ',2,'d'],['実は童貞であること',0.8,'d'],['下の毛の濃さ',0.8,'d'],['包茎気味であること',0.5,'d'],['体臭への不安',2,'d'],['足の臭い',2,'d'],['ワキの汗染み',2,'d'],['いびきを指摘されたこと',2,'d'],['収入の低さ',2.5,'d'],['貯金のなさ',3,'d'],['職場で年下に敬語を使われないこと',1.5,'d']
-  ];
-  const INNER_BLOOD_DIST = {
-    '日本':[38,31,22,9],'韓国':[34,28,27,11],'中国':[28,41,24,7],'台湾':[26,44,24,6],'ロシア':[36,33,23,8],'アメリカ':[40,45,11,4],'カナダ':[42,46,9,3],'イギリス':[42,47,8,3],'フランス':[45,43,9,3],'ドイツ':[43,41,11,5],'イタリア':[41,46,10,3],'スペイン':[44,46,8,2],'スウェーデン':[44,38,12,6],'ポーランド':[38,33,20,9],'トルコ':[44,33,16,7],'ブラジル':[41,47,9,3],'メキシコ':[31,61,6,2],'アルゼンチン':[40,49,8,3],'タイ':[21,38,34,7],'ベトナム':[21,42,31,6],'フィリピン':[25,45,25,5],'インドネシア':[25,41,27,7],'マレーシア':[24,39,30,7],'インド':[22,37,33,8],'モンゴル':[22,36,33,9],'ナイジェリア':[23,52,21,4],'オーストラリア':[38,49,10,3]
-  }; // [A,O,B,AB]
+ // [A,O,B,AB]
   const INNER_RHNEG = (nat)=>/日本|韓国|中国|台湾|タイ|ベトナム|フィリピン|インドネシア|マレーシア|モンゴル/.test(nat)?0.005:/インド/.test(nat)?0.05:/トルコ/.test(nat)?0.1:/ナイジェリア/.test(nat)?0.04:/ブラジル|メキシコ|アルゼンチン/.test(nat)?0.08:0.15;
   function innerWeighted(list, extra){
     const cand = (extra ? list.concat(extra) : list).map(x=>[x, Math.max(0.01, x[1])]);
@@ -3947,9 +2886,6 @@
     const it = innerWeighted(list);
     return [it[0], innerBadgeOf(it, 0, list)];
   }
-  const INNER_INCOME_TABLE = [
-    [/医師|歯科医師/, 900, 1800],[/弁護士/, 700, 1500],[/パイロット/, 1000, 1700],[/公認会計士/, 650, 1200],[/コンサルタント/, 550, 1100],[/商社/, 550, 1200],[/銀行員/, 480, 900],[/研修医/, 400, 550],[/薬剤師/, 480, 650],[/看護師/, 400, 580],[/理学療法士/, 350, 480],[/介護士/, 280, 380],[/ITエンジニア|アプリ開発|ゲーム開発/, 450, 850],[/公務員|消防士|警察官|自衛官|教師|教員|教官|司書|国鉄/, 380, 680],[/プロスポーツ選手/, 400, 5000],[/モデル|俳優|ミュージシャン|お笑い芸人|声優/, 150, 900],[/YouTuber|プロゲーマー|動画クリエイター/, 120, 1500],[/デザイナー|カメラマン|編集者|イラストレーター|映像/, 320, 650],[/アナウンサー/, 550, 1100],[/新聞記者/, 500, 850],[/建築士/, 450, 750],[/大工|電気工事士|自動車整備士/, 350, 600],[/工場勤務|配送|引越し|警備員|郵便/, 300, 480],[/タクシー|バス運転手|電車運転士/, 350, 600],[/農家|漁師/, 250, 700],[/店長|マスター|店主/, 350, 700],[/アパレル|カフェ|コンビニ|スーパー|家電量販|花屋|書店員|ホテル|バーテンダー|銭湯/, 250, 400],[/美容師|理容師/, 280, 480],[/保育士/, 300, 400],[/塾講師/, 320, 550],[/大学研究員/, 400, 700],[/ジムトレーナー|インストラクター|ライフガード/, 280, 480],[/シェフ|パティシエ|寿司職人|ラーメン/, 300, 600],[/僧侶/, 300, 600],[/書道家|古着屋/, 200, 500],[/営業|経理|事務|企画|不動産/, 380, 650]
-  ];
   function chooseInnerIncome(c){
     const role = String(c.role||''), age = Number(c.age)||25, cat = innerRoleCat(role);
     if(cat==='student'){
@@ -4139,37 +3075,6 @@
   INNER_LOVE_NOTES.push(['敬語が可愛い人に弱い',2.5],['食べっぷりのいい人に弱い',3],['方言に弱い',2.5],['年の差は気にしない',2.5],['同じ趣味の人がいい',3.5],['連絡はマメな方',3],['連絡不精で振られがち',2.5,'d'],['理想が高いと言われる',2.5]);
 
   // --- 新規データプール ---
-  const INNER_HOBBY_GENERIC = [['サウナ通い',4],['筋トレ',5],['ランニング',4],['フットサル',2.5],['ゴルフ練習場通い',2.5],['釣り',3],['キャンプ',3],['登山',2.5],['ロードバイク',2],['自炊・料理',4],['ラーメン食べ歩き',3.5],['カレー屋巡り',2],['コーヒー（豆から淹れる）',2.5],['クラフトビール巡り',2],['日本酒の飲み比べ',2],['映画鑑賞',5],['ミニシアター通い',1.5],['読書',4],['マンガ',4],['ゲーム（FPS）',3],['ゲーム（RPG）',3],['レトロゲーム収集',1.5],['ボードゲーム会',1.5],['麻雀',2],['将棋アプリ',2],['カメラ・写真',3],['フィルムカメラ',1.5],['プラモデル',2],['ガンプラ',2],['鉄道（乗り鉄）',1.5],['御朱印集め',1.5],['城巡り',1.5],['美術館巡り',2],['水族館巡り',1.5],['観葉植物',2.5],['熱帯魚・アクアリウム',1.5],['メダカ飼育',1.2],['DIY',2.5],['車いじり',2],['バイクツーリング',2],['スニーカー収集',2],['古着屋巡り',2],['レコード収集',1.5],['ギター',2.5],['カラオケ',3],['ダーツ',1.5],['ビリヤード',1.2],['ボルダリング',1.5],['サーフィン',1.2],['スノボ（冬季）',2],['野球観戦',3],['サッカー観戦',2.5],['温泉巡り',3],['銭湯巡り',2.5],['食べ歩きブログ巡回',2],['ポイ活',1.5],['競馬（趣味の範囲）',1.5,'d'],['盆栽',1,'r'],['蕎麦打ち',0.8,'r'],['献血（趣味と言い張る）',0.8,'r']];
-  const INNER_HOBBY_BY_VIBE = {'スポーツ系':[['フットサル',6],['ジム通い',6],['ランニング',5]],'古着系':[['古着屋巡り',8],['レコード収集',3]],'オタク系':[['アニメ鑑賞',7],['ゲーム（RPG）',6],['フィギュア収集',3]],'アウトドア系':[['キャンプ',8],['登山',6],['釣り',4]],'バンドマン系':[['ギター',8],['ライブ通い',5],['機材集め',4]],'レトロ系':[['純喫茶巡り',7],['フィルムカメラ',4]],'メガネ知的系':[['読書',7],['美術館巡り',4]],'おじさん系':[['銭湯巡り',6],['晩酌の肴づくり',5],['競馬（趣味の範囲）',2,'d']],'ギャル男系':[['サウナ通い',6],['クラブ・音楽イベント',4]],'ホスト系':[['筋トレ',6],['美容・スキンケア研究',5]],'サブカル系':[['ミニシアター通い',6],['レコード収集',4],['ZINE集め',2]],'清楚系':[['カフェで読書',6],['植物の世話',3]],'ヤンキー系':[['バイクいじり',7],['地元の草野球',3]],'韓国風':[['カフェ巡り',5],['ファッション研究',4]]};
-  const INNER_MYBOOM_MODERN = [['朝サウナ',4],['白湯を飲むこと',3],['オートミールアレンジ',2],['二郎系ラーメン開拓',3],['韓国ドラマ一気見',2.5],['ショート動画の沼',3],['推し配信者の切り抜き巡回',2],['プロテインの味比べ',3],['コンビニ新作スイーツ評論',3.5],['スマートウォッチの睡眠スコア',2.5],['キャンプ飯動画',2.5],['サブスクの解約整理',2],['歩数計チャレンジ',2],['冷凍餃子の焼き方研究',3],['電気圧力鍋',2],['ふるさと納税の返礼品研究',2.5],['ノーカフェイン生活（3日目）',2],['AIに献立を決めてもらうこと',1.5],['マイボトル持参',2.5],['昼休みの散歩',3]];
-  const INNER_MYBOOM_COMMON = [['ストレッチ',3.5],['蒙古タンメン的な激辛麺',2.5],['卵かけご飯の醤油研究',3],['納豆のトッピング研究',2.5],['缶コーヒーの飲み比べ',2.5],['靴磨き',2],['クロスワード',1.5],['青春時代の曲を聴き直すこと',3.5],['妻・彼女の真似をした健康法',2],['寝る前の白黒映画',1.2,'r'],['ぬか漬け',1.5],['ベランダ菜園のミニトマト',2.5],['ラジオの深夜放送',2],['手帳・文房具',2],['スクワット',3],['近所の野良猫の観察',2.5],['指のストレッチ',1.5],['出汁を取ること',1.5]];
-  const INNER_MYBOOM_RETRO = [['ビックリマンシール集め',3],['ファミコンの攻略',3],['深夜ラジオのハガキ職人',2],['喫茶店のナポリタン巡り',3],['レンタルビデオ屋の新作チェック',3],['プロ野球ニュースの録画',2.5],['ラジカセでのエアチェック',2.5],['プラモ屋通い',2.5]];
-  const INNER_FOOD_LIKE = [['唐揚げ',7],['餃子',6],['家系ラーメン',4],['味噌ラーメン',4],['豚骨ラーメン',4],['寿司（サーモン）',4],['寿司（中トロ）',3],['焼肉（ハラミ）',5],['焼肉（タン塩）',4],['カレーライス',6],['ハンバーグ',5],['オムライス',4],['親子丼',4],['カツ丼',4.5],['天ぷらそば',3],['讃岐うどん',3.5],['牛丼',5],['麻婆豆腐',4],['チャーハン',5],['ナポリタン',3.5],['生姜焼き',5],['卵かけご飯',4],['明太子',3],['刺身の盛り合わせ',3.5],['焼き鳥（皮）',3],['焼き鳥（ねぎま）',3.5],['もつ煮',3],['おでん（大根）',3],['キムチ鍋',3.5],['もつ鍋',3],['ピザ',3.5],['ステーキ',4],['回転寿司ぜんぶ',3.5],['実家の味噌汁',3.5],['白米そのもの',3.5],['プリン',2.5],['チョコミント',1.5],['大福',2],['シュークリーム',2.5],['メロンパン',2.5],['コンビニのホットスナック',3.5],['駅そば',2.5],['カツカレー',4],['エビフライ',3.5],['ぶり大根',2],['サバの味噌煮',3],['ローストビーフ',2.5],['ペペロンチーノ',2.5],['タコライス',1.5],['ジンギスカン',1.5]];
-  const INNER_FOOD_HATE = [['パクチー',5],['セロリ',4.5],['春菊',3],['ゴーヤ',3.5],['レバー',4],['牡蠣',3.5],['うに',2.5],['納豆',3],['くさや',2],['ブルーチーズ',3],['酢の物',2.5],['らっきょう',3],['梅干し',2.5],['グリンピース',3],['ミニトマト',2.5],['生玉ねぎ',3],['椎茸',3.5],['なす',2.5],['ピーマン',2.5],['激辛料理',3],['甘すぎるスイーツ',2.5],['生クリーム',2.5],['あんこ',2],['ホルモン',2.5],['生もの全般',2],['マヨネーズ',2],['ドリアン',2],['八角の香り',2.5],['山菜の苦み',2],['酢豚のパイナップル',4],['パンに入ったレーズン',3.5],['わさび',2.5],['からし',2],['セロリ以上にパセリ',1.5],['グミ',1.5],['貝類全般',2],['スイカ',1.5],['メロン',1.2],['牛乳',2],['特になし（好き嫌いゼロ）',5]];
-  const INNER_HEALTH_BASE = [['至って健康（風邪もめったに引かない）',7],['おおむね良好',9],['おおむね良好（肩こりだけが友達）',5],['健康だが健診の数値がじわじわ来ている',4],['健康優良（献血の常連）',1.5,'r'],['丈夫だけが取り柄',4],['季節の変わり目に弱い',3],['良好（ただし花粉の季節を除く）',4]];
-  const INNER_HEALTH_MID = [['血圧がやや高め',4],['尿酸値に警告が出ている',3,'d'],['γ-GTPと戦っている',2.5,'d'],['腰と長い付き合い',4],['老眼が始まった',3],['五十肩の気配',2],['健診の再検査を先延ばし中',3,'d'],['禁煙に成功して3年目',2],['禁煙に挑戦中（3回目）',2,'d']];
-  const INNER_LIVING_SINGLE = [['一人暮らし（賃貸アパート）',9],['一人暮らし（賃貸マンション）',6],['実家暮らし',7],['会社の独身寮',2],['社宅住まい',1.5],['友人とルームシェア',1.5],['祖父母の家に同居（家賃代わりに手伝い）',0.8,'r'],['住み込み（職場の上）',0.6,'r']];
-  const INNER_LIVING_MARRIED = [['家族と賃貸マンション',6],['家族と持ち家（ローン返済中）',6],['家族と持ち家（実家を建て替え）',2],['単身赴任中（家族は地元）',1.2,'d'],['妻の実家の近くに新居',1.5],['二世帯住宅（親と同居）',1.5]];
-  const INNER_FRIEND_MEET = [['幼なじみ',5],['小学校からの腐れ縁',4],['中学の部活仲間',4],['高校の同級生',6],['高校の部活仲間',5],['大学のサークル仲間',4],['大学の同期',3.5],['専門学校の同期',2],['職場の同期',5],['前の職場の同期',3],['バイト先で知り合った',3],['行きつけの店の常連仲間',2.5],['サウナで知り合った',1.5],['草野球チームの仲間',2],['ネトゲのフレンド（オフ会で意気投合）',1.5],['ジム仲間',2],['隣の席だっただけの縁',2.5]];
-  const INNER_FRIEND_NAMES = ['ユウタ','ケンジ','ダイキ','ショウ','タクミ','ヒロ','カズ','リョウ','シンジ','マサ','コウジ','テツ','ナオ','ジュン','ゴロー','ハヤト','ワタル','アキラ'];
-  const INNER_FRIEND_FREQ = [['月イチで飲む',5],['週末によく遊ぶ',3],['年2回の旅行が恒例',2],['ほぼ毎日どうでもいい連絡をし合う',3],['連絡は稀だが会えば一瞬で戻る',4],['サシ飲みできる唯一の相手',3],['家族ぐるみの付き合い',2],['月イチのフットサル仲間',2]];
-  const INNER_LOVER_NONE = [['なし（出会いがない）',6],['なし（仕事が恋人）',3],['なし（半年前に破局）',2.5],['なし（絶賛片思い中）',2.5],['なし（マッチングアプリと格闘中）',2.5],['なし（気楽で気に入っている）',3],['なし（友達どまりの人はいる）',2.5]];
-  const INNER_LOVER_YES = [['恋人あり（付き合って3ヶ月）',3],['恋人あり（付き合って1年）',4],['恋人あり（付き合って2年・倦怠期）',2],['恋人あり（学生時代から）',2.5],['恋人あり（遠距離）',1.5],['恋人あり（同棲中）',2.5],['恋人あり（最近ケンカ中）',1.5]];
-  const INNER_MEMORY_BASE = [['修学旅行の夜の告白大会',4],['文化祭の打ち上げ',4],['卒業式で第二ボタンを聞かれなかったこと',2.5],['初めての一人旅',3.5],['免許合宿での出会いと別れ',3],['成人式の同窓会',3.5],['初任給で親に鰻をおごった日',4],['上京の日の新幹線の窓',3],['富士山頂のご来光',2],['夜行バスで見た朝焼け',2.5],['地元の花火大会',4],['祖父母の家の夏休み',4],['台風の日の停電で家族で食べたカップ麺',3],['猫を拾った雨の日',2],['初めて売上目標を達成した日',3],['深夜のファミレスで語り明かした夜',4],['文化祭のバンドでの1曲',2.5],['満員の甲子園アルプス席',1.5],['卒業旅行の朝帰り',3]];
-  const INNER_JP_PREFS = [
-    ['北海道',['札幌市','函館市','帯広市'],4,'north,sea'],['青森県',['青森市','八戸市','弘前市'],1,'tohoku,sea'],['岩手県',['盛岡市','一関市'],1,'tohoku'],['宮城県',['仙台市','石巻市'],2,'tohoku,sea'],['秋田県',['秋田市','横手市'],0.8,'tohoku'],['山形県',['山形市','鶴岡市'],0.8,'tohoku'],['福島県',['郡山市','いわき市','会津若松市'],1.4,'tohoku'],
-    ['茨城県',['水戸市','つくば市','日立市'],2,'kanto'],['栃木県',['宇都宮市','小山市'],1.6,'kanto'],['群馬県',['高崎市','前橋市','草津町'],1.5,'kanto,onsen'],['埼玉県',['さいたま市','川越市','所沢市'],5,'kanto,metro'],['千葉県',['千葉市','船橋市','柏市'],4.5,'kanto,metro,sea'],['東京都',['世田谷区','練馬区','八王子市','足立区'],8,'kanto,metro'],['神奈川県',['横浜市','川崎市','藤沢市'],6.5,'kanto,metro,sea'],
-    ['新潟県',['新潟市','長岡市'],1.6,'sea,snow'],['富山県',['富山市','高岡市'],0.8,'sea'],['石川県',['金沢市','小松市'],1,'sea'],['福井県',['福井市','敦賀市'],0.6,'sea'],['山梨県',['甲府市','富士吉田市'],0.7,'mountain'],['長野県',['長野市','松本市','木曽町'],1.6,'mountain'],['岐阜県',['岐阜市','高山市'],1.4,'nagoya,mountain'],['静岡県',['静岡市','浜松市','沼津市'],2.6,'sea'],['愛知県',['名古屋市','豊田市','岡崎市'],5,'nagoya,metro'],['三重県',['四日市市','津市','鳥羽市'],1.2,'sea'],
-    ['滋賀県',['大津市','草津市'],1,'kansai'],['京都府',['京都市','宇治市'],2,'kansai'],['大阪府',['大阪市','堺市','東大阪市','枚方市'],6,'kansai,metro'],['兵庫県',['神戸市','姫路市','尼崎市','豊岡市'],4,'kansai,sea,onsen'],['奈良県',['奈良市','橿原市'],1,'kansai'],['和歌山県',['和歌山市','田辺市'],0.7,'kansai,sea'],
-    ['鳥取県',['鳥取市','米子市'],0.4,'sea'],['島根県',['松江市','出雲市'],0.5,'sea'],['岡山県',['岡山市','倉敷市'],1.4,''],['広島県',['広島市','福山市','呉市'],2,'hiroshima,sea'],['山口県',['下関市','山口市'],1,'sea'],
-    ['徳島県',['徳島市','鳴門市'],0.6,'sea'],['香川県',['高松市','丸亀市'],0.8,'sea'],['愛媛県',['松山市','今治市'],1,'sea'],['高知県',['高知市','四万十市'],0.6,'tosa,sea'],
-    ['福岡県',['福岡市','北九州市','久留米市'],3.6,'hakata,metro'],['佐賀県',['佐賀市','唐津市'],0.6,'kyushu,sea'],['長崎県',['長崎市','佐世保市','五島市'],1,'kyushu,sea,island'],['熊本県',['熊本市','八代市'],1.2,'kyushu'],['大分県',['大分市','別府市'],0.9,'kyushu,onsen'],['宮崎県',['宮崎市','都城市'],0.8,'kyushu,sea'],['鹿児島県',['鹿児島市','霧島市','奄美市'],1.2,'kyushu,island,onsen'],['沖縄県',['那覇市','沖縄市','石垣市'],1.1,'okinawa,island,sea']
-  ];
-  const INNER_NATION_CITIES = {'韓国':['ソウル','釜山','大邱'],'中国':['上海','北京','広州','成都'],'台湾':['台北','高雄','台中'],'ロシア':['モスクワ','サンクトペテルブルク'],'アメリカ':['ロサンゼルス','ニューヨーク','シアトル','オースティン'],'カナダ':['トロント','バンクーバー'],'イギリス':['ロンドン','マンチェスター'],'フランス':['パリ','リヨン','マルセイユ'],'ドイツ':['ベルリン','ミュンヘン','ハンブルク'],'イタリア':['ローマ','ミラノ','ナポリ'],'スペイン':['マドリード','バルセロナ','セビリア'],'スウェーデン':['ストックホルム','ヨーテボリ'],'ポーランド':['ワルシャワ','クラクフ'],'トルコ':['イスタンブール','アンカラ'],'ブラジル':['サンパウロ','リオデジャネイロ'],'メキシコ':['メキシコシティ','グアダラハラ'],'アルゼンチン':['ブエノスアイレス','コルドバ'],'タイ':['バンコク','チェンマイ'],'ベトナム':['ホーチミン','ハノイ','ダナン'],'フィリピン':['マニラ','セブ'],'インドネシア':['ジャカルタ','バンドン'],'マレーシア':['クアラルンプール','ペナン'],'インド':['ムンバイ','デリー','バンガロール'],'モンゴル':['ウランバートル'],'ナイジェリア':['ラゴス','アブジャ'],'オーストラリア':['シドニー','メルボルン','ブリスベン']};
-  const INNER_DIALECTS = {kansai:['関西弁',['砕けると関西弁が全開になる','イントネーションだけ関西が残る','ツッコミの時だけ関西弁']],hakata:['博多弁',['砕けると「〜っちゃん」が出る','博多弁のイントネーションが抜けない']],hiroshima:['広島弁',['熱が入ると「じゃけえ」が出る']],nagoya:['名古屋弁',['たまに「〜だがや」が漏れて笑われる','名古屋のイントネーションが残る']],tohoku:['東北訛り',['標準語だが酔うと訛りが顔を出す','イントネーションにほんのり東北が残る']],okinawa:['うちなーぐち',['のんびりした沖縄イントネーション','たまに「だからよ〜」が出る']],tosa:['土佐弁',['熱くなると「〜ぜよ」風味になる']],kyushu:['九州訛り',['語尾に「〜たい」「〜けん」が混ざる']],north:['北海道弁',['寒い日は「なまら」と言いがち']]};
-  const INNER_SPEECH_REGISTER = {polite:[['基本は丁寧な敬語',6],['物腰やわらかな敬語ベース',4],['折り目正しい話し方',3],['敬語だが冗談は言う',4],['クッション言葉が多い丁寧口調',3],['講師のように順序立てて話す',2.5],['一人称以外は完全な標準語敬語',2.5]],mid:[['敬語とタメ口を相手で使い分ける',6],['丁寧だが親しくなると砕ける',5],['基本フラットで落ち着いた口調',5],['低めのトーンで淡々と話す',4],['質問で会話をつなぐタイプ',3],['相手の言葉をよく引用して返す',2.5],['砕けた敬語（〜っすね）',4]],rough:[['フランクなタメ口多め',6],['歯に衣着せぬ物言い',3],['ノリと勢いで話すタイプ',4],['声が大きめで豪快',3],['べらんめえ気味の江戸っ子口調',1.5],['体育会系のハキハキ口調',4],['先輩風だが面倒見のいい口調',3],['ぶっきらぼうだが言葉は選ぶ',3]]};
-  const INNER_SPEECH_VOICE = [['声が低くて通る',3],['声がやや高め',2.5],['ややハスキー',2],['張りのある声',2.5],['声量控えめ',2.5],['早口',3],['ゆっくり話す',3],['抑揚が豊か',2.5],['ほぼ一本調子',2],['笑い声が大きい',2.5],['ささやくような小声になる瞬間がある',1.5],['電話向きのクリアな発声',2]];
-  const INNER_SPEECH_HABITS = [['「要するに」が口癖',3],['「なるほどですね」構文',3],['例え話が多い',3.5],['擬音が多い（ガッと行ってバッと）',3],['相槌のバリエーションが豊富',3],['話す前に少し間を取る',3.5],['早口になりがち',3.5],['語尾がやや伸びる',2.5],['よく笑いながら話す',4],['声が通るので内緒話が下手',2.5],['ぼそっと面白いことを言う',3],['数字を交えて話しがち',2],['「逆に」を多用',3],['褒め上手',2.5],['話にオチを付けたがる',3],['敬語が丁寧すぎて営業と間違われる',2],['電話だと声が1トーン上がる',3],['考えながら顎を触る',2.5],['語尾に「〜かな」を付けがち',3],['「それな」で同意しがち',2.5],['固有名詞をど忘れして「アレ」で通す',3],['聞き返す時に片耳を向ける',2],['沈黙が気まずくてつい喋る',3],['オチの前に自分で笑ってしまう',3],['ことわざを微妙に間違える',2],['数字の記憶だけ異様に正確',2],['敬称を略さない（フルネーム＋さん）',2],['擬人化して物に話しかける',1.5],['英単語がルー語気味に混ざる',1.5],['決めゼリフの前に咳払い',2],['相手の名前を会話に織り込む',2.5],['締めの「はい」が口癖',2.5]];
 
   function innerParseKanaName(c){
     const raw = nameKana(c) || String(c.name||'');
@@ -4419,19 +3324,6 @@
   }
 
   // --- 依存関係グラフ（再抽選時のカスケード） ---
-  const INNER_DEPS = {
-    origin:['birthplace','family'],
-    marital:['living','family','residence','lover','memory'],
-    living:['family','residence'],
-    birthplace:['speech','residence'],
-    pronoun:['speech'],
-    weakness:['health'],
-    past:['memory'],
-    love:['lover'],
-    income:['residence'],
-    hobby:['myboom'],
-    complex:['speech']
-  };
   function innerExpandKeys(keys){
     const out = new Set(keys);
     let grew = true;
@@ -4491,7 +3383,6 @@
     return c;
   }
   // --- カテゴリ表示状態（初期はすべて非表示・表示したものだけプロンプト反映） ---
-  const INNER_CATS = [['basic','🪪 基本データ','🪪 Basic Data','icat-basic'],['life','🏠 暮らし・家族','🏠 Life & Family','icat-life'],['daily','☕ 日常・嗜好','☕ Daily & Tastes','icat-daily'],['mind','💭 内面','💭 Inner Self','icat-mind'],['past','🕰 過去・人間関係','🕰 Past & People','icat-past'],['adult','🌙 オトナの事情','🌙 Grown-up','icat-adult']];
   let innerCatShow = {basic:false, life:false, daily:false, mind:false, past:false, adult:false};
   function innerAnyShown(){ return Object.values(innerCatShow).some(Boolean); }
   // --- 表示セクション（カテゴリ選択式・32項目） ---
@@ -4683,14 +3574,7 @@
   }
   /* ===== V3.4 内面・背景 追加項目＋整合強化＋UI刷新 ===== */
   // --- 行動原理 ---
-  const INNER_PRINCIPLES = [
-    ['迷ったら楽しい方を選ぶ',5],['家族がいちばん',5],['借りは必ず返す',5],['筋は通す',4],['約束は守る（守れない約束はしない）',5],['金より信用',4],['寝れば大体なんとかなる',4],['まず飯を食ってから考える',4],['逃げるが勝ちも立派な戦略',3],['見て見ぬふりはしない',3.5],['先に謝ったほうが強い',3],['体が資本',4.5],['頼まれたら基本断らない',4],['自分の機嫌は自分で取る',4],['石橋を叩いて渡る',3.5],['勢いで生きる',3.5],['負けたままでは終わらない',3.5],['人の悪口は言わない',4],['とりあえずやってみる',4.5],['何事も三年は続ける',3],['嫌なことほど朝イチで片付ける',3.5],['疑って外すより信じて騙される方を選ぶ',2.5],['誰も見ていなくても手は抜かない',3.5],['金は天下の回りもの',3],['敵を作らないのが最強の護身',3],['困っている人がいたら声をかける',3.5],['他人と比べない（比べても勝てないから）',3],['迷惑をかけたら倍にして返す',2.5],['沈黙は金、でも挨拶は大声',2.5],['行けたら行くは行かない',3],
-    ['面倒事からは全力で逃げる',2,'d'],['勝てる勝負しかしない',2,'d'],['バレない範囲のズルは人間味',1.2,'d'],['義理より実利',1.5,'d'],['謝るより先に言い訳を考えてしまう',1.5,'d']
-  ];
   // --- 許せないこと ---
-  const INNER_UNFORGIVABLES = [
-    ['食べ物を粗末にすること',6],['弱い者いじめ',6],['列への横入り',5],['傘泥棒',4],['連絡なしのドタキャン',5],['店員への横柄な態度',5.5],['歩きタバコ',4.5],['裏切り',4],['陰口',4],['子どもと動物を泣かせること',4.5],['人の努力を嘲笑うこと',4.5],['冷蔵庫のプリンを無断で食べること',3.5],['ゲームの順番の割り込み',3],['金の貸し借りを曖昧にすること',4],['挨拶を無視されること',4],['サービス残業の強要',3.5],['マウンティング',3.5],['デマを流すこと',3.5],['土足で人の心に踏み込むこと',3],['約束の時間に平気で遅れること',4],['乾杯前に飲み始めること',2],['映画のネタバレ',3.5],['電車で降りる人を待たずに乗り込むこと',4],['トイレットペーパーの芯を替えないこと',3],['人の話を最後まで聞かないこと',3.5],['「言わなくても分かるだろ」という態度',3],['努力を「才能」の一言で片付けられること',2.5],['食事中のスマホ（相手がいる時）',3],['エレベーターの「閉」連打で挟まれかけたこと',2],['自分の非を部下のせいにする上司',3.5]
-  ];
   // --- 風俗経験 ---
   function chooseInnerFuzoku(c){
     const age = Number(c.age)||25;
@@ -4848,10 +3732,6 @@
   // --- 恋愛対象：実際の割合＋対象別の多彩な傾向ノート ---
   INNER_LOVE_BASE.length = 0;
   INNER_LOVE_BASE.push(['女性',90.6],['男性',2.6,'r'],['男女どちらも',2.6,'r'],['まだ揺らいでいて分からない',1.1,'r'],['恋愛にあまり興味がない',1.6,'r'],['二次元にしか本気になれない',1,'r'],['恋愛よりも推しがすべて',0.5,'r']);
-  const INNER_LOVE_NOTE_ANY = [['年上に惹かれがち',5],['年下が好み',4],['同い年が落ち着く',4],['面食い',4],['性格重視',5],['声フェチ',2.5],['惚れっぽい',4],['冷めやすい',3],['一途',5],['依存しがち',2,'d'],['束縛強め',1.5,'d'],['尽くしすぎて重いと言われる',2,'d'],['ダメな相手ばかり好きになる',2,'d'],['押しに弱い',3],['高嶺の花ばかり狙って玉砕する',2],['笑いのツボが合う人に弱い',4],['ギャップに弱い',4],['メガネに弱い',2],['褒められるとすぐ好きになる',3],['連絡はマメな方',3],['連絡不精で振られがち',2.5,'d'],['理想が高いと言われる',2.5],['同じ趣味の人がいい',3.5],['年の差は気にしない',2.5],['食べっぷりのいい人に弱い',3],['敬語が可愛い人に弱い',2.5],['方言に弱い',2.5],['既婚者に惹かれてしまう悪癖',0.6,'d'],['元恋人を引きずっている',2,'d'],['匂いに弱い',1.5,'d'],['手フェチ',1.5,'d']];
-  const INNER_LOVE_NOTE_F = [['ショートカットに弱い',2.5],['ポニーテールに弱い',2],['浴衣に弱い',1.5],['母性に弱い',2,'d'],['うなじに弱い',1.5,'d'],['姉御肌に弱い',2.5],['小柄な人に惹かれる',2],['背の高い人に惹かれる',2],['黒髪ロングが原点',2],['笑顔に弱い',3.5],['料理上手に弱い',3],['泣きぼくろに弱い',1.5]];
-  const INNER_LOVE_NOTE_M = [['筋肉質な人に弱い',2.5],['低い声に弱い',2.5],['スーツ姿に弱い',2.5],['ヒゲが似合う人に弱い',2],['年上の包容力に弱い',2.5],['塩対応に弱い',1.5],['ジャージ姿に弱い',1.5],['手の骨っぽさに弱い',1.5,'d'],['体格差に弱い',2],['職人気質な人に惹かれる',2],['寡黙な人に惹かれる',2.5],['笑い上戸に弱い',2]];
-  const INNER_LOVE_NOTE_BI = [['性別より人柄',5],['どちらかといえば女性寄り',3],['どちらかといえば男性寄り',2.5],['惹かれる相手に性別は関係ない',3.5],['その時々で揺れる',2],['好きになった人が性別',3]];
   function chooseInnerLove(c){
     const base = innerWeighted(INNER_LOVE_BASE);
     let v = base[0], badge = base[2] ? 'rare' : null;
@@ -4969,7 +3849,6 @@
     return [`${meet[0]}・${kanji}（${fq[0]}）`, null];
   }
   // --- 友人の実体化（表示情報を反映して友人作成） ---
-  const INNER_KANA2KANJI = {ユウタ:['悠太','ユウタ'],ケンジ:['健二','ケンジ'],ダイキ:['大輝','ダイキ'],ショウ:['翔','ショウ'],タクミ:['拓海','タクミ'],ヒロ:['宏樹','ヒロキ'],カズ:['和真','カズマ'],リョウ:['涼','リョウ'],シンジ:['慎二','シンジ'],マサ:['雅之','マサユキ'],コウジ:['浩二','コウジ'],テツ:['哲平','テッペイ'],ナオ:['直樹','ナオキ'],ジュン:['潤','ジュン'],ゴロー:['吾郎','ゴロー'],ハヤト:['隼人','ハヤト'],ワタル:['航','ワタル'],アキラ:['彰','アキラ']};
   function innerFriendRelOf(meetTxt){
     if(/幼なじみ|腐れ縁/.test(meetTxt)) return ['幼なじみ','同い年'];
     if(/高校の同級生|専門学校の同期/.test(meetTxt)) return ['同級生', null];
@@ -5045,7 +3924,6 @@
   INNER_DEPS.income.push('asset');
   INNER_DEPS.desire = (INNER_DEPS.desire||[]).concat(['asset']);
 
-  const INNER_FIELD_GEN = {innerDream:'dream', innerDesire:'desire', weaknessMind:'weakness', weaknessBody:'weakness', innerTalent:'talent', pastUpbringing:'past', pastTrauma:'past', pronoun:'pronoun', incomeText:'income', originText:'origin', educationText:'education', complexText:'complex', bloodType:'blood', loveTarget:'love', maritalText:'marital', livingText:'living', familyText:'family', birthplaceText:'birthplace', birthdateText:'birthdate', nicknameText:'nickname', speechText:'speech', memoryText:'memory', friendText:'friend', loverText:'lover', residenceText:'residence', healthText:'health', hobbyText:'hobby', myBoomText:'myboom', foodLikeText:'foods', foodHateText:'foods', principleText:'principle', unforgivableText:'unforgivable', fuzokuText:'fuzoku', gambleText:'gamble', firstExpText:'firstexp', weekFreqText:'weekfreq', drinkText:'drink', smokeText:'smoke', loveCountText:'lovecount', assetText:'asset'};
 
   function generateCharacter(partialMode='full', groupCtx=null){
     const fixed = groupCtx ? {} : getFixed();
@@ -5726,27 +4604,6 @@ ${promptTargetGuide(c, false)}`;
     sel.focus();
   }
 
-  const DICE_GROUPS = {
-    height:['height','heightRaw','weight','footSize'],
-    bodyType:['bodyType','weight'],
-    sockType:['sockType','sockColor','sockShape','sockMaterial'],
-    outfitType:['outfitType','outfitBrand','jacket','top','bottom','shoes','sockBrand','sockType','sockShape','sockMaterial','sockColor','sockUse'],
-    holidayOutfitType:['holidayOutfitType','holidayOutfitBrand','holidayJacket','holidayTop','holidayBottom','holidayShoes','holidaySockBrand','holidaySockType','holidaySockColor','holidaySockUse'],
-    mbti:['mbti','personality'],
-    nationality:['nationality','ethnicity','name'],
-    age:['age','ageAppearance','name']
-  };
-  const FRIEND_RELATIONS = {
-    '同僚':{sameRole:true, hier:['上司','先輩','同い年','後輩']},
-    '同期':{sameRole:true, hier:null, fixedHier:'同期', delta:[-2,2]},
-    '同級生':{sameRole:true, hier:null, fixedHier:'同い年', delta:[0,0]},
-    '幼なじみ':{sameRole:false, hier:['先輩','同い年','後輩']},
-    '趣味仲間':{sameRole:false, hier:['先輩','同い年','後輩']},
-    '学生時代からの友人':{sameRole:false, hier:['先輩','同い年','後輩']}
-  };
-  const FRIEND_HIER_DELTA = {'上司':[6,15],'先輩':[1,5],'同い年':[0,0],'後輩':[-5,-1]};
-  const FRIEND_REL_EN = {'同僚':'Colleague (same occupation)','同期':'Same-cohort colleague (same occupation, ±2 yrs)','同級生':'Classmate (same occupation, same age)','幼なじみ':'Childhood friend','趣味仲間':'Hobby friend','学生時代からの友人':'Friend since school days'};
-  const FRIEND_HIER_EN = {'上司':'Boss','先輩':'Senior','同い年':'Same age','後輩':'Junior'};
   function renderFriendPanel(){
     const relSel = document.getElementById('friendRelation'); if(!relSel) return;
     const keep = relSel.value;
@@ -5903,26 +4760,6 @@ ${promptTargetGuide(c, false)}`;
     for(const [label, pt, test] of RARE_RULES){ try{ if(test(c)) out.push([label, pt]); }catch(e){} }
     return out;
   }
-  const IKEMEN_DELTAS = {
-    faceAsym: {'左右対称に近い整った顔':8,'ほぼ対称（ごく自然な左右差）':0,'わずかな左右差がある自然な顔':-1,'眉の高さに少し左右差がある顔':-3,'口角の上がり方に少し左右差がある顔':-3,'目の大きさにわずかな左右差がある顔':-3,'左右で目の開き方が少し違う顔':-4,'笑うと片側の口角が先に上がる顔':-3,'鼻筋がごくわずかに湾曲した顔':-5},
-    faceSpacing: {'標準的な配置':4,'やや求心寄りの配置':0,'やや遠心寄りの配置':0,'求心顔（目鼻口が中心に寄った配置）':-3,'遠心顔（パーツが外側に離れた配置）':-3,'はっきり求心的な配置（自然範囲の上限）':-6,'はっきり遠心的な配置（自然範囲の上限）':-6},
-    faceRatio: {'標準的なバランスの比率':4,'目が大きめで存在感のある比率':3,'全体に小づくりな比率':0,'全体に大ぶりでくっきりした比率':0,'口が大きめではっきりした比率':-1,'口が小さめの比率':-1,'目が小さめ・切れ長寄りの比率':-2,'鼻の存在感が強い比率':-3},
-    faceLine: {'卵型のフェイスライン':5,'シャープなフェイスライン':4,'逆三角形に近いフェイスライン':3,'面長のフェイスライン':1,'自然なフェイスライン':0,'柔らかいフェイスライン':0,'しっかりしたフェイスライン':-1,'やや角ばったフェイスライン':-2,'丸顔寄りのフェイスライン':-2,'ベース型のフェイスライン':-3,'ホームベース型のフェイスライン':-3},
-    eyebrow: {'眉山のはっきりした眉':4,'太めの直線眉':3,'短めで力強い眉':2,'太めのアーチ眉':1,'標準的な直線眉':0,'標準的なゆるいアーチ眉':0,'眉尻の下がった優しい眉':0,'やや細めの直線眉':-1,'やや細めのアーチ眉':-1,'への字型の眉':-3},
-    eyelid: {'平行二重':5,'末広二重':3,'奥二重':0,'一重':-2,'左右で異なるまぶた（片方だけ二重）':-4},
-    eyeShape: {'アーモンド形の目':5,'切れ長の目':4,'丸みのある目':1,'標準的な目の形':0,'たれ目気味の目':-1,'つり目気味の目':-1,'細めの目':-3},
-    eyelash: {'長めで濃いまつ毛':3,'やや長めのまつ毛':2,'標準的な長さのまつ毛':0,'短めで控えめなまつ毛':-1,'細くまばらなまつ毛':-3},
-    nose: {'通った鼻筋':4,'高めの鼻筋':3,'すっきりした鼻筋':3,'鼻筋の細い鼻':2,'自然な鼻筋':0,'しっかりした鼻':0,'控えめで自然な鼻':-1,'鼻先の丸い鼻':-2,'わし鼻気味の鼻':-2,'小鼻の張った鼻':-3,'高さ控えめで平たい鼻':-3,'団子鼻気味の鼻':-4},
-    jawChin: {'しっかりした顎先':3,'軽く割れた顎先':2,'尖り気味の顎先':1,'標準的な顎先':0,'丸みのある顎先':-1},
-    jawAngle: {'エラは目立たない':1,'ほどよく張ったエラ':0,'はっきり張ったエラ':-2},
-    teethAlign: {'整った歯列':5,'矯正後のきれいな歯列':4,'ほぼ整った歯列':0,'八重歯が少し覗く歯列':0,'前歯2本がやや大きめの歯列':-1,'矯正中（目立ちにくい矯正装置）':-2,'前歯がわずかに重なる歯列':-3,'下の前歯に軽い重なりがある歯列':-3,'すきっ歯気味の歯列':-4,'前歯がわずかに前傾した歯列':-4},
-    cheek: {'頬骨が高めの頬':3,'標準的な頬':0,'ややこけた頬':-2,'ふっくらした頬':-2},
-    browRidge: {'彫りが深い眉まわり':3,'彫りは標準的':0,'ややフラットな眉まわり':-2},
-    hairline: {'富士額の生え際':1,'直線的な生え際':0,'ゆるいM字の生え際':-2,'やや後退気味の生え際':-5},
-    eyeBags: {'クマなし':0,'うっすらとした目の下のクマ':-2},
-    lipTone: {'血色のよい唇':1,'標準的な血色の唇':0,'やや乾燥気味の唇':-2}
-  };
-  const IKEMEN_AXIS_LABELS = {faceAsym:'左右差', faceSpacing:'パーツ配置', faceRatio:'目鼻口比率', faceLine:'輪郭', eyebrow:'眉', eyelid:'まぶた', eyeShape:'目の形', eyelash:'まつ毛', nose:'鼻', jawChin:'顎先', jawAngle:'エラ', teethAlign:'歯並び', cheek:'頬', browRidge:'彫り', hairline:'生え際', eyeBags:'クマ', lipTone:'唇の血色'};
   function ikemenBreakdown(c){
     if(!c) return [];
     const out = [];
@@ -5956,7 +4793,6 @@ ${promptTargetGuide(c, false)}`;
     const s = rarityBreakdown(c).reduce((a,[,p])=>a+p,0);
     if(s>=40) return [s,'LEGEND','legend']; if(s>=24) return [s,'SUPER RARE','super']; if(s>=10) return [s,'RARE','rare']; return [s,'NORMAL','normal'];
   }
-  const BODYHAIR_KEYS = ['bodyHairOverall','chestHair','abdominalHair','lowerAbdomenHair','armHair','shinHair','thighHair','armpitHair','handFingerHair','footToeHair','backHair'];
   function rerollProfile(key){
     if(!current || spinning) return;
     if(key==='skinDetail' || key==='skinDetail2'){
@@ -6233,13 +5069,6 @@ ${targetJa}
 【禁止事項】未成年に見える表現、性的なポーズ、過度な身体強調、局部や臀部の強調、${underwearAvoid(c, false)}資料用拡大パネル以外での足裏・足指の過度な接写、AIっぽい肌、別人化、文字崩れ、${fullOutfitSheet ? '指定コーデ以外の服装への勝手な変更。' : allowsOutfitPanels ? '指定パネル以外への服装・靴の混入。' : '上着・トップス・ボトムス・靴・靴下の混入。'}`;
   }
 
-  const UNIFORM_NAME_MIGRATION = {
-    '防衛大学校の常装制服風（濃紺の詰襟スタイル）':'防衛大学校の常装冬服風（花紺色の詰襟型短ジャケット）',
-    '防衛大学校の第1種夏服風（白の上衣）':'防衛大学校の第1種夏服風（白の詰襟上下）',
-    '防衛大学校の第3種夏服風（半袖シャツ）':'防衛大学校の第3種夏服風（白の半袖開襟シャツ）',
-    '防衛大学校の校内服装（作業服スタイル）':'防衛大学校の校内服装（水色シャツ＋ネクタイ）',
-    '防衛大学校の校内服装（OD色の作業服＋指定ジャンパー）':'防衛大学校の校内服装（水色シャツ＋ネクタイ）'
-  };
   function migrateUniformFields(c){
     if(!c || !c.workUniform) return;
     const nm = UNIFORM_NAME_MIGRATION[c.workUniform];
@@ -6652,7 +5481,6 @@ ${promptTargetGuide(b, false)}`;
 
   // ===== V1.9.1 A案 UI logic =====
   let promptTab = 'main';
-  const PROMPT_PANES = [['main','pane-main'],['derived','pane-derived'],['outfit','pane-outfit'],['outfitHoliday','pane-outfitHoliday'],['scene','pane-scene'],['friendPair','pane-friendPair'],['group','pane-group']];
   function renderPromptTabs(){
     const bar = document.getElementById('promptTabs'); if(!bar) return;
     const labels = uiLang==='en'

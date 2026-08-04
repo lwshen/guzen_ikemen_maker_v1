@@ -130,6 +130,37 @@ awk 'length($0)>10000' <js> | wc -l   # 基线 ≥1
 
 **注意（本次为 awk/字符差异的教训）**：文档中出现的"字符数"如果来源是 `awk length()`，实际单位是字节。
 
+## 3.2 Phase 2 执行结果（2026-08-04，分支 `astro-migration`）
+
+**已完成**：数据与逻辑分离。`verify/phase2-extract-data.mjs` 用字符串/模板字面量感知的解析器扫描 app.js 的 160 个顶层 `const`，**机械判定**可抽取性（初始化器能在空 vm 沙箱求值 + 不含函数 + ≥40 字符），把 **132 个纯数据常量**（约 300KB）按主题抽入 7 个文件：
+
+| 文件                              | 常量数 | 内容                                                   |
+| --------------------------------- | ------ | ------------------------------------------------------ |
+| `public/data/data-names.js`       | 2      | NAMES_BY_YEAR、NATION_NAMES                            |
+| `public/data/data-occupations.js` | 17     | OCCUPATIONS、UNIFORM*\*、VIBE*\*、BRAND_SINCE 等       |
+| `public/data/data-i18n.js`        | 10     | uiText、valueTranslations、各 LabelMap                 |
+| `public/data/data-body-sports.js` | 17     | SPORT*\*、TRAINING*\*、BODY\_\*、POSTURE\*             |
+| `public/data/data-inner.js`       | 53     | INNER\_\*、各 catchphrase hook 表                      |
+| `public/data/data-foot.js`        | 19     | FOOT*\*、SOLE*\*、TOE\_\*、POSTER_FOOT                 |
+| `public/data/data-core.js`        | 14     | pools、slotDefs、EYE_MIGRATION、FACE_EXTRA_DEFAULTS 等 |
+
+28 个 const 留在 app.js，原因全部机械可查（`verify/data-manifest.json`）：函数（pick/weighted/RARE_RULES/INNER_EDIT_POOLS…）、DOM 引用（els）、运行时状态（measurementDeckState）、微型配置（STORAGE_KEY/PRESET_KEY/OCC_CAT={} 等）。
+
+**关键设计决定**：仍是**经典脚本 + 非严格模式**——数据文件挂到 `window.GUZEN_DATA`，app.js 开头一次解构，`<script>` 按序加载。**没有**转 ES module，因为那会给 6800 行 sloppy-mode 代码强加 strict mode（风险 #1），且模块的词法作用域会改变风险 #8 的同名函数覆盖语义。逻辑代码除了删除 const 声明和插入解构头外**零改动、零重排**。
+
+**验证结果（全部通过）**：
+
+| 层                              | 结果                                                                                                                   |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 第 1 层 结构                    | ALL PASS（已适配拆分：132 个常量在数据文件中恰好出现一次、app.js 无残留声明、script 标签序正确且全为经典脚本）         |
+| 第 5 层 数据 deep-equal（新增） | **132/132**：每个常量与原版 index.html 字面量深度相等，**含对象 key 顺序**（Object.keys 迭代序驱动下拉选项，属于行为） |
+| 第 2 层 行为对拍                | **100/100 场景逐字节一致，0 JS 错误**（新增 5×群组生成 + 5×朋友生成场景，补上此前覆盖缺口）                            |
+| 第 3/4 层 视觉+存储             | 8/8 截图 PNG 字节级相同；localStorage 无缝衔接                                                                         |
+
+**重建管线**（全部可重跑）：`python3 verify/phase1-extract.py && node verify/phase2-extract-data.mjs && npm run build && npm run verify`。
+
+**已知局限**：① 逻辑仍是单个 6000 行 IIFE（Phase 3）；② 第 5 层以原版 index.html 为基线——**迁移验收后**若开始有意修改数据，第 5 层报 FAIL 是预期行为，届时应把基线切换为「上一个已验收版本」或停用该层；③ TDZ（暂时性死区）语义差异理论上存在（常量从「声明行处生效」变为「IIFE 顶部生效」），但原代码若在声明前引用早已崩溃，故不可能有此依赖，第 2 层亦为兜底。
+
 ## 附录 A — 146 个数据常量基线表
 
 | 行号 | 常量                     | 类型    | 条目数 | 内容                                                                                                                                                                 |

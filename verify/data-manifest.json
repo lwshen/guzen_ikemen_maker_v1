@@ -1,0 +1,787 @@
+{
+ "extracted": [
+  {
+   "name": "C_MEASUREMENT_VALUES",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 504
+  },
+  {
+   "name": "C_MEASUREMENT_EN",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 512
+  },
+  {
+   "name": "pools",
+   "file": "data-core.js",
+   "indexHtmlLine": 551
+  },
+  {
+   "name": "slotDefs",
+   "file": "data-core.js",
+   "indexHtmlLine": 666
+  },
+  {
+   "name": "slotLabelMap",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 682
+  },
+  {
+   "name": "fixedFieldLabelMap",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 689
+  },
+  {
+   "name": "uiText",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 692
+  },
+  {
+   "name": "valueTranslations",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 742
+  },
+  {
+   "name": "sceneTranslations",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 867
+  },
+  {
+   "name": "captionFieldLabelMap",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 941
+  },
+  {
+   "name": "cardFieldLabelMap",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 944
+  },
+  {
+   "name": "uiCardTitles",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 947
+  },
+  {
+   "name": "NAMES_BY_YEAR",
+   "file": "data-names.js",
+   "indexHtmlLine": 1461
+  },
+  {
+   "name": "NATION_NAMES",
+   "file": "data-names.js",
+   "indexHtmlLine": 1490
+  },
+  {
+   "name": "OCC_SCENES",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 1722
+  },
+  {
+   "name": "OCC_CAT_SCENES",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 1824
+  },
+  {
+   "name": "VIBE_AGE_MAX",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2109
+  },
+  {
+   "name": "OCCUPATIONS",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2126
+  },
+  {
+   "name": "OCC_CAT_LABELS",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2148
+  },
+  {
+   "name": "OCC_CAT_ORDER",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2149
+  },
+  {
+   "name": "OCC_MBTI_CAT",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2163
+  },
+  {
+   "name": "ATHLETIC_OCC",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2169
+  },
+  {
+   "name": "UNIFORM_WORKWEAR",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2183
+  },
+  {
+   "name": "UNIFORM_VARIANTS",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2233
+  },
+  {
+   "name": "SPORTS",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2321
+  },
+  {
+   "name": "SPORT_BODY",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2322
+  },
+  {
+   "name": "VIBE_OCC",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2359
+  },
+  {
+   "name": "ETHNIC_HAIR_WEIGHTS",
+   "file": "data-core.js",
+   "indexHtmlLine": 2410
+  },
+  {
+   "name": "STRICT_HAIR_OCC",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2428
+  },
+  {
+   "name": "FREE_HAIR_OCC",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2429
+  },
+  {
+   "name": "SPORT_EXP_POOL",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2460
+  },
+  {
+   "name": "SPORT_EXP_WEIGHTS",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2489
+  },
+  {
+   "name": "SPORT_MUSCLE",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2542
+  },
+  {
+   "name": "SPORT_SKELETON",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2571
+  },
+  {
+   "name": "TRAINING_LEVELS",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2638
+  },
+  {
+   "name": "TRAINING_DESC",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2644
+  },
+  {
+   "name": "TRAINING_BODY",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2675
+  },
+  {
+   "name": "TRAINING_EXCL",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2683
+  },
+  {
+   "name": "BODY_ASYMS",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2697
+  },
+  {
+   "name": "POSTURES",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2698
+  },
+  {
+   "name": "BODY_ASYM_EN",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2699
+  },
+  {
+   "name": "POSTURE_EN",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2700
+  },
+  {
+   "name": "SPORT_MEM",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2758
+  },
+  {
+   "name": "CULT_MEM",
+   "file": "data-body-sports.js",
+   "indexHtmlLine": 2788
+  },
+  {
+   "name": "MBTI_INTRO",
+   "file": "data-inner.js",
+   "indexHtmlLine": 2802
+  },
+  {
+   "name": "OCC_HOOK",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2812
+  },
+  {
+   "name": "OCC_CAT_HOOK",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 2832
+  },
+  {
+   "name": "ERA_HOOK",
+   "file": "data-inner.js",
+   "indexHtmlLine": 2845
+  },
+  {
+   "name": "BRIDGE_HOOK",
+   "file": "data-inner.js",
+   "indexHtmlLine": 2855
+  },
+  {
+   "name": "TRAIN_HOOK",
+   "file": "data-inner.js",
+   "indexHtmlLine": 2862
+  },
+  {
+   "name": "EYE_MIGRATION",
+   "file": "data-core.js",
+   "indexHtmlLine": 3032
+  },
+  {
+   "name": "BRAND_SINCE",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 3156
+  },
+  {
+   "name": "UNDERWEAR_COLOR_EN",
+   "file": "data-i18n.js",
+   "indexHtmlLine": 3382
+  },
+  {
+   "name": "FOOT_CFG_AXES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3412
+  },
+  {
+   "name": "FOOT_SCENES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3413
+  },
+  {
+   "name": "FOOT_COZY",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3416
+  },
+  {
+   "name": "FOOT_POSTURES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3417
+  },
+  {
+   "name": "FOOT_SHOE_STATES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3420
+  },
+  {
+   "name": "FOOT_FABRICS",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3421
+  },
+  {
+   "name": "FOOT_SOCK_STATES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3428
+  },
+  {
+   "name": "FOOT_ANGLES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3431
+  },
+  {
+   "name": "FOOT_OCC_SCENES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3432
+  },
+  {
+   "name": "FOOT_SCENE_MIGRATION",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3455
+  },
+  {
+   "name": "FOOT_OCC_CAT_SCENES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3463
+  },
+  {
+   "name": "FOOT_PROPS",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3474
+  },
+  {
+   "name": "POSTER_FOOT",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3524
+  },
+  {
+   "name": "FOOT_WIDTHS",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3635
+  },
+  {
+   "name": "FOOT_FEATURES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3659
+  },
+  {
+   "name": "SOLE_TYPES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3686
+  },
+  {
+   "name": "SOLE_WRINKLES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3700
+  },
+  {
+   "name": "TOE_LINES",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3705
+  },
+  {
+   "name": "TOE_CURLS",
+   "file": "data-foot.js",
+   "indexHtmlLine": 3717
+  },
+  {
+   "name": "FACE_EXTRA_DEFAULTS",
+   "file": "data-core.js",
+   "indexHtmlLine": 3861
+  },
+  {
+   "name": "INNER_DISPLAY_KEYS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4245
+  },
+  {
+   "name": "INNER_DREAMS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4259
+  },
+  {
+   "name": "INNER_DREAM_CAT",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4266
+  },
+  {
+   "name": "INNER_DESIRES",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4267
+  },
+  {
+   "name": "INNER_WEAK_MIND",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4271
+  },
+  {
+   "name": "INNER_WEAK_BODY",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4275
+  },
+  {
+   "name": "INNER_TALENTS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4279
+  },
+  {
+   "name": "INNER_UPBRINGINGS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4282
+  },
+  {
+   "name": "INNER_TRAUMAS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4286
+  },
+  {
+   "name": "INNER_PRONOUNS_BASE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4289
+  },
+  {
+   "name": "INNER_LOVE_BASE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4290
+  },
+  {
+   "name": "INNER_LOVE_NOTES",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4291
+  },
+  {
+   "name": "INNER_ORIGINS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4292
+  },
+  {
+   "name": "INNER_COMPLEX_GENERIC",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4295
+  },
+  {
+   "name": "INNER_BLOOD_DIST",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4299
+  },
+  {
+   "name": "INNER_INCOME_TABLE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4378
+  },
+  {
+   "name": "INNER_HOBBY_GENERIC",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4570
+  },
+  {
+   "name": "INNER_HOBBY_BY_VIBE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4571
+  },
+  {
+   "name": "INNER_MYBOOM_MODERN",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4572
+  },
+  {
+   "name": "INNER_MYBOOM_COMMON",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4573
+  },
+  {
+   "name": "INNER_MYBOOM_RETRO",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4574
+  },
+  {
+   "name": "INNER_FOOD_LIKE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4575
+  },
+  {
+   "name": "INNER_FOOD_HATE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4576
+  },
+  {
+   "name": "INNER_HEALTH_BASE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4577
+  },
+  {
+   "name": "INNER_HEALTH_MID",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4578
+  },
+  {
+   "name": "INNER_LIVING_SINGLE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4579
+  },
+  {
+   "name": "INNER_LIVING_MARRIED",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4580
+  },
+  {
+   "name": "INNER_FRIEND_MEET",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4581
+  },
+  {
+   "name": "INNER_FRIEND_NAMES",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4582
+  },
+  {
+   "name": "INNER_FRIEND_FREQ",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4583
+  },
+  {
+   "name": "INNER_LOVER_NONE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4584
+  },
+  {
+   "name": "INNER_LOVER_YES",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4585
+  },
+  {
+   "name": "INNER_MEMORY_BASE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4586
+  },
+  {
+   "name": "INNER_JP_PREFS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4587
+  },
+  {
+   "name": "INNER_NATION_CITIES",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4596
+  },
+  {
+   "name": "INNER_DIALECTS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4597
+  },
+  {
+   "name": "INNER_SPEECH_REGISTER",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4598
+  },
+  {
+   "name": "INNER_SPEECH_VOICE",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4599
+  },
+  {
+   "name": "INNER_SPEECH_HABITS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4600
+  },
+  {
+   "name": "INNER_DEPS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4850
+  },
+  {
+   "name": "INNER_CATS",
+   "file": "data-inner.js",
+   "indexHtmlLine": 4922
+  },
+  {
+   "name": "INNER_PRINCIPLES",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5114
+  },
+  {
+   "name": "INNER_UNFORGIVABLES",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5119
+  },
+  {
+   "name": "INNER_LOVE_NOTE_ANY",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5279
+  },
+  {
+   "name": "INNER_LOVE_NOTE_F",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5280
+  },
+  {
+   "name": "INNER_LOVE_NOTE_M",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5281
+  },
+  {
+   "name": "INNER_LOVE_NOTE_BI",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5282
+  },
+  {
+   "name": "INNER_KANA2KANJI",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5400
+  },
+  {
+   "name": "INNER_FIELD_GEN",
+   "file": "data-inner.js",
+   "indexHtmlLine": 5476
+  },
+  {
+   "name": "DICE_GROUPS",
+   "file": "data-core.js",
+   "indexHtmlLine": 6157
+  },
+  {
+   "name": "FRIEND_RELATIONS",
+   "file": "data-core.js",
+   "indexHtmlLine": 6167
+  },
+  {
+   "name": "FRIEND_HIER_DELTA",
+   "file": "data-core.js",
+   "indexHtmlLine": 6175
+  },
+  {
+   "name": "FRIEND_REL_EN",
+   "file": "data-core.js",
+   "indexHtmlLine": 6176
+  },
+  {
+   "name": "FRIEND_HIER_EN",
+   "file": "data-core.js",
+   "indexHtmlLine": 6177
+  },
+  {
+   "name": "IKEMEN_DELTAS",
+   "file": "data-core.js",
+   "indexHtmlLine": 6334
+  },
+  {
+   "name": "IKEMEN_AXIS_LABELS",
+   "file": "data-core.js",
+   "indexHtmlLine": 6353
+  },
+  {
+   "name": "BODYHAIR_KEYS",
+   "file": "data-core.js",
+   "indexHtmlLine": 6387
+  },
+  {
+   "name": "UNIFORM_NAME_MIGRATION",
+   "file": "data-occupations.js",
+   "indexHtmlLine": 6664
+  },
+  {
+   "name": "PROMPT_PANES",
+   "file": "data-core.js",
+   "indexHtmlLine": 7083
+  }
+ ],
+ "skipped": [
+  {
+   "name": "STORAGE_KEY",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "sleep",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "rnd",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "randomNormal",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "shuffleInPlace",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "makeBalancedMeasurementDeck",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "makeCMeasurementDeck",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "measurementDeckState",
+   "reason": "not a pure literal (ReferenceError)"
+  },
+  {
+   "name": "drawProfileMeasurement",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "ensureProfileMeasurements",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "profileMeasurementCLabel",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "pick",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "weighted",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "uniqId",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "els",
+   "reason": "not a pure literal (ReferenceError)"
+  },
+  {
+   "name": "OCC_CAT",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "SUIT_TYPES",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "SCHOOL_TYPES",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "SPORT_STAGES",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "INNER_RHNEG",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "INNER_EDIT_POOLS",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "RARE_RULES",
+   "reason": "contains function(s)"
+  },
+  {
+   "name": "FRIEND_PAIR_COUNTS",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "accCollapsed",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "catCollapsed",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "PRESET_KEY",
+   "reason": "tiny literal / config"
+  },
+  {
+   "name": "makerLangSel",
+   "reason": "not a pure literal (ReferenceError)"
+  },
+  {
+   "name": "copyDerivedBtn",
+   "reason": "not a pure literal (ReferenceError)"
+  }
+ ],
+ "dataFiles": [
+  "data-body-sports.js",
+  "data-core.js",
+  "data-foot.js",
+  "data-i18n.js",
+  "data-inner.js",
+  "data-names.js",
+  "data-occupations.js"
+ ]
+}

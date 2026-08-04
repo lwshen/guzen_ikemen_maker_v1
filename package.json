@@ -10,7 +10,8 @@
     "verify:structure": "python3 verify/layer1-structure.py",
     "verify:behavior": "node verify/layer2-behavior.mjs",
     "verify:visual": "node verify/layer3-4-visual-storage.mjs",
-    "verify": "npm run verify:structure && npm run verify:behavior && npm run verify:visual"
+    "verify:data": "node verify/layer5-data-equal.mjs",
+    "verify": "npm run verify:structure && npm run verify:data && npm run verify:behavior && npm run verify:visual"
   },
   "dependencies": {
     "astro": "^5.0.0"
