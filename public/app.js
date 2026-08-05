@@ -1,4 +1,5 @@
 (function(){
+  'use strict';
   // Phase 2: pure data tables live in /data/*.js (loaded before this file),
   // exposed via window.GUZEN_DATA. Extraction is mechanical and verified —
   // see verify/phase2-extract-data.mjs and verify/layer5-data-equal.mjs.

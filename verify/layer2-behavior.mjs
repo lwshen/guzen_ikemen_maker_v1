@@ -48,8 +48,93 @@ const initScript = seed => `(() => {
 const PROMPT_IDS = ['promptBox', 'outfitPromptBox', 'outfitHolidayPromptBox', 'scenePromptBox',
   'friendPairPromptBox', 'derivedPromptBox', 'groupPromptBox'];
 
-async function runScenario(browser, baseURL, { seed, lang, modes, group, friend }) {
-  const context = await browser.newContext();
+// Interaction flows beyond plain generation — each runs the same deterministic
+// steps on both sides and snapshots after every meaningful state change.
+const FLOWS = {
+  // inline slot editor + per-slot dice reroll
+  editor: async (page, snap) => {
+    await page.click('.tab[data-tab="slot"]');
+    await page.click('#slot-height [data-edit]');
+    await page.waitForSelector('#slot-height .slot-editor select');
+    await page.evaluate(() => {
+      const sel = document.querySelector('#slot-height .slot-editor select');
+      sel.value = sel.options[3].value;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await snap();
+    await page.click('.tab[data-tab="slot"]');
+    await page.click('#slot-vibe [data-dice]');
+    await snap();
+  },
+  // preset save / load / delete round-trip
+  preset: async (page, snap) => {
+    await page.click('.tab[data-tab="slot"]');
+    const pick = (id, idx) => page.evaluate(([id, idx]) => {
+      const sel = document.getElementById(id);
+      sel.value = sel.options[idx].value;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }, [id, idx]);
+    await pick('initialVibe', 2);
+    await page.fill('#presetName', 'p1');
+    await page.click('#savePresetBtn');
+    await pick('initialVibe', 4);
+    await page.selectOption('#presetSelect', 'p1');
+    await page.click('#loadPresetBtn');
+    await snap();
+    await page.click('#deletePresetBtn');
+    await snap();
+  },
+  // save twice, favorite, load, clear
+  history: async (page, snap) => {
+    await page.click('#saveBtn');
+    const b1 = await page.$eval('#promptBox', el => el.value);
+    await page.click('#startBtn');
+    await page.waitForFunction(p => document.getElementById('promptBox').value !== p, b1);
+    await page.click('#saveBtn');
+    await page.click('.tab[data-tab="history"]');
+    await page.click('#historyList .history-item:nth-child(1) [data-fav]');
+    await page.click('#historyList .history-item:nth-child(2) [data-load]');
+    await snap();
+    await page.click('.tab[data-tab="history"]');
+    await page.click('#clearHistoryBtn');
+    await snap();
+  },
+  // export current char, re-import a mutated copy (single), then an array
+  importexport: async (page, snap) => {
+    const [download] = await Promise.all([page.waitForEvent('download'), page.click('#jsonBtn')]);
+    const chunks = [];
+    for await (const c of await download.createReadStream()) chunks.push(c);
+    const exported = JSON.parse(Buffer.concat(chunks).toString('utf-8'));
+    const before = await page.$eval('#promptBox', el => el.value);
+    const single = Buffer.from(JSON.stringify({ ...exported, name: 'テスト' }), 'utf-8');
+    await page.setInputFiles('#importFile', { name: 's.json', mimeType: 'application/json', buffer: single });
+    await page.waitForFunction(p => document.getElementById('promptBox').value !== p, before);
+    await snap();
+    const arr = Buffer.from(JSON.stringify([{ ...exported, name: 'エーくん' }, { ...exported, name: 'ビーくん' }]), 'utf-8');
+    await page.setInputFiles('#importFile', { name: 'a.json', mimeType: 'application/json', buffer: arr });
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('guzen-ikemen-maker-v1.results') || '[]').length >= 2);
+    await snap();
+  },
+  // restore-from-prompt round-trip using the app's own generated prompt
+  restore: async (page, snap) => {
+    const promptText = await page.$eval('#promptBox', el => el.value);
+    await page.click('.tab[data-tab="history"]');
+    await page.fill('#restoreCodeInput', promptText);
+    await page.click('#restoreCodeBtn');
+    await page.waitForFunction(p => document.getElementById('promptBox').value !== p, promptText);
+    await snap();
+  },
+  // UI language round-trip with an existing result (re-init path)
+  langswitch: async (page, snap) => {
+    await page.selectOption('#makerLanguage', 'en');
+    await snap();
+    await page.selectOption('#makerLanguage', 'ja');
+    await snap();
+  },
+};
+
+async function runScenario(browser, baseURL, { seed, lang, modes, group, friend, flow }) {
+  const context = await browser.newContext({ acceptDownloads: true });
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
@@ -63,6 +148,17 @@ async function runScenario(browser, baseURL, { seed, lang, modes, group, friend 
   await page.check('#instantMode');
 
   const captures = [];
+  const snap = async () => captures.push(await page.evaluate(ids => ({
+    prompts: Object.fromEntries(ids.map(id => [id, document.getElementById(id).value])),
+    profile: document.getElementById('profileView').innerHTML,
+    rareScore: document.getElementById('rareScore').textContent,
+    rarity: document.getElementById('rarity').textContent,
+    storage: {
+      results: localStorage.getItem('guzen-ikemen-maker-v1.results'),
+      presets: localStorage.getItem('guzen-ikemen-maker-v1.presets'),
+    },
+  }), PROMPT_IDS));
+
   for (const mode of modes) {
     if (mode !== 'full') {
       // mode buttons live in #slotAside, hidden after auto-switch to the result tab
@@ -74,13 +170,9 @@ async function runScenario(browser, baseURL, { seed, lang, modes, group, friend 
     await page.waitForFunction(
       prev => document.getElementById('promptBox').value !== prev && document.getElementById('promptBox').value !== '',
       before, { timeout: 30000 });
-    captures.push(await page.evaluate(ids => ({
-      prompts: Object.fromEntries(ids.map(id => [id, document.getElementById(id).value])),
-      profile: document.getElementById('profileView').innerHTML,
-      rareScore: document.getElementById('rareScore').textContent,
-      rarity: document.getElementById('rarity').textContent,
-    }), PROMPT_IDS));
+    await snap();
   }
+  if (flow) await FLOWS[flow](page, snap);
   if (friend) {
     // create a friend from the current result (auto-saves the original to history)
     await page.click('#friendBtn');
@@ -110,6 +202,10 @@ for (let s = 1; s <= Math.min(5, SEEDS); s++) {
   scenarios.push({ seed: 500 + s, lang: 'ja', modes: ['full'], group: true });
   scenarios.push({ seed: 600 + s, lang: 'ja', modes: ['full'], friend: true });
 }
+Object.keys(FLOWS).forEach((flow, fi) => {
+  for (let s = 1; s <= Math.min(3, SEEDS); s++)
+    scenarios.push({ seed: 700 + fi * 10 + s, lang: 'ja', modes: ['full'], flow });
+});
 
 const oldSrv = await serve(path.join(ROOT));        // original index.html (self-contained)
 const newSrv = await serve(path.join(ROOT, 'dist')); // Astro build output
@@ -128,7 +224,7 @@ for (let i = 0; i < scenarios.length; i += CONCURRENCY) {
   }));
   for (const { sc, a, b } of results) {
     const label = `seed=${sc.seed} lang=${sc.lang} modes=${sc.modes.join('+')}`
-      + (sc.group ? ' group' : '') + (sc.friend ? ' friend' : '');
+      + (sc.group ? ' group' : '') + (sc.friend ? ' friend' : '') + (sc.flow ? ` flow=${sc.flow}` : '');
     const same = JSON.stringify(a.captures) === JSON.stringify(b.captures);
     if (a.errors.length || b.errors.length) {
       jsErrors++;
