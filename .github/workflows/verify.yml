@@ -1,0 +1,65 @@
+# CI verification for the Astro migration — see MIGRATION_VERIFICATION.md.
+#
+# structure job: regenerates everything from index.html and fails on drift
+#   (generated files hand-edited, or index.html changed without re-running the
+#   pipeline), then runs the fast checks (layer 1 structural, layer 5 data).
+# behavior job: seeded-PRNG old-vs-new comparison (layer 2), screenshot and
+#   localStorage continuity checks (layers 3+4) under Playwright/Chromium.
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  structure:
+    name: pipeline drift + L1 structure + L5 data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Regenerate pipeline outputs from index.html
+        run: |
+          python3 verify/phase1-extract.py
+          node verify/phase2-extract-data.mjs
+          node verify/phase3-split-components.mjs
+      - name: Generated files must match committed ones (no drift)
+        run: git diff --exit-code -- src public verify/data-manifest.json
+      - run: npm run build
+      - name: Layer 1 — structural equivalence vs index.html
+        run: npm run verify:structure
+      - name: Layer 5 — per-constant data deep-equal
+        run: npm run verify:data
+
+  behavior:
+    name: L2 behavior + L3 visual + L4 storage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # real CJK glyphs so the screenshot comparison exercises actual text
+      # rendering (both sides share the runner's fonts either way)
+      - name: Install Japanese fonts
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+      - run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Layer 2 — seeded behavioral comparison (100 scenarios)
+        run: npm run verify:behavior
+      - name: Layers 3+4 — visual regression + localStorage continuity
+        run: npm run verify:visual
