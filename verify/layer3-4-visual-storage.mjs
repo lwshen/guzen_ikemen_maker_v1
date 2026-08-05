@@ -2,12 +2,12 @@
 // Layer 4: localStorage continuity (history + preset saved in the old app must
 // survive when the Astro build is served from the SAME origin).
 //
-// The SETTINGS tab intentionally diverged from the frozen baseline (the
-// fixed-age select showed 「ランダム歳」 upstream; fixed post-freeze), so its
-// screenshots compare against committed golden PNGs under verify/golden/
-// instead of the baseline. Regenerate with --update-golden after intentional
-// visual changes to that tab.
-// Usage: node verify/layer3-4-visual-storage.mjs [--outdir DIR] [--update-golden]
+// All screenshots are same-environment old-vs-new comparisons (committed
+// golden PNGs would be platform-dependent: fonts differ between macOS and the
+// CI runners). Known intentional divergences from the frozen baseline are
+// instead applied to the OLD side as explicit DOM shims (BASELINE_SHIM below)
+// so the pixel comparison stays byte-exact.
+// Usage: node verify/layer3-4-visual-storage.mjs [--outdir DIR]
 import { chromium } from 'playwright';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -64,6 +64,14 @@ const browser = await chromium.launch();
 const VIEWPORTS = [{ w: 390, h: 844 }, { w: 1280, h: 900 }];
 const TABS = ['slot', 'result', 'history', 'settings'];
 
+// applied to the FROZEN BASELINE page only: aligns known intentional
+// post-freeze fixes so old-vs-new pixel comparison stays exact.
+// (1) the fixed-age select upstream showed the random sentinel as 「ランダム歳」
+const BASELINE_SHIM = () => {
+  const opt = document.querySelector('#fixedForm [data-fixed="age"] option');
+  if (opt && opt.textContent === 'ランダム歳') opt.textContent = 'ランダム';
+};
+
 async function shoot(baseURL, tag) {
   const shots = {};
   for (const vp of VIEWPORTS) {
@@ -74,6 +82,7 @@ async function shoot(baseURL, tag) {
     // kill transitions/animations (injected on BOTH sides): the app has .15-.2s
     // transitions, and a screenshot mid-transition-frame makes byte-compare flaky
     await page.addStyleTag({ content: '*{transition:none!important;animation:none!important;caret-color:transparent!important}' });
+    if (tag === 'old') await page.evaluate(BASELINE_SHIM);
     await page.check('#instantMode');
     const before = await page.$eval('#promptBox', el => el.value);
     await page.click('#startBtn');
@@ -92,23 +101,11 @@ async function shoot(baseURL, tag) {
 }
 
 {
-  const UPDATE_GOLDEN = process.argv.includes('--update-golden');
-  const GOLDEN_DIR = path.join(ROOT, 'verify', 'golden');
-  const isGolden = key => key.endsWith('-settings');
   const oldSrv = await makeServer(ROOT, 0);
   const newSrv = await makeServer(path.join(ROOT, 'dist'), 0);
   const [oldShots, newShots] = [await shoot(oldSrv.url, 'old'), await shoot(newSrv.url, 'new')];
   for (const key of Object.keys(newShots)) {
-    const b = fs.readFileSync(newShots[key]);
-    if (isGolden(key)) {
-      const gfile = path.join(GOLDEN_DIR, `settings-${key.split('-')[0]}.png`);
-      if (UPDATE_GOLDEN) { fs.mkdirSync(GOLDEN_DIR, { recursive: true }); fs.writeFileSync(gfile, b); console.log(`GOLD layer3 screenshot ${key} (recorded)`); continue; }
-      const exists = fs.existsSync(gfile);
-      ok(`layer3 screenshot ${key} (golden)`, exists && fs.readFileSync(gfile).equals(b),
-        exists ? '' : 'no golden PNG (run --update-golden)');
-      continue;
-    }
-    const a = fs.readFileSync(oldShots[key]);
+    const a = fs.readFileSync(oldShots[key]), b = fs.readFileSync(newShots[key]);
     ok(`layer3 screenshot ${key}`, a.equals(b), a.equals(b) ? '' : `differs (${oldShots[key]} vs ${newShots[key]})`);
   }
   await oldSrv.close(); await newSrv.close();
