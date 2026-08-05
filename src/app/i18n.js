@@ -3,7 +3,7 @@
 // except top-level state rewritten to ST.* (see state.js).
 import {
   captionFieldLabelMap, cardFieldLabelMap, fixedFieldLabelMap, sceneTranslations, slotLabelMap, uiCardTitles, uiText, valueTranslations,
-  valueTranslationsZh, sceneTranslationsZh,
+  valueTranslationsZh, sceneTranslationsZh, SCENE_MOD_ZH,
 } from '../data/index.js';
 import {
   renderFriendPanel,
@@ -44,6 +44,23 @@ import {
     return ja;
   }
 
+  // scenes may carry a weather/time prefix (buildEncounterScene, sceneMods), so
+  // look the sentence up with the prefix split off and translated separately
+  function sceneDisplay(value){
+    const table = SCENE_I18N[ST.uiLang] || {};
+    const raw = String(value);
+    if(table[raw]) return table[raw];
+    for(const [modJa, modZh] of Object.entries(SCENE_MOD_ZH)){
+      if(raw.startsWith(modJa)){
+        const rest = raw.slice(modJa.length);
+        const restT = table[rest];
+        if(!restT) return raw;
+        return (ST.uiLang==='zh' ? modZh : '') + restT;
+      }
+    }
+    return raw;
+  }
+
   function displayValue(key, value){
     if(value===undefined || value===null) return value;
     if(key==='captionMode') return captionModeDisplay(value);
@@ -51,7 +68,7 @@ import {
     const vt = VALUE_I18N[ST.uiLang] || {};
     if(key==='age') return ST.uiLang==='zh' ? `${value}岁` : `${value} years old`;
     if(key==='eraYear') return ST.uiLang==='zh' ? `${value}年` : `${value} CE`;
-    if(key==='sceneIdea') return (SCENE_I18N[ST.uiLang] || {})[String(value)] || value;
+    if(key==='sceneIdea') return sceneDisplay(value);
     return vt[String(value)] || value;
   }
 
@@ -68,7 +85,7 @@ import {
     const vt = VALUE_I18N[ST.uiLang] || {};
     if(key==='age') return ST.uiLang==='zh' ? `${value}岁` : `${value} years old`;
     if(key==='eraYear') return ST.uiLang==='zh' ? `${value}年` : `${value} CE`;
-    if(key==='sceneIdea') return (SCENE_I18N[ST.uiLang] || {})[String(value)] || value;
+    if(key==='sceneIdea') return sceneDisplay(value);
     return vt[String(value)] || value;
   }
 
@@ -139,7 +156,7 @@ import {
   function getCaptionFieldLabelsArray(c, english=false){
     const labels = [];
     const fields = c?.captionFields || {name:true,era:true,height:true,weight:true,footSize:true,mbti:true};
-    Object.entries(captionFieldLabelMap).forEach(([k,map])=>{ if(fields[k]) labels.push(english?map.en:map.ja); });
+    Object.entries(captionFieldLabelMap).forEach(([k,map])=>{ if(fields[k]) labels.push(english==='zh' ? (map.zh ?? map.ja) : english?map.en:map.ja); });
     return labels;
   }
 
@@ -309,6 +326,7 @@ import {
 
   function buildBodyHairSummary(c, english=false){
     if(c && c.bodyHairMode === '自然な表現（簡潔）'){
+      if(english==='zh') return '体毛按年龄・体质相应的自然范围整体低调描绘（既不过度无毛化，也不过度刻画）。';
       return english
         ? 'Body hair: a natural, age-appropriate amount overall, kept subtle — neither artificially hairless nor excessive.'
         : '体毛は年齢・体質相応の自然な範囲で、全体に控えめに描く（過度な無毛化も過剰な描写もしない）。';
@@ -316,6 +334,10 @@ import {
     if(!c) return '';
     const partsJa = [`体毛は全体として${c.bodyHairOverall}`];
     const areasJa = [['胸毛',c.chestHair],['腹毛',c.abdominalHair],['へそ下',c.lowerAbdomenHair],['腕毛',c.armHair],['すね毛',c.shinHair],['もも毛',c.thighHair],['脇毛',c.armpitHair],['手の甲・指毛',c.handFingerHair],['足の甲・指毛',c.footToeHair],['背中',c.backHair]];
+    if(english==='zh'){
+      const partZh = {'胸毛':'胸毛','腹毛':'腹毛','へそ下':'脐下','腕毛':'手臂毛','すね毛':'小腿毛','もも毛':'大腿毛','脇毛':'腋毛','手の甲・指毛':'手背・手指毛','足の甲・指毛':'脚背・脚趾毛','背中':'背部'};
+      return `体毛整体${displayValue('bodyHairOverall',c.bodyHairOverall)}。${areasJa.map(([k,v])=>`${partZh[k]||k}为${displayValue('bodyHairLevel',v)}`).join('、')}。体毛表现为非性向，作为成年男性的自然身体特征来描绘。`;
+    }
     if(!english) return `${partsJa[0]}。${areasJa.map(([k,v])=>`${k}は${v}`).join('、')}。体毛表現は非性的で、成人男性の自然な身体特徴として描写する。`;
     const areasEn = [['chest hair',c.chestHair],['abdominal hair',c.abdominalHair],['lower abdomen hair',c.lowerAbdomenHair],['arm hair',c.armHair],['shin hair',c.shinHair],['thigh hair',c.thighHair],['armpit hair',c.armpitHair],['hand and finger hair',c.handFingerHair],['foot and toe hair',c.footToeHair],['back hair',c.backHair]];
     return `Body hair overall is ${displayValue('bodyHairOverall',c.bodyHairOverall)}. ${areasEn.map(([k,v])=>`${k}: ${displayValue('bodyHairLevel',v)}`).join('; ')}. Depict body hair non-sexually as a natural adult male body feature.`;

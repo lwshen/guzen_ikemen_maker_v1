@@ -2,6 +2,7 @@
 // Split from the verbatim V3.2.0 baseline (Phase 4 stage B) — bodies unchanged
 // except top-level state rewritten to ST.* (see state.js).
 import {
+  FRIEND_REL_ZH, FRIEND_HIER_ZH,
   BODYHAIR_KEYS, BODY_ASYMS, FACE_EXTRA_DEFAULTS, FOOT_CFG_AXES, FOOT_FEATURES, FOOT_WIDTHS, IKEMEN_AXIS_LABELS, IKEMEN_DELTAS,
   OCCUPATIONS, POSTURES, SOLE_TYPES, SOLE_WRINKLES, SPORT_EXP_POOL, TOE_CURLS, TOE_LINES, TRAINING_LEVELS,
   UNIFORM_NAME_MIGRATION, UNIFORM_VARIANTS, pools, valueTranslations,
@@ -102,6 +103,14 @@ import {
   }
 
   function ikemenRank(sc, english=false){
+    if(english==='zh'){
+      if(sc >= 85) return '奇迹级五官';
+      if(sc >= 75) return '回头率级帅哥';
+      if(sc >= 65) return '吸睛帅哥';
+      if(sc >= 55) return '较端正的五官';
+      if(sc >= 45) return '平均水平的五官';
+      return '朴实亲切的五官';
+    }
     if(sc >= 85) return english ? 'Miraculous features' : '奇跡の造形';
     if(sc >= 75) return english ? 'Head-turning looks' : '振り返られるイケメン';
     if(sc >= 65) return english ? 'Eye-catching looks' : '目を引くイケメン';
@@ -427,7 +436,7 @@ ${targetJa}
     if(c.headwear){
       const onLabel = LT('着帽する', 'Wear the cap', '戴帽');
       const offLabel = LT('着帽しない', 'No cap', '不戴帽');
-      rows.push([L.headwearRow, `<select data-headwear-edit style="background:#0d1a2c;border:1px solid var(--gold);border-radius:8px;color:#eaf2ff;padding:4px 6px;font-size:12px"><option value="on"${c.headwearOn!==false?' selected':''}>${onLabel}</option><option value="off"${c.headwearOn===false?' selected':''}>${offLabel}</option></select> <span class="notice" style="display:inline">${c.headwear}</span>`]);
+      rows.push([L.headwearRow, `<select data-headwear-edit style="background:#0d1a2c;border:1px solid var(--gold);border-radius:8px;color:#eaf2ff;padding:4px 6px;font-size:12px"><option value="on"${c.headwearOn!==false?' selected':''}>${onLabel}</option><option value="off"${c.headwearOn===false?' selected':''}>${offLabel}</option></select> <span class="notice" style="display:inline">${displayValue('headwear', c.headwear)}</span>`]);
     }
     return rows;
   }
@@ -448,6 +457,7 @@ ${targetJa}
     const fo = c.friendOf; if(!fo) return '';
     const relMapEn = {'同僚':'Colleague','同期':'Same-cohort colleague','同級生':'Classmate','幼なじみ':'Childhood friend','趣味仲間':'Hobby friend','学生時代からの友人':'Friend since school days'};
     const hierMapEn = {'上司':'his boss','先輩':'his senior','同い年':'same age','後輩':'his junior','同期':'same cohort'};
+    if(english==='zh') return `${fo.name}（${fo.age}岁・${displayValue('role', fo.role)}）的${FRIEND_REL_ZH[fo.relation] || fo.relation}（${FRIEND_HIER_ZH[fo.hierarchy] || fo.hierarchy}）`;
     if(english) return `${relMapEn[fo.relation] || fo.relation} (${hierMapEn[fo.hierarchy] || fo.hierarchy}) of ${fo.name} (${fo.age}, ${displayValue('role', fo.role)})`;
     return `${fo.name}（${fo.age}歳・${fo.role}）の${fo.relation}（${fo.hierarchy}）`;
   }

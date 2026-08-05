@@ -7,7 +7,7 @@ import {
   FOOT_OCC_SCENES, FOOT_POSTURES, FOOT_PROPS, FOOT_SCENES, FOOT_SCENE_MIGRATION, FOOT_SHOE_STATES, FOOT_SOCK_STATES, FOOT_WIDTHS,
   FREE_HAIR_OCC, FVOCAB, MBTI_INTRO, NAMES_BY_YEAR, NATION_NAMES, OCCUPATIONS, OCC_CAT_HOOK, OCC_CAT_LABELS,
   OCC_CAT_ORDER, OCC_CAT_SCENES, OCC_HOOK, OCC_MBTI_CAT, OCC_SCENES, POSTER_FOOT, POSTURE_EN, SOLE_TYPES,
-  SOLE_WRINKLES, SPORTS, SPORT_EXP_WEIGHTS, SPORT_MEM, SPORT_MUSCLE, SPORT_SKELETON, STRICT_HAIR_OCC, TOE_CURLS,
+  SOLE_WRINKLES, SPORTS, SPORT_EXP_WEIGHTS, SPORT_MEM, SPORT_MUSCLE, SPORT_MUSCLE_ZH, SPORT_SKELETON, SPORT_STAGES_ZH, STRICT_HAIR_OCC, TOE_CURLS,
   TOE_LINES, TRAINING_DESC, TRAINING_LEVELS, TRAIN_HOOK, UNDERWEAR_COLOR_EN, UNIFORM_VARIANTS, VIBE_AGE_MAX, VIBE_OCC,
   pools, slotDefs, valueTranslations,
 } from '../data/index.js';
@@ -781,7 +781,16 @@ import {
     return list;
   }
 
-  function accWorkNote(c){ return ACC_WORK_OFF.some(r=>String(c.role||'').includes(r)) ? '（勤務中は外す）' : ''; }
+  // zh display line for the muscle-development profile row (ja/en keep the
+  // original muscleLine expression at the call site)
+  function muscleDevLineZh(c){
+    const hist = ((c && c.sportsHistory) || []).filter(x=>x.strength > 0 && SPORT_MUSCLE[x.name]);
+    if(!hist.length) return '无（无运动经历影响）';
+    const zh = SPORT_MUSCLE_ZH[hist[0].name];
+    return zh ? zh[0] : SPORT_MUSCLE[hist[0].name][0];
+  }
+
+  function accWorkNote(c){ return ACC_WORK_OFF.some(r=>String(c.role||'').includes(r)) ? LT('（勤務中は外す）','(removed while on duty)','（工作时摘下）') : ''; }
 
   function syncMarriageRing(c){
     if(!c) return;
@@ -1336,7 +1345,8 @@ import {
 
   function sportsHistoryText(c, english=false){
     const h = (c && c.sportsHistory) || [];
-    if(!h.length) return english ? 'None (non-athletic)' : 'なし（文化系・帰宅部）';
+    if(!h.length) return english==='zh' ? '无（文化系・不参加社团）' : english ? 'None (non-athletic)' : 'なし（文化系・帰宅部）';
+    if(english==='zh') return h.map(x=>`${displayValue('sportName',x.name)}（${SPORT_STAGES_ZH[SPORT_STAGES[x.from]]||SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+(SPORT_STAGES_ZH[SPORT_STAGES[x.to]]||SPORT_STAGES[x.to])}）`).join('／');
     return h.map(x=>`${x.name}（${SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+SPORT_STAGES[x.to]}）`).join('／');
   }
 
@@ -1549,8 +1559,13 @@ import {
 
   function muscleSummary(c, english=false){
     const hist = ((c && c.sportsHistory) || []).filter(x=>x.strength > 0 && SPORT_MUSCLE[x.name]);
-    if(!hist.length) return english ? 'None' : 'なし';
+    if(!hist.length) return english==='zh' ? '无' : english ? 'None' : 'なし';
     const m = hist[0];
+    if(english==='zh'){
+      const tierZh = ((c.role === 'プロスポーツ選手' && m.name === c.sportName) || m.strength >= 2) ? '发达' : m.strength >= 0.8 ? '适度' : '留有痕迹';
+      const zh = SPORT_MUSCLE_ZH[m.name];
+      return `${displayValue('sportName',m.name)}：${zh?zh[1]:SPORT_MUSCLE[m.name][2]}（${tierZh}）${hist[1] && hist[1].strength > 0 ? `／${displayValue('sportName',hist[1].name)}` : ''}`;
+    }
     const tierTxt = ((c.role === 'プロスポーツ選手' && m.name === c.sportName) || m.strength >= 2) ? (english ? 'well developed' : 'しっかり') : m.strength >= 0.8 ? (english ? 'moderate' : 'ほどよく') : (english ? 'faint traces' : '名残程度');
     return `${m.name}：${SPORT_MUSCLE[m.name][2]}（${tierTxt}）${hist[1] && hist[1].strength > 0 ? `／${hist[1].name}` : ''}`;
   }
@@ -1911,6 +1926,10 @@ import {
     const brandEn = c?.boxerBrand && c.boxerBrand !== '指定しない' ? `${c.boxerBrand} ` : '';
     if(mode === '時代に合った下着の種類' && c?.underwearType){
       const t = c.underwearType, col = c.underwearColor || '';
+      if(english==='zh'){
+        const brandZh = c?.boxerBrand && c.boxerBrand !== '指定しない' ? `${displayValue('outfitBrand',c.boxerBrand)}的` : '';
+        return `${brandZh}${col?`${displayValue('underwearColor',col)}的`:''}${displayValue('underwearType',t)}`;
+      }
       if(english){
         const colEn = UNDERWEAR_COLOR_EN[col] || col;
         const tEn = {'白ブリーフ':'classic white briefs','カラーブリーフ':`${colEn} classic briefs`,'トランクス':`${colEn} loose trunks-style boxer shorts`,'ボクサーパンツ':`${colEn} boxer briefs`}[t] || `${colEn} ${t}`;
@@ -1920,6 +1939,10 @@ import {
       return `${brandJa}${tJa}`;
     }
     const bwt = c?.baseWearType || 'ボクサーパンツ';
+    if(english==='zh'){
+      const brandZh = c?.boxerBrand && c.boxerBrand !== '指定しない' ? `${displayValue('outfitBrand',c.boxerBrand)}的` : '';
+      return `${brandZh}${displayValue('boxerColor',c?.boxerColor)}的${displayValue('baseWearType',bwt)}`;
+    }
     const bwtEn = {'ボクサーパンツ':'boxer briefs','ショートショーツ':'athletic short shorts','スポーツスパッツ':'sports compression spats'}[bwt] || 'boxer briefs';
     if(english) return `${brandEn}${UNDERWEAR_COLOR_EN[c?.boxerColor] || c?.boxerColor} ${bwtEn}`;
     return `${brandJa}${c?.boxerColor}の${bwt}`;
@@ -2678,6 +2701,7 @@ import {
   }
 
 export {
+  muscleDevLineZh,
   initManualControls,
   initInitialSettings,
   getInitial,
