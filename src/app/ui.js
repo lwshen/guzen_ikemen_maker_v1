@@ -98,13 +98,13 @@ import {
         const rows=[[L.weekdayOutfit,`${displayValue('outfitBrand',ST.current.outfitBrand)}・${displayValue('outfitType',ST.current.outfitType)}`,'outfitType']];
         rows.push(...buildUniformEditRows(ST.current, L));
         if(!ST.current.workUniform){
-          rows.push([en2?'Work Outer':'上着（平日）', `${ST.current.coat?`${B(ST.current.outerBrand)}${ST.current.coat}／中は`:''}${ST.current.jacket||'指定なし'}`, 'jacket']);
-          rows.push([en2?'Work Top':'トップス（平日）', `${B(ST.current.topBrand)}${ST.current.top}`, 'top']);
-          rows.push([en2?'Work Bottom':'ボトムス（平日）', `${B(ST.current.bottomBrand)}${ST.current.bottom}`, 'bottom']);
-          rows.push([en2?'Work Shoes':'靴（平日）', `${B(ST.current.shoesBrand)}${ST.current.shoes}`, 'shoes']);
+          rows.push([LT('上着（平日）','Work Outer','外套（工作日）'), `${ST.current.coat?`${B(ST.current.outerBrand)}${displayValue('coat',ST.current.coat)}${LT('／中は',' / inner: ','／内搭')}`:''}${displayValue('jacket',ST.current.jacket||'指定なし')}`, 'jacket']);
+          rows.push([LT('トップス（平日）','Work Top','上装（工作日）'), `${B(ST.current.topBrand)}${displayValue('top',ST.current.top)}`, 'top']);
+          rows.push([LT('ボトムス（平日）','Work Bottom','下装（工作日）'), `${B(ST.current.bottomBrand)}${displayValue('bottom',ST.current.bottom)}`, 'bottom']);
+          rows.push([LT('靴（平日）','Work Shoes','鞋子（工作日）'), `${B(ST.current.shoesBrand)}${displayValue('shoes',ST.current.shoes)}`, 'shoes']);
           if(isSuit){
-            rows.push([en2?'Tie':'ネクタイ', ST.current.tie||'ノータイ', 'tie']);
-            rows.push([en2?'Suit Silhouette':'シルエット', ST.current.suitSilhouette||'—', 'suitSilhouette']);
+            rows.push([LT('ネクタイ','Tie','领带'), displayValue('tie', ST.current.tie||'ノータイ'), 'tie']);
+            rows.push([LT('シルエット','Suit Silhouette','西装廓形'), displayValue('suitSilhouette', ST.current.suitSilhouette||'—'), 'suitSilhouette']);
           }
         }
         rows.push([L.sock,`${displayValue('sockBrand',ST.current.sockBrand)}・${displayValue('sockType',ST.current.sockType)}・${displayValue('sockColor',ST.current.sockColor)}`,'sockType']);

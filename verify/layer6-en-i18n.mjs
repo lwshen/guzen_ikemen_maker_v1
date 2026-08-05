@@ -34,19 +34,54 @@ const server = http.createServer((req, res) => {
 });
 await new Promise(r => server.listen(0, '127.0.0.1', r));
 
+// seeded PRNG + frozen Date: without this the scanned character differs per
+// run and conditional profile rows (suit/uniform) appear nondeterministically
+const FIXED_TIME = 1754269200000;
+const INIT = `(() => {
+  let s = 1 >>> 0;
+  Math.random = function() {
+    s |= 0; s = (s + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const OrigDate = Date;
+  class FakeDate extends OrigDate {
+    constructor(...a) { a.length === 0 ? super(${FIXED_TIME}) : super(...a); }
+    static now() { return ${FIXED_TIME}; }
+  }
+  FakeDate.parse = OrigDate.parse; FakeDate.UTC = OrigDate.UTC;
+  globalThis.Date = FakeDate;
+})();`;
+// spin once per occupation so the conditional row families (plain / suit /
+// uniform+headwear) all render deterministically
+const OCCUPATIONS = [null, '銀行員', '警察官'];
+
 const browser = await chromium.launch();
 let failures = 0, jsErrors = 0;
 for (const { lang, pattern, what } of CHECKS) {
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
+  await page.addInitScript(INIT);
   await page.goto(`http://127.0.0.1:${server.address().port}/`, { waitUntil: 'load' });
   await page.selectOption('#makerLanguage', lang);
   await page.check('#instantMode');
-  await page.click('#startBtn');
-  await page.waitForFunction(() => document.getElementById('promptBox').value !== '');
+  const spin = async occ => {
+    if (occ) await page.evaluate(o => {
+      const sel = document.getElementById('initialOccupation');
+      sel.value = o;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }, occ);
+    const before = await page.$eval('#promptBox', el => el.value);
+    await page.click('#startBtn');
+    await page.waitForFunction(p => document.getElementById('promptBox').value !== p
+      && document.getElementById('promptBox').value !== '', before);
+  };
+  await spin(OCCUPATIONS[0]);
 
-  const problems = await page.evaluate(patSrc => {
+  const problemSet = new Set();
+  const scan = async () => (await page.evaluate(patSrc => {
     const PAT = new RegExp(patSrc);
     const out = [];
     // 1. every select option label (language picker excluded: bilingual by design)
@@ -65,7 +100,11 @@ for (const { lang, pattern, what } of CHECKS) {
       if (t && PAT.test(t)) out.push(`${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}: ${t.slice(0, 40)}`);
     }
     return [...new Set(out)];
-  }, pattern.source);
+  }, pattern.source)).forEach(f => problemSet.add(f));
+
+  await scan();
+  for (const occ of OCCUPATIONS.slice(1)) { await spin(occ); await scan(); }
+  const problems = [...problemSet];
   await page.close();
 
   if (errors.length) { jsErrors++; console.log(`${lang}: JS errors:`, errors.join('; ')); }
