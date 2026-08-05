@@ -14,7 +14,7 @@ upstream updates to index.html only need to keep the overall shape:
 """
 import os, hashlib
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 src = open(f'{ROOT}/index.html', encoding='utf-8', newline='').read()
 lines = src.split('\n')
 assert '\r' not in src, 'unexpected CR in source'

@@ -25,13 +25,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Regenerate pipeline outputs from index.html
-        run: |
-          python3 verify/phase1-extract.py
-          node verify/phase2-extract-data.mjs
-          node verify/phase3-split-components.mjs
-      - name: Generated files must match committed ones (no drift)
-        run: git diff --exit-code -- src public verify/data-manifest.json
+      # Phase 4 froze the index.html baseline: app code is hand-maintained now,
+      # so the old regenerate-and-diff drift check is retired (scripts archived
+      # under verify/archive/).
       - run: npm run build
       - name: Layer 1 — structural equivalence vs index.html
         run: npm run verify:structure

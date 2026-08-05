@@ -6,7 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { ROOT, parseTopLevelConsts } from './phase2-extract-data.mjs';
+import { ROOT, parseTopLevelConsts } from './archive/phase2-extract-data.mjs';
 
 const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'verify', 'data-manifest.json'), 'utf-8'));
 

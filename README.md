@@ -16,12 +16,7 @@ npm run build      # 构建到 dist/
 npm run verify     # 构建后跑五层迁移验证（结构 / 数据 deep-equal / 行为对拍 / 视觉 / localStorage）
 ```
 
-从原版 index.html 重建全部生成物：
-
-```bash
-python3 verify/phase1-extract.py && node verify/phase2-extract-data.mjs \
-  && node verify/phase3-split-components.mjs && npm run build
-```
+**基线已冻结（Phase 4，2026-08-05）**：`index.html` 固定为 upstream `7438239`（V3.2.0），只作为验证对照基线，不再从它重建代码；提取管线脚本归档于 `verify/archive/`。功能开发直接改 Astro 版源码。
 
 ⚠️ 注意事项：
 

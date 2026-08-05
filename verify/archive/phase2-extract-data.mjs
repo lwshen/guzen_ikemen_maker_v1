@@ -16,7 +16,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
-export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MIN_LITERAL_LEN = 40;
 
 // --- string/template/comment-aware scanner -------------------------------

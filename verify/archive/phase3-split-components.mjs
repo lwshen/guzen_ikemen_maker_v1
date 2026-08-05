@@ -20,7 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const pagePath = path.join(ROOT, 'src', 'pages', 'index.astro');
 const src = fs.readFileSync(pagePath, 'utf-8');
 const lines = src.split('\n');
