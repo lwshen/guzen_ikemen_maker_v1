@@ -6,6 +6,11 @@
 //
 // NOTE (by design): once data is edited intentionally post-Phase 4, this layer
 // reports the drift vs the frozen baseline — update/retire it at that point.
+//
+// First intentional divergence (2026-08-05, EN i18n fix): valueTranslations
+// and uiText gained entries the upstream never shipped. For those two, the
+// check is SUBSET mode — every baseline entry must survive byte-identical
+// (additions allowed, edits/deletions still fail). Everything else stays exact.
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -34,12 +39,24 @@ function deepEqual(a, b) {
   return ka.every(k => deepEqual(a[k], b[k]));
 }
 
+const SUBSET_MODE = new Set(['valueTranslations', 'uiText']); // append-only vs baseline
+
+// every baseline entry must exist unchanged in `cur`; additions are allowed;
+// arrays are compared exactly (subset semantics are ambiguous for lists)
+function subsetEqual(base, cur) {
+  if (Object.is(base, cur)) return true;
+  if (typeof base !== typeof cur || typeof base !== 'object' || base === null || cur === null) return false;
+  if (Array.isArray(base) || Array.isArray(cur)) return deepEqual(base, cur);
+  return Object.keys(base).every(k => k in cur && subsetEqual(base[k], cur[k]));
+}
+
 let fails = 0;
 for (const { name } of manifest.extracted) {
   const literal = origConsts.get(name);
   if (literal === undefined) { console.log(`FAIL ${name}: not found in frozen baseline`); fails++; continue; }
   const expected = vm.runInNewContext(`(${literal})`, {}, { timeout: 5000 });
-  if (!deepEqual(expected, data[name])) { console.log(`FAIL ${name}: deep-equal mismatch vs baseline`); fails++; }
+  const ok = SUBSET_MODE.has(name) ? subsetEqual(expected, data[name]) : deepEqual(expected, data[name]);
+  if (!ok) { console.log(`FAIL ${name}: ${SUBSET_MODE.has(name) ? 'baseline entries not preserved' : 'deep-equal mismatch vs baseline'}`); fails++; }
 }
 const extraKeys = Object.keys(data).filter(k => !manifest.extracted.some(e => e.name === k));
 if (extraKeys.length) { console.log(`FAIL unexpected src/data exports: ${extraKeys}`); fails++; }

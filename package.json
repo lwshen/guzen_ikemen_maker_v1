@@ -12,7 +12,8 @@
     "verify:visual": "node verify/layer3-4-visual-storage.mjs",
     "verify:data": "node verify/layer5-data-equal.mjs",
     "verify:options": "node verify/layer2-options-sweep.mjs",
-    "verify": "npm run verify:structure && npm run verify:data && npm run verify:behavior && npm run verify:visual"
+    "verify:en": "node verify/layer6-en-i18n.mjs",
+    "verify": "npm run verify:structure && npm run verify:data && npm run verify:behavior && npm run verify:visual && npm run verify:en"
   },
   "dependencies": {
     "astro": "^5.0.0"
