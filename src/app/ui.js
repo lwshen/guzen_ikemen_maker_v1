@@ -108,21 +108,21 @@ import {
           }
         }
         rows.push([L.sock,`${displayValue('sockBrand',ST.current.sockBrand)}・${displayValue('sockType',ST.current.sockType)}・${displayValue('sockColor',ST.current.sockColor)}`,'sockType']);
-        rows.push([en2?'Accessories (Work)':'アクセサリー（平日）', ((ST.current.accessories||[]).join('・')||'なし')+accWorkNote(ST.current), 'accessoriesEdit']);
+        rows.push([LT('アクセサリー（平日）','Accessories (Work)','配饰（工作日）'), ((ST.current.accessories||[]).map(a=>displayValue('accessory',a)).join('・')||displayValue('accessory','なし'))+accWorkNote(ST.current), 'accessoriesEdit']);
         if(ST.current.holidayOutfitType){
           rows.push([L.holidayOutfit,`${displayValue('outfitBrand',ST.current.holidayOutfitBrand)}・${displayValue('outfitType',ST.current.holidayOutfitType)}${ST.current.holidayGapSuit?'⚡':''}`,'holidayOutfitType']);
-          rows.push([en2?'Casual Outer':'上着（休日）', `${ST.current.holidayOuterBrand?`${ST.current.holidayOuterBrand}・`:''}${ST.current.holidayJacket||'指定なし'}`, 'holidayJacket']);
-          rows.push([en2?'Casual Top':'トップス（休日）', `${ST.current.holidayTopBrand?`${ST.current.holidayTopBrand}・`:''}${ST.current.holidayTop||''}`, 'holidayTop']);
-          rows.push([en2?'Casual Bottom':'ボトムス（休日）', `${ST.current.holidayBottomBrand?`${ST.current.holidayBottomBrand}・`:''}${ST.current.holidayBottom||''}`, 'holidayBottom']);
-          rows.push([en2?'Casual Shoes':'靴（休日）', `${ST.current.holidayShoesBrand?`${ST.current.holidayShoesBrand}・`:''}${ST.current.holidayShoes||''}`, 'holidayShoes']);
+          rows.push([LT('上着（休日）','Casual Outer','外套（休息日）'), `${ST.current.holidayOuterBrand?`${ST.current.holidayOuterBrand}・`:''}${displayValue('holidayJacket',ST.current.holidayJacket||'指定なし')}`, 'holidayJacket']);
+          rows.push([LT('トップス（休日）','Casual Top','上装（休息日）'), `${ST.current.holidayTopBrand?`${ST.current.holidayTopBrand}・`:''}${displayValue('holidayTop',ST.current.holidayTop||'')}`, 'holidayTop']);
+          rows.push([LT('ボトムス（休日）','Casual Bottom','下装（休息日）'), `${ST.current.holidayBottomBrand?`${ST.current.holidayBottomBrand}・`:''}${displayValue('holidayBottom',ST.current.holidayBottom||'')}`, 'holidayBottom']);
+          rows.push([LT('靴（休日）','Casual Shoes','鞋子（休息日）'), `${ST.current.holidayShoesBrand?`${ST.current.holidayShoesBrand}・`:''}${displayValue('holidayShoes',ST.current.holidayShoes||'')}`, 'holidayShoes']);
           rows.push([L.holidaySock,`${displayValue('sockBrand',ST.current.holidaySockBrand)}・${displayValue('sockType',ST.current.holidaySockType)}・${displayValue('sockColor',ST.current.holidaySockColor)}`]);
-          rows.push([en2?'Accessories (Casual)':'アクセサリー（休日）', ((ST.current.holidayAccessories||[]).join('・')||'なし'), 'holidayAccessoriesEdit']);
+          rows.push([LT('アクセサリー（休日）','Accessories (Casual)','配饰（休息日）'), ((ST.current.holidayAccessories||[]).map(a=>displayValue('accessory',a)).join('・')||displayValue('accessory','なし')), 'holidayAccessoriesEdit']);
           const memo=[ST.current.holidayGapSuit?(en2?'Suit even on days off':'休日なのにスーツ（本人は私服のつもり）'):'',ST.current.holidayStyleNote||ST.current.styleNote,ST.current.muscleFashionNote,ST.current.senseFashionNote].filter(Boolean).join('。');
-          rows.push([en2?'Styling Memo':'着こなしメモ', memo||'—', 'holidayStyleNote']);
+          rows.push([LT('着こなしメモ','Styling Memo','穿搭笔记'), memo||'—', 'holidayStyleNote']);
         }
         return rows;
       })()],
-      ['output', L.outputSection, [[L.background,displayValue('background',ST.current.background),'background'],[L.output,`${displayValue('outputType',ST.current.outputType)} / ${displayValue('count',ST.current.count)}`],[L.promptTarget,`<span class="mini-badge">${ST.current.promptTarget || 'ChatGPT'}</span>`],[L.imageText, ST.current.captionMode==='表記しない' ? captionModeDisplay(ST.current.captionMode) : `${captionModeDisplay(ST.current.captionMode)} / ${getCaptionFieldLabelsArray(ST.current, ST.uiLang==='en').join(', ')}`],[LT('顔立ちプリセット出力', 'Face Preset in Prompt', '脸型预设输出'), ST.current.facePresetOut||'含める', 'facePresetOut'],[L.cardSetting, `${displayValue('cardStyle',ST.current.cardStyle)} / ${ST.current.cardRarity} / ${displayValue('cardTheme',ST.current.cardTheme)} / ${displayValue('cardLayout',ST.current.cardLayout)} / ${displayValue('cardWearMode',ST.current.cardWearMode || 'ボクサーパンツのみ')} / ${displayValue('cardEffect',cardEffectByRarity(ST.current.cardRarity))}`]]],
+      ['output', L.outputSection, [[L.background,displayValue('background',ST.current.background),'background'],[L.output,`${displayValue('outputType',ST.current.outputType)} / ${displayValue('count',ST.current.count)}`],[L.promptTarget,`<span class="mini-badge">${ST.current.promptTarget || 'ChatGPT'}</span>`],[L.imageText, ST.current.captionMode==='表記しない' ? captionModeDisplay(ST.current.captionMode) : `${captionModeDisplay(ST.current.captionMode)} / ${getCaptionFieldLabelsArray(ST.current, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en').join(', ')}`],[LT('顔立ちプリセット出力', 'Face Preset in Prompt', '脸型预设输出'), displayValue('facePresetOut', ST.current.facePresetOut||'含める'), 'facePresetOut'],[L.cardSetting, `${displayValue('cardStyle',ST.current.cardStyle)} / ${ST.current.cardRarity} / ${displayValue('cardTheme',ST.current.cardTheme)} / ${displayValue('cardLayout',ST.current.cardLayout)} / ${displayValue('cardWearMode',ST.current.cardWearMode || 'ボクサーパンツのみ')} / ${displayValue('cardEffect',cardEffectByRarity(ST.current.cardRarity))}`]]],
       ['scene', L.sceneSection, [[L.scene,displayValue('sceneIdea',ST.current.sceneIdea),'sceneIdea']]]
     ];
     const pcIcons = {basic:'👤', inner:'🎭', face:'🙂', body:'📐', bodyhair:'🧔', main:'🩳', outfit:'👕', output:'🖨️', scene:'🎬'};

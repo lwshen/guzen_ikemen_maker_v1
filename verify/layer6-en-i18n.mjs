@@ -57,8 +57,9 @@ for (const { lang, pattern, what } of CHECKS) {
       for (const og of s.querySelectorAll('optgroup')) if (PAT.test(og.label))
         out.push(`select#${s.id} optgroup: ${og.label.slice(0, 40)}`);
     }
-    // 2. field labels, buttons, headings, pane descriptions, chips
-    for (const el of document.querySelectorAll('label > span, button, h2, h3, .pane-desc, .chip, .flow-step, .dtype-btn')) {
+    // 2. field labels, buttons, headings, pane descriptions, chips, and
+    //    profile ROW LABELS (.kv b — values are character data, labels are chrome)
+    for (const el of document.querySelectorAll('label > span, button, h2, h3, .pane-desc, .chip, .flow-step, .dtype-btn, #profileView .kv b')) {
       if (el.id === 'makerLanguageLabel') continue; // bilingual by design
       const t = el.textContent.trim();
       if (t && PAT.test(t)) out.push(`${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}: ${t.slice(0, 40)}`);
