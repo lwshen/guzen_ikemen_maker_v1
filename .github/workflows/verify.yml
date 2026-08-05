@@ -59,6 +59,8 @@ jobs:
         run: npm run verify:behavior
       - name: Layers 3+4 — visual regression + localStorage continuity
         run: npm run verify:visual
+      - name: Layer 6 — EN-mode zero-Japanese assertion
+        run: npm run verify:en
 
   # ~10 min: sweeps all ~900 select options / checkboxes / derived-type
   # buttons against the frozen baseline. Run on demand, not per push.
