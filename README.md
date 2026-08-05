@@ -2,26 +2,22 @@
 
 Guzen Ikemen Maker V3.0.0 — Astro 版。
 
-- `index.html` — 迁移前的单文件原版，作为验证基线保留（verify 脚本以它为「旧版」对照，勿删）。
-- `src/pages/index.astro` — 页面骨架：head + 原样内联 CSS + 组件调用 + 脚本标签。
-- `src/components/*.astro` — 7 个区块组件（Hero / TabsNav / InitialPanel / SlotTab / ResultTab / HistoryTab / SettingsTab），内容为原版逐行切块（Phase 3）。**改界面改这里。**
-- `public/data/*.js` — 132 个纯数据表（名字库/职业/翻译/内面设定等），按主题分 7 个文件，挂载到 `window.GUZEN_DATA`（Phase 2）。**改数据表改这里。**
-- `public/app.js` — 应用逻辑（单 IIFE，经典脚本，从 GUZEN_DATA 解构数据）。
-- `verify/` — 迁移验证脚本 + 提取管线，详见 `MIGRATION_VERIFICATION.md`。
+- `index.html` — 冻结的单文件原版（upstream V3.2.0），作为验证基线保留（verify 脚本以它为「旧版」对照，勿删）。
+- `src/pages/index.astro` — 页面骨架：head + 原样内联 CSS + 组件调用 + 模块脚本。
+- `src/components/*.astro` — 7 个区块组件（Hero / TabsNav / InitialPanel / SlotTab / ResultTab / HistoryTab / SettingsTab）。**改界面改这里。**
+- `src/data/*.js` — 139 个纯数据表（名字库/职业/翻译/内面设定等）的 ES module，按主题分 7 个文件。**改数据表改这里。**
+- `src/app/*.js` — 应用逻辑 ES modules（Phase 4）：`state.js`（共享状态 ST + els）、`core`（随机/测量）、`i18n`、`generate`、`inner`、`flow`、`prompts`、`ui`、入口 `main.js`（数据补丁 + 事件绑定 + init，保持基线原序）。**改逻辑改这里。**
+- `verify/` — 迁移验证脚本（提取管线已归档于 `verify/archive/`），详见 `MIGRATION_VERIFICATION.md`。
 
 ```bash
 npm install
 npm run dev        # 本地开发
 npm run build      # 构建到 dist/
 npm run verify     # 构建后跑五层迁移验证（结构 / 数据 deep-equal / 行为对拍 / 视觉 / localStorage）
+npm run verify:options  # 选项全扫描（~900 个选项点逐一对拍，约 5-10 分钟；CI 里手动触发）
 ```
 
-从原版 index.html 重建全部生成物：
-
-```bash
-python3 verify/phase1-extract.py && node verify/phase2-extract-data.mjs \
-  && node verify/phase3-split-components.mjs && npm run build
-```
+**基线已冻结（Phase 4，2026-08-05）**：`index.html` 固定为 upstream `7438239`（V3.2.0），只作为验证对照基线，不再从它重建代码；提取管线脚本归档于 `verify/archive/`。功能开发直接改 Astro 版源码。
 
 ⚠️ 注意事项：
 

@@ -1,29 +1,28 @@
-// Layer 5: per-constant deep-equal — every extracted data constant, as loaded
-// from public/data/*.js, must equal the literal in the ORIGINAL index.html.
-// Comparison is key-order-sensitive: Object.keys iteration order feeds option
-// lists and weighted picks, so reordered keys are a real behavioral change.
-// Run after verify/phase2-extract-data.mjs. See MIGRATION_VERIFICATION.md.
+// Layer 5: per-constant deep-equal — every data constant, as ACTUALLY exported
+// by src/data (imported and evaluated), must equal the literal in the frozen
+// index.html baseline. Key-order-sensitive: Object.keys iteration order feeds
+// option lists and weighted picks, so reordered keys are a real behavioral
+// change. See MIGRATION_VERIFICATION.md sections 1 and 4.
+//
+// NOTE (by design): once data is edited intentionally post-Phase 4, this layer
+// reports the drift vs the frozen baseline — update/retire it at that point.
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { ROOT, parseTopLevelConsts } from './phase2-extract-data.mjs';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { parseTopLevelConsts } from './archive/phase2-extract-data.mjs';
 
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'verify', 'data-manifest.json'), 'utf-8'));
 
-// original literals: same parser over the script region of index.html
-// (region located by marker lines, same shape contract as phase1-extract.py)
+// original literals from the frozen baseline (region located by marker lines)
 const orig = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf-8');
 const origLines = orig.split('\n');
 const region = origLines.slice(origLines.indexOf('<script>') + 1, origLines.indexOf('</script>')).join('\n');
 const origConsts = new Map(parseTopLevelConsts(region).map(c => [c.name, c.init]));
 
-// load the shipped data files into one sandbox (window === global, classic-script style)
-const sandbox = {};
-sandbox.window = sandbox;
-vm.createContext(sandbox);
-for (const f of manifest.dataFiles) {
-  vm.runInContext(fs.readFileSync(path.join(ROOT, 'public', 'data', f), 'utf-8'), sandbox, { filename: f });
-}
+// what actually ships: evaluate the real modules
+const data = await import(pathToFileURL(path.join(ROOT, 'src', 'data', 'index.js')));
 
 function deepEqual(a, b) {
   if (Object.is(a, b)) return true;
@@ -38,13 +37,12 @@ function deepEqual(a, b) {
 let fails = 0;
 for (const { name } of manifest.extracted) {
   const literal = origConsts.get(name);
-  if (literal === undefined) { console.log(`FAIL ${name}: not found in original index.html`); fails++; continue; }
+  if (literal === undefined) { console.log(`FAIL ${name}: not found in frozen baseline`); fails++; continue; }
   const expected = vm.runInNewContext(`(${literal})`, {}, { timeout: 5000 });
-  const actual = sandbox.GUZEN_DATA?.[name];
-  if (!deepEqual(expected, actual)) { console.log(`FAIL ${name}: deep-equal mismatch vs original`); fails++; }
+  if (!deepEqual(expected, data[name])) { console.log(`FAIL ${name}: deep-equal mismatch vs baseline`); fails++; }
 }
-const extraKeys = Object.keys(sandbox.GUZEN_DATA ?? {}).filter(k => !manifest.extracted.some(e => e.name === k));
-if (extraKeys.length) { console.log(`FAIL unexpected GUZEN_DATA keys: ${extraKeys}`); fails++; }
+const extraKeys = Object.keys(data).filter(k => !manifest.extracted.some(e => e.name === k));
+if (extraKeys.length) { console.log(`FAIL unexpected src/data exports: ${extraKeys}`); fails++; }
 
 console.log(`\n${manifest.extracted.length} constants checked, ${fails} failures`);
 console.log(fails ? 'RESULT: FAIL' : 'RESULT: ALL PASS');
