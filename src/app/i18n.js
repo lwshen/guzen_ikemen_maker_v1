@@ -39,6 +39,9 @@ import {
 
   function displayOptionLabel(key, value){
     if(key==='captionMode') return captionModeDisplay(value);
+    // the ランダム sentinel must never be run through per-key templates
+    // (upstream showed 「ランダム歳」/「ランダム years old」 in the fixed-age select)
+    if(String(value)==='ランダム') return ST.uiLang==='en' ? (valueTranslations['ランダム'] || value) : value;
     if(ST.uiLang!=='en'){
       if(key==='age') return `${value}歳`;
       if(key==='eraYear') return eraLabel(value);
@@ -48,6 +51,22 @@ import {
     if(key==='eraYear') return `${value} CE`;
     if(key==='sceneIdea') return sceneTranslations[String(value)] || value;
     return valueTranslations[String(value)] || value;
+  }
+
+  // post-freeze fix: eight selects ship hardcoded static <option> labels that
+  // never pass through displayOptionLabel. Original Japanese labels are kept in
+  // data-ja on first run, then rendered per current language via the table.
+  function translateStaticSelectOptions(){
+    const ids = ['initialFacePresetOut','initialIkemenIndex','initialBodyHairMode','initialSportsInfluence',
+      'initialHeightBase','initialPromptDetail','initialBioCaption','profileSheetWearSel'];
+    for(const id of ids){
+      const sel = document.getElementById(id);
+      if(!sel) continue;
+      for(const o of sel.options){
+        if(!o.dataset.ja) o.dataset.ja = o.textContent;
+        o.textContent = ST.uiLang==='en' ? (valueTranslations[o.dataset.ja] || valueTranslations[o.value] || o.dataset.ja) : o.dataset.ja;
+      }
+    }
   }
 
   function renderSelectOptions(selectEl, key, values, selectedValue, includeRandom=false){
@@ -82,7 +101,7 @@ import {
 
   function captionModeDisplay(mode){
     if(ST.uiLang!=='en') return mode || '表記しない';
-    const map = {'画像下部に1行で表記':'One-line footer text','カード風ミニプロフィールを下部に表示':'Mini profile card at the bottom','スタイリッシュなタグ型で表示':'Stylish tag-style display','表記しない':'No text overlay'};
+    const map = {'表記する':'Show spec text','画像下部に1行で表記':'One-line footer text','カード風ミニプロフィールを下部に表示':'Mini profile card at the bottom','スタイリッシュなタグ型で表示':'Stylish tag-style display','表記しない':'No text overlay'};
     return map[mode] || 'No text overlay';
   }
 
@@ -368,6 +387,14 @@ import {
     const cp2=document.getElementById('copyOutfitBtn'); if(cp2) cp2.textContent=T('copyOutfitBtn');
     const cp3=document.getElementById('copySceneBtn'); if(cp3) cp3.textContent=T('copySceneBtn');
     const cp4=document.getElementById('copyDerivedBtn'); if(cp4) cp4.textContent=T('copyCardBtn');
+    // post-freeze fix: these two copy buttons and the group prompt title were
+    // missing from the upstream relabel pass (stayed Japanese in EN mode)
+    const cp6=document.getElementById('copyOutfitHolidayBtn'); if(cp6) cp6.textContent=T('copyLabel');
+    const cp7=document.getElementById('copyGroupBtn'); if(cp7) cp7.textContent=T('copyLabel');
+    const gpt=document.getElementById('groupPromptTitle'); if(gpt) gpt.textContent=T('groupPromptTitle');
+    const fs1=document.getElementById('flowStep1'); if(fs1) fs1.textContent=T('flowStep1');
+    const fs2=document.getElementById('flowStep2'); if(fs2) fs2.textContent=T('flowStep2');
+    translateStaticSelectOptions();
     const histTitle=document.querySelector('#tab-history .section-title h2'); if(histTitle) histTitle.textContent=T('historyTitle');
     const chBtn=document.getElementById('clearHistoryBtn'); if(chBtn) chBtn.textContent=T('clearHistoryBtn');
     const setTitle=document.querySelector('#tab-settings .section-title h2'); if(setTitle) setTitle.textContent=T('settingsTitle');

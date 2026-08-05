@@ -1,7 +1,13 @@
 // Layer 3: visual regression (old vs Astro build, same seeded state) and
 // Layer 4: localStorage continuity (history + preset saved in the old app must
 // survive when the Astro build is served from the SAME origin).
-// Usage: node verify/layer3-4-visual-storage.mjs [--outdir DIR]
+//
+// The SETTINGS tab intentionally diverged from the frozen baseline (the
+// fixed-age select showed 「ランダム歳」 upstream; fixed post-freeze), so its
+// screenshots compare against committed golden PNGs under verify/golden/
+// instead of the baseline. Regenerate with --update-golden after intentional
+// visual changes to that tab.
+// Usage: node verify/layer3-4-visual-storage.mjs [--outdir DIR] [--update-golden]
 import { chromium } from 'playwright';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -86,11 +92,23 @@ async function shoot(baseURL, tag) {
 }
 
 {
+  const UPDATE_GOLDEN = process.argv.includes('--update-golden');
+  const GOLDEN_DIR = path.join(ROOT, 'verify', 'golden');
+  const isGolden = key => key.endsWith('-settings');
   const oldSrv = await makeServer(ROOT, 0);
   const newSrv = await makeServer(path.join(ROOT, 'dist'), 0);
   const [oldShots, newShots] = [await shoot(oldSrv.url, 'old'), await shoot(newSrv.url, 'new')];
-  for (const key of Object.keys(oldShots)) {
-    const a = fs.readFileSync(oldShots[key]), b = fs.readFileSync(newShots[key]);
+  for (const key of Object.keys(newShots)) {
+    const b = fs.readFileSync(newShots[key]);
+    if (isGolden(key)) {
+      const gfile = path.join(GOLDEN_DIR, `settings-${key.split('-')[0]}.png`);
+      if (UPDATE_GOLDEN) { fs.mkdirSync(GOLDEN_DIR, { recursive: true }); fs.writeFileSync(gfile, b); console.log(`GOLD layer3 screenshot ${key} (recorded)`); continue; }
+      const exists = fs.existsSync(gfile);
+      ok(`layer3 screenshot ${key} (golden)`, exists && fs.readFileSync(gfile).equals(b),
+        exists ? '' : 'no golden PNG (run --update-golden)');
+      continue;
+    }
+    const a = fs.readFileSync(oldShots[key]);
     ok(`layer3 screenshot ${key}`, a.equals(b), a.equals(b) ? '' : `differs (${oldShots[key]} vs ${newShots[key]})`);
   }
   await oldSrv.close(); await newSrv.close();

@@ -87,7 +87,11 @@ function sample(values) {
 function buildUnits(inv) {
   const units = [];
   const SKIP = new Set(['presetSelect', 'makerLanguage', 'friendRelation', 'friendHierarchy',
-    'friendPairWearSel', 'friendPairCountSel']); // covered by flows / need friend context
+    'friendPairWearSel', 'friendPairCountSel', // covered by flows / need friend context
+    // English prompt output intentionally diverged from the frozen baseline
+    // (post-freeze i18n fix); EN regression coverage lives in the layer-2
+    // golden scenarios, so these two stay out of the baseline-anchored sweep
+    'initialPromptLanguage', 'manualPromptLanguage']);
   for (const s of inv.selects) {
     const key = s.id ?? `fixed:${s.fixed}`;
     if (s.id && SKIP.has(s.id)) continue;

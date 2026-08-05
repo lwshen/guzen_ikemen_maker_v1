@@ -1,8 +1,15 @@
-// Layer 2: seeded behavioral equivalence — old single-file app vs Astro build.
+// Layer 2: seeded behavioral equivalence — frozen baseline vs Astro build.
 // Both pages get the same seeded PRNG (mulberry32) in place of Math.random and a
 // frozen Date, then run identical action scripts; every prompt textarea, the
 // rendered profile HTML, and the rarity readout must match byte-for-byte.
-// Usage: node verify/layer2-behavior.mjs [--seeds N]
+//
+// JA scenarios compare old-vs-new against the frozen index.html baseline.
+// EN-involving scenarios (lang=en, langswitch flow) compare the build against
+// COMMITTED GOLDEN SNAPSHOTS instead: EN display intentionally diverged from
+// the baseline when the missing V3.1-V3.4 translations were fixed post-freeze
+// (see MIGRATION_VERIFICATION.md §4.2). Regenerate with --update-golden after
+// an intentional EN-display change.
+// Usage: node verify/layer2-behavior.mjs [--seeds N] [--update-golden]
 import { chromium } from 'playwright';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -207,15 +214,22 @@ Object.keys(FLOWS).forEach((flow, fi) => {
     scenarios.push({ seed: 700 + fi * 10 + s, lang: 'ja', modes: ['full'], flow });
 });
 
-const oldSrv = await serve(path.join(ROOT));        // original index.html (self-contained)
+const UPDATE_GOLDEN = process.argv.includes('--update-golden');
+const GOLDEN_PATH = path.join(ROOT, 'verify', 'golden', 'en-scenarios.json');
+const isGolden = sc => sc.lang === 'en' || sc.flow === 'langswitch';
+const golden = fs.existsSync(GOLDEN_PATH) ? JSON.parse(fs.readFileSync(GOLDEN_PATH, 'utf-8')) : {};
+const goldenOut = {};
+
+const oldSrv = await serve(path.join(ROOT));        // frozen index.html baseline
 const newSrv = await serve(path.join(ROOT, 'dist')); // Astro build output
 const browser = await chromium.launch();
 
-let failures = 0, jsErrors = 0;
+let failures = 0, jsErrors = 0, goldenCount = 0;
 const CONCURRENCY = 6;
 for (let i = 0; i < scenarios.length; i += CONCURRENCY) {
   const batch = scenarios.slice(i, i + CONCURRENCY);
   const results = await Promise.all(batch.map(async sc => {
+    if (isGolden(sc)) return { sc, b: await runScenario(browser, newSrv.url, sc) };
     const [a, b] = await Promise.all([
       runScenario(browser, oldSrv.url, sc),
       runScenario(browser, newSrv.url, sc),
@@ -225,11 +239,22 @@ for (let i = 0; i < scenarios.length; i += CONCURRENCY) {
   for (const { sc, a, b } of results) {
     const label = `seed=${sc.seed} lang=${sc.lang} modes=${sc.modes.join('+')}`
       + (sc.group ? ' group' : '') + (sc.friend ? ' friend' : '') + (sc.flow ? ` flow=${sc.flow}` : '');
-    const same = JSON.stringify(a.captures) === JSON.stringify(b.captures);
-    if (a.errors.length || b.errors.length) {
+    if ((a?.errors.length || 0) + b.errors.length > 0) {
       jsErrors++;
-      console.log(`ERR  ${label} old=[${a.errors.join('; ')}] new=[${b.errors.join('; ')}]`);
+      console.log(`ERR  ${label} old=[${a?.errors.join('; ') ?? ''}] new=[${b.errors.join('; ')}]`);
     }
+    if (isGolden(sc)) {
+      goldenCount++;
+      if (UPDATE_GOLDEN) { goldenOut[label] = b.captures; console.log(`GOLD ${label} (recorded)`); continue; }
+      const expect = golden[label];
+      if (!expect) { failures++; console.log(`DIFF ${label} — no golden snapshot (run --update-golden)`); continue; }
+      if (JSON.stringify(expect) !== JSON.stringify(b.captures)) {
+        failures++;
+        console.log(`DIFF ${label} vs golden snapshot`);
+      } else console.log(`OK   ${label} (golden)`);
+      continue;
+    }
+    const same = JSON.stringify(a.captures) === JSON.stringify(b.captures);
     if (!same) {
       failures++;
       console.log(`DIFF ${label}`);
@@ -246,5 +271,10 @@ for (let i = 0; i < scenarios.length; i += CONCURRENCY) {
 }
 
 await browser.close(); oldSrv.close(); newSrv.close();
-console.log(`\n${scenarios.length} scenarios: ${scenarios.length - failures} identical, ${failures} diffs, ${jsErrors} scenarios with JS errors`);
+if (UPDATE_GOLDEN) {
+  fs.mkdirSync(path.dirname(GOLDEN_PATH), { recursive: true });
+  fs.writeFileSync(GOLDEN_PATH, JSON.stringify(goldenOut));
+  console.log(`\ngolden snapshots written: ${Object.keys(goldenOut).length} -> ${GOLDEN_PATH}`);
+}
+console.log(`\n${scenarios.length} scenarios (${scenarios.length - goldenCount} baseline + ${goldenCount} golden): ${scenarios.length - failures} OK, ${failures} diffs, ${jsErrors} with JS errors`);
 process.exit(failures || jsErrors ? 1 : 0);
