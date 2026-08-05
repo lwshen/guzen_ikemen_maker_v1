@@ -55,7 +55,32 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium
       - run: npm run build
-      - name: Layer 2 — seeded behavioral comparison (100 scenarios)
+      - name: Layer 2 — seeded behavioral comparison (118 scenarios)
         run: npm run verify:behavior
       - name: Layers 3+4 — visual regression + localStorage continuity
         run: npm run verify:visual
+
+  # ~10 min: sweeps all ~900 select options / checkboxes / derived-type
+  # buttons against the frozen baseline. Run on demand, not per push.
+  options-sweep:
+    name: option sweep (manual)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Japanese fonts
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+      - run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Option sweep
+        run: npm run verify:options

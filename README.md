@@ -14,6 +14,7 @@ npm install
 npm run dev        # 本地开发
 npm run build      # 构建到 dist/
 npm run verify     # 构建后跑五层迁移验证（结构 / 数据 deep-equal / 行为对拍 / 视觉 / localStorage）
+npm run verify:options  # 选项全扫描（~900 个选项点逐一对拍，约 5-10 分钟；CI 里手动触发）
 ```
 
 **基线已冻结（Phase 4，2026-08-05）**：`index.html` 固定为 upstream `7438239`（V3.2.0），只作为验证对照基线，不再从它重建代码；提取管线脚本归档于 `verify/archive/`。功能开发直接改 Astro 版源码。

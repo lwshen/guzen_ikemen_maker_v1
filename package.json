@@ -11,6 +11,7 @@
     "verify:behavior": "node verify/layer2-behavior.mjs",
     "verify:visual": "node verify/layer3-4-visual-storage.mjs",
     "verify:data": "node verify/layer5-data-equal.mjs",
+    "verify:options": "node verify/layer2-options-sweep.mjs",
     "verify": "npm run verify:structure && npm run verify:data && npm run verify:behavior && npm run verify:visual"
   },
   "dependencies": {
