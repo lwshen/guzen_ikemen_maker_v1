@@ -1,0 +1,22 @@
+{
+  "name": "guzen-ikemen-maker",
+  "type": "module",
+  "version": "3.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "verify:structure": "python3 verify/layer1-structure.py",
+    "verify:behavior": "node verify/layer2-behavior.mjs",
+    "verify:visual": "node verify/layer3-4-visual-storage.mjs",
+    "verify:data": "node verify/layer5-data-equal.mjs",
+    "verify": "npm run verify:structure && npm run verify:data && npm run verify:behavior && npm run verify:visual"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}
