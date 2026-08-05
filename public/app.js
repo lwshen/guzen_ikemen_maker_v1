@@ -3164,15 +3164,6 @@
     const it = innerWeighted(list);
     return [it[0], it[2]==='d' ? 'rare' : innerBadgeOf(it, 0, list)];
   }
-  function chooseInnerPast(c){
-    const up = innerWeighted(INNER_UPBRINGINGS);
-    const r = Math.random();
-    let trauma = 'トラウマ：なし', tBadge = null;
-    if(r >= 0.9){ const t = innerWeighted(INNER_TRAUMAS); trauma = 'はっきりしたトラウマ：' + t[0]; tBadge = 'rare'; }
-    else if(r >= 0.65){ const t = innerWeighted(INNER_TRAUMAS); trauma = '少し引きずっている：' + t[0]; tBadge = (t[2]==='r'||t[2]==='d') ? 'rare' : null; }
-    const badge = up[2] ? 'rare' : tBadge;
-    return [up[0], trauma, badge];
-  }
   function chooseInnerPronoun(c){
     const age = Number(c.age)||25;
     let list = INNER_PRONOUNS_BASE.map(x=>x.slice());
@@ -3294,62 +3285,11 @@
     const share = type==='A型'?dist[0]:type==='O型'?dist[1]:type==='B型'?dist[2]:dist[3];
     return [v, rhn ? 'rare' : (share<=10 ? 'rare' : null)];
   }
-  function chooseInnerLove(c){
-    const base = innerWeighted(INNER_LOVE_BASE);
-    let v = base[0], badge = base[2] ? 'rare' : null;
-    if(['女性','男性','男女どちらも'].includes(base[0]) && Math.random()<.72){
-      const n = innerWeighted(INNER_LOVE_NOTES);
-      v = base[0]+'（'+n[0]+'）';
-      if(!badge && n[2]==='d' && Math.random()<.45) badge = /既婚者/.test(n[0]) ? 'gap' : 'rare';
-    }
-    return [v, badge];
-  }
-  function generateInnerProfile(c, keys){
-    const all = !keys;
-    if(!c.innerMeta) c.innerMeta = {};
-    const M = c.innerMeta;
-    const has = k => all || keys.includes(k);
-    if(has('income')){ const r = chooseInnerIncome(c); c.incomeText = r[0]; M.income = r[1]; }
-    if(has('education')){ const r = chooseInnerEducation(c); c.educationText = r[0]; M.education = r[1]; }
-    if(has('principle')){ const r = chooseInnerPrinciple(c); c.principleText = r[0]; M.principle = r[1]; }
-    if(has('dream')){ const r = chooseInnerDream(c); c.innerDream = r[0]; M.dream = r[1]; }
-    if(has('desire')){ const r = chooseInnerDesire(c, c.innerDream); c.innerDesire = r[0]; M.desire = r[1]; }
-    if(has('weakness')){ const r = chooseInnerWeakness(c); c.weaknessMind = r[0]; c.weaknessBody = r[1]; M.weakness = r[2]; }
-    if(has('talent')){ const r = chooseInnerTalent(c); c.innerTalent = r[0]; M.talent = r[1]; }
-    if(has('past')){ const r = chooseInnerPast(c); c.pastUpbringing = r[0]; c.pastTrauma = r[1]; M.past = r[2]; }
-    if(has('unforgivable')){ const r = chooseInnerUnforgivable(c); c.unforgivableText = r[0]; M.unforgivable = r[1]; }
-    if(has('gamble')){ const r = chooseInnerGamble(c); c.gambleText = r[0]; M.gamble = r[1]; }
-    if(has('asset')){ const r = chooseInnerAsset(c); c.assetText = r[0]; M.asset = r[1]; }
-    if(has('pronoun')){ const r = chooseInnerPronoun(c); c.pronoun = r[0]; M.pronoun = r[1]; }
-    if(has('origin')){ const r = chooseInnerOrigin(c); c.originText = r[0]; M.origin = r[1]; }
-    if(has('complex')){ const r = chooseInnerComplex(c); c.complexText = r[0]; M.complex = r[1]; }
-    if(has('blood')){ const r = chooseInnerBlood(c); c.bloodType = r[0]; M.blood = r[1]; }
-    if(has('love')){ const r = chooseInnerLove(c); c.loveTarget = r[0]; M.love = r[1]; }
-    return c;
-  }
   function innerBadgeHtml(c, key){
     const b = c.innerMeta && c.innerMeta[key];
     if(b==='rare') return ' <span class="inner-badge ib-rare">★レア</span>';
     if(b==='gap') return ' <span class="inner-badge ib-gap">⚡ギャップ</span>';
     return '';
-  }
-  function buildInnerSection(c, L){
-    const en = uiLang==='en';
-    const V = (val, key)=>`${val||'—'}${innerBadgeHtml(c, key)}`;
-    return ['inner', en ? 'Inner / Background (never in prompts)' : '内面・背景（プロンプト非反映）', [
-      [en?'Public Dream':'表向きの夢', V(c.innerDream,'dream'), 'innerDream'],
-      [en?'Hidden Desire':'欲望（本音）', V(c.innerDesire,'desire'), 'innerDesire'],
-      [en?'Weakness (Mind / Body)':'弱点（性格 / 身体）', V(`${c.weaknessMind||'—'}／${c.weaknessBody||'—'}`,'weakness'), 'weaknessMind,weaknessBody'],
-      [en?'Talent':'秀でた才能', V(c.innerTalent,'talent'), 'innerTalent'],
-      [en?'Past / Trauma':'過去（生い立ち / トラウマ）', V(`${c.pastUpbringing||'—'}<br>${c.pastTrauma||'トラウマ：なし'}`,'past'), 'pastUpbringing,pastTrauma'],
-      [en?'First-person Pronoun':'一人称', V(c.pronoun,'pronoun'), 'pronoun'],
-      [en?'Income':'収入', V(c.incomeText,'income'), 'incomeText'],
-      [en?'Family Roots':'出自', V(c.originText,'origin'), 'originText'],
-      [en?'Education':'学歴', V(c.educationText,'education'), 'educationText'],
-      [en?'Complex':'コンプレックス', V(c.complexText,'complex'), 'complexText'],
-      [en?'Blood Type':'血液型', V(c.bloodType,'blood'), 'bloodType'],
-      [en?'Romantic Interest':'恋愛対象', V(c.loveTarget,'love'), 'loveTarget']
-    ]];
   }
   const INNER_EDIT_POOLS = ()=>({
     innerDream: [...new Set([].concat(INNER_DREAMS.y,INNER_DREAMS.m,INNER_DREAMS.s,INNER_DREAMS.o,INNER_DREAMS.common,...Object.values(INNER_DREAM_CAT)).map(x=>x[0]))],
@@ -3488,24 +3428,6 @@
     if(/祖父母の家/.test(liv)) return ['祖父・祖母と同居（実家に'+members.replace(/祖父・祖母/,'父・母')+'）', null];
     return [members + 'と同居', null];
   }
-  function chooseInnerBirthplace(c){
-    const nat = String(c.nationality||'日本');
-    if(nat!=='日本' && INNER_NATION_CITIES[nat]){
-      return [nat+'・'+pick(INNER_NATION_CITIES[nat])+'出身', null];
-    }
-    const org = String(c.originText||'');
-    let cand = INNER_JP_PREFS.map(x=>x.slice());
-    const wantTag = /漁師町/.test(org)?'sea':/離島/.test(org)?'island':/山間/.test(org)?'mountain':/温泉旅館/.test(org)?'onsen':null;
-    if(wantTag) cand = cand.map(x=>x[3].includes(wantTag)?[x[0],x[1],x[2]*8,x[3]]:x);
-    const row = weighted(cand.map(x=>[x, x[2]]));
-    let city;
-    if(wantTag==='island') city = pick(row[1].filter(m=>/石垣|五島|奄美/.test(m)).length? row[1].filter(m=>/石垣|五島|奄美/.test(m)) : row[1]);
-    else if(wantTag==='onsen') city = pick(row[1].filter(m=>/別府|草津|豊岡|霧島/.test(m)).length? row[1].filter(m=>/別府|草津|豊岡|霧島/.test(m)) : row[1]);
-    else city = pick(row[1]);
-    c._bpTags = row[3]; c._bpPref = row[0];
-    const rare = row[2]<=0.7 ? 'rare' : null;
-    return [row[0]+'：'+city, rare];
-  }
   function innerWareki(y){
     if(y>=2019) return '令和'+(y-2018===1?'元':y-2018)+'年';
     if(y>=1989) return '平成'+(y-1988===1?'元':y-1988)+'年';
@@ -3602,31 +3524,6 @@
     if(Math.random()<pYes){ const it = innerWeighted(INNER_LOVER_YES); return [it[0], null]; }
     const it = innerWeighted(INNER_LOVER_NONE);
     return [it[0], null];
-  }
-  function chooseInnerResidence(c){
-    const liv = String(c.livingText||''), nat = String(c.nationality||'日本');
-    const bp = String(c.birthplaceText||'').split('：')[0].replace(/・.*$/,'');
-    const inc = (String(c.incomeText||'').match(/約(\d+)万円/)||[])[1];
-    const rich = inc && Number(inc)>=800;
-    if(/実家/.test(liv)) return [`実家（${bp||'出身地'}）`, null];
-    if(/寮|営内|社宅|住み込み/.test(liv)) return [pick(['職場まで徒歩圏の寮・社宅','会社敷地内（通勤0分）','職場の裏（通勤30秒）']), null];
-    if(/単身赴任/.test(liv)) return [pick(['赴任先のワンルーム（家具は最小限）','赴任先の1K（週末に帰省）']), null];
-    if(nat!=='日本' && Math.random()<.5) return [pick(['母国の実家近くのアパート','母国の都市部のフラット']), null];
-    if(innerIsMarried(c)){
-      return [pick([`郊外の2LDK（${rich?'分譲':'賃貸'}）`, '駅徒歩15分の3LDK（ローン返済中）', '妻の地元寄りの住宅街', `${bp?bp+'にUターンして持ち家':'郊外の建売住宅'}`]), null];
-    }
-    const metro = Math.random()<.6;
-    if(metro) return [pick(['都市部・駅徒歩12分の1K','都市部・築古だが広めの1DK','職場まで自転車15分のアパート','家賃を抑えた各駅停車の駅近く',`${rich?'都心の1LDK（少し背伸び）':'都市部のワンルーム'}`]), rich?'rare':null];
-    return [pick([`地元（${bp||'出身地'}）の市内アパート（地元勤務）`, '地方都市の1LDK（家賃に余裕）', '海の見える町のアパート']), null];
-  }
-  function chooseInnerFriend(c){
-    if(c.friendOf && c.friendOf.name){
-      return [`${nameKana(c.friendOf.name)}（${c.friendOf.relation||'友人'}・友人作成機能で作成済み）`, null];
-    }
-    const meet = innerWeighted(INNER_FRIEND_MEET);
-    const nm = pick(INNER_FRIEND_NAMES);
-    const fq = innerWeighted(INNER_FRIEND_FREQ);
-    return [`${meet[0]}の${nm}（${fq[0]}）〔👥友人を作成で実体化可〕`, null];
   }
 
   // --- 依存関係グラフ（再抽選時のカスケード） ---
@@ -5823,7 +5720,7 @@ ${promptTargetGuide(b, false)}`;
   }
   /* ===== V3.1 線画プレビュー（密テンプレート方式・髪なし） ===== */
   function renderProfile(){
-    if(!current){ const ib0=document.getElementById('innerAboveTabs'); if(ib0) ib0.innerHTML=''; els.profileView.innerHTML=`<p class="notice">${uiLang==='ja'?'まだ結果がありません。':'No result yet.'}</p>`; els.promptBox.value=''; document.getElementById('outfitPromptBox').value=''; document.getElementById('scenePromptBox').value=''; const cardBox=document.getElementById('cardPromptBox'); if(cardBox) cardBox.value=''; return; }
+    if(!current){ const ib0=document.getElementById('innerAboveTabs'); if(ib0) ib0.innerHTML=''; els.profileView.innerHTML=`<p class="notice">${uiLang==='ja'?'まだ結果がありません。':'No result yet.'}</p>`; els.promptBox.value=''; document.getElementById('outfitPromptBox').value=''; document.getElementById('scenePromptBox').value=''; return; }
     if(!current.personality && current.mbti) current.personality = mbtiDescription(current.mbti, false);
     migrateUniformFields(current);
     if(current.cardWearMode === '提案服装') current.cardWearMode = '職業服装';
