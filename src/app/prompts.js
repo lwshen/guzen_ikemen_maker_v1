@@ -24,6 +24,7 @@ import {
   underwearDesc, underwearShapeGuide, uniformHatPhrase, uniformJacketPhrase,
 } from './generate.js';
 import {
+  LT,
   T, buildBodyHairSummary, buildCaptionInstruction, buildCardInstruction, cardEffectByRarity, cardPoseGuide, cardWearDescription, displayOptionLabel,
   displayValue, mbtiDescription, outfitStyleGuide, promptTargetGuide, slotLabel, suggestCardRarity,
 } from './i18n.js';
@@ -187,8 +188,8 @@ import {
     if(btn.dataset.pEdit === 'sportsHistory'){
       const ed = document.createElement('div'); ed.className='pf-editor';
       const save = buildSportsHistoryEditor(ed, ()=>{ ed.remove(); renderAll(); });
-      const ok = document.createElement('button'); ok.className='pf-btn'; ok.textContent = ST.uiLang==='en'?'Save':'決定'; ok.onclick=save;
-      const ng = document.createElement('button'); ng.className='pf-btn'; ng.textContent = ST.uiLang==='en'?'Cancel':'キャンセル'; ng.onclick=()=>ed.remove();
+      const ok = document.createElement('button'); ok.className='pf-btn'; ok.textContent = LT('決定', 'Save', '确定'); ok.onclick=save;
+      const ng = document.createElement('button'); ng.className='pf-btn'; ng.textContent = LT('キャンセル', 'Cancel', '取消'); ng.onclick=()=>ed.remove();
       ed.append(ok, ng); kv.append(ed); return;
     }
     const keys = btn.dataset.pEdit.split(',');
@@ -424,8 +425,8 @@ ${targetJa}
       rows.push([L.uniformKind, displayValue('workUniform', c.workUniform) || c.workUniform]);
     }
     if(c.headwear){
-      const onLabel = ST.uiLang==='en' ? 'Wear the cap' : '着帽する';
-      const offLabel = ST.uiLang==='en' ? 'No cap' : '着帽しない';
+      const onLabel = LT('着帽する', 'Wear the cap', '戴帽');
+      const offLabel = LT('着帽しない', 'No cap', '不戴帽');
       rows.push([L.headwearRow, `<select data-headwear-edit style="background:#0d1a2c;border:1px solid var(--gold);border-radius:8px;color:#eaf2ff;padding:4px 6px;font-size:12px"><option value="on"${c.headwearOn!==false?' selected':''}>${onLabel}</option><option value="off"${c.headwearOn===false?' selected':''}>${offLabel}</option></select> <span class="notice" style="display:inline">${c.headwear}</span>`]);
     }
     return rows;
@@ -541,7 +542,7 @@ ${promptTargetGuide(b, false)}`;
     if(!isFeet) return;
     const cfg = footCfg(ST.current);
     const form = document.getElementById('footCfgForm');
-    const randomLabel = ST.uiLang==='en' ? 'Random (auto)' : 'ランダム（おまかせ）';
+    const randomLabel = LT('ランダム（おまかせ）', 'Random (auto)', '随机（自动）');
     form.innerHTML = FOOT_CFG_AXES.map(([axis, ja, en])=>{
       const opts = ['ランダム'].concat(footAxisOptions(axis));
       return `<label class="field"><span>${ST.uiLang==='en' ? en : ja}</span><select data-foot-axis="${axis}">${opts.map(v=>`<option value="${v}"${cfg[axis]===v?' selected':''}>${v==='ランダム' ? randomLabel : v}</option>`).join('')}</select></label>`;
@@ -662,9 +663,9 @@ ${promptTargetGuide(b, false)}`;
     const cntSel = document.getElementById('friendPairCountSel');
     if(!wearSel || !cntSel) return;
     const wearOpts = ['私服','職業服装'];
-    const wearLabels = ST.uiLang==='en' ? {'私服':'Casual outfit','職業服装':'Work outfit'} : {'私服':'私服','職業服装':'職業服装'};
+    const wearLabels = LT({'私服':'私服','職業服装':'職業服装'}, {'私服':'Casual outfit','職業服装':'Work outfit'}, {'私服':'便服','職業服装':'职业服装'});
     wearSel.innerHTML = wearOpts.map(v=>`<option value="${v}">${wearLabels[v]}</option>`).join('');
-    cntSel.innerHTML = FRIEND_PAIR_COUNTS.map(v=>`<option value="${v}">${ST.uiLang==='en' ? (parseInt(v,10)+' image'+(parseInt(v,10)>1?'s':'')) : v}</option>`).join('');
+    cntSel.innerHTML = FRIEND_PAIR_COUNTS.map(v=>`<option value="${v}">${LT(v, parseInt(v,10)+' image'+(parseInt(v,10)>1?'s':''), parseInt(v,10)+' 张')}</option>`).join('');
     if(ST.current){ wearSel.value = ST.current.friendPairWear || '私服'; cntSel.value = ST.current.friendPairCount || '3枚'; }
   }
 

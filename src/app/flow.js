@@ -3,7 +3,7 @@
 // except top-level state rewritten to ST.* (see state.js).
 import {
   BODY_ASYMS, DICE_GROUPS, ETHNIC_HAIR_WEIGHTS, FOOT_FEATURES, FOOT_WIDTHS, FRIEND_HIER_DELTA, FRIEND_HIER_EN, FRIEND_RELATIONS,
-  FRIEND_REL_EN, INNER_DEPS, INNER_FIELD_GEN, OCCUPATIONS, POSTURES, SOLE_TYPES, SOLE_WRINKLES, SPORTS,
+  FRIEND_REL_EN, FRIEND_REL_ZH, FRIEND_HIER_ZH, INNER_DEPS, INNER_FIELD_GEN, OCCUPATIONS, POSTURES, SOLE_TYPES, SOLE_WRINKLES, SPORTS,
   SPORT_BODY, SPORT_EXP_POOL, STRICT_HAIR_OCC, TOE_CURLS, TOE_LINES, TRAINING_BODY, TRAINING_EXCL, TRAINING_LEVELS,
   UNIFORM_VARIANTS, UNIFORM_WORKWEAR, VIBE_OCC, pools, slotDefs,
 } from '../data/index.js';
@@ -23,6 +23,7 @@ import {
   sportsHistoryLine, sportsHistoryText, syncMarriageRing, teethLine, trainingLine, trainingWeightAdj, underwearDesc, vibeProfile,
 } from './generate.js';
 import {
+  LT,
   T, cardEffectByRarity, cardWearDescription, displayOptionLabel, displayValue, mbtiDescription, mbtiDisplay, promptTargetGuide,
   suggestCardRarity,
 } from './i18n.js';
@@ -723,13 +724,13 @@ ${promptTargetGuide(c, false)}`;
       const fr = mk(stages, e ? SPORT_STAGES[e.from] : '小学校');
       const to = mk(stages, e ? SPORT_STAGES[e.to] : '高校');
       const st = mk(STR_PRESETS, e ? (e.strength===0?'0': e.strength>=2?'2.2': e.strength>=0.8?'1.2':'0.5') : 'auto');
-      const lab = document.createElement('label'); lab.textContent = (ST.uiLang==='en'?'Sport ':'競技')+(i+1);
+      const lab = document.createElement('label'); lab.textContent = (LT('競技', 'Sport ', '竞技'))+(i+1);
       const row = document.createElement('div'); row.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px';
       row.append(sp,fr,to,st); container.append(lab,row);
       rows.push({sp,fr,to,st});
     }
     const note = document.createElement('p'); note.className='notice'; note.style.margin='4px 0 0';
-    note.textContent = ST.uiLang==='en' ? 'Order: sport / start / end / body influence. Height & body type stay as-is.' : '競技／開始／終了／体格への影響。確定済みの身長・体型は変わりません（記述側に反映）。';
+    note.textContent = LT('競技／開始／終了／体格への影響。確定済みの身長・体型は変わりません（記述側に反映）。', 'Order: sport / start / end / body influence. Height & body type stay as-is.', '顺序：竞技／开始／结束／对体格的影响。已确定的身高・体型不会改变。');
     container.append(note);
     return ()=>{
       const stIdx = v=>SPORT_STAGES.indexOf(v);
@@ -757,8 +758,8 @@ ${promptTargetGuide(c, false)}`;
     if(key==='sportsHistory'){
       const wrap = document.createElement('div'); wrap.className='slot-editor';
       const save = buildSportsHistoryEditor(wrap, ()=>{ wrap.remove(); renderAll(); });
-      const ok = document.createElement('button'); ok.className='pf-btn'; ok.textContent = ST.uiLang==='en'?'Save':'決定'; ok.onclick=save;
-      const ng = document.createElement('button'); ng.className='pf-btn'; ng.textContent = ST.uiLang==='en'?'Cancel':'キャンセル'; ng.onclick=()=>wrap.remove();
+      const ok = document.createElement('button'); ok.className='pf-btn'; ok.textContent = LT('決定', 'Save', '确定'); ok.onclick=save;
+      const ng = document.createElement('button'); ng.className='pf-btn'; ng.textContent = LT('キャンセル', 'Cancel', '取消'); ng.onclick=()=>wrap.remove();
       wrap.append(ok, ng); slotEl.append(wrap); return;
     }
     const cur = ST.current[key] !== undefined && ST.current[key] !== null ? String(ST.current[key]) : '';
@@ -781,7 +782,7 @@ ${promptTargetGuide(c, false)}`;
   function renderFriendPanel(){
     const relSel = document.getElementById('friendRelation'); if(!relSel) return;
     const keep = relSel.value;
-    relSel.innerHTML = Object.keys(FRIEND_RELATIONS).map(r=>`<option value="${r}">${ST.uiLang==='en' ? FRIEND_REL_EN[r] : r}</option>`).join('');
+    relSel.innerHTML = Object.keys(FRIEND_RELATIONS).map(r=>`<option value="${r}">${ST.uiLang==='en' ? FRIEND_REL_EN[r] : ST.uiLang==='zh' ? (FRIEND_REL_ZH[r]||r) : r}</option>`).join('');
     if(keep && FRIEND_RELATIONS[keep]) relSel.value = keep;
     const rel = FRIEND_RELATIONS[relSel.value];
     const hierField = document.getElementById('friendHierField');
@@ -789,7 +790,7 @@ ${promptTargetGuide(c, false)}`;
     if(rel.hier){
       hierField.classList.remove('hidden');
       const keepH = hierSel.value;
-      hierSel.innerHTML = rel.hier.map(h=>`<option value="${h}">${ST.uiLang==='en' ? FRIEND_HIER_EN[h] : h}</option>`).join('');
+      hierSel.innerHTML = rel.hier.map(h=>`<option value="${h}">${ST.uiLang==='en' ? FRIEND_HIER_EN[h] : ST.uiLang==='zh' ? (FRIEND_HIER_ZH[h]||h) : h}</option>`).join('');
       if(keepH && rel.hier.includes(keepH)) hierSel.value = keepH;
     } else {
       hierField.classList.add('hidden');

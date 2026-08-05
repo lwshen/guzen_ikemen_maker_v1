@@ -18,6 +18,7 @@ import {
   enQuality, openSlotEditor, renderSlots, rerollOne,
 } from './flow.js';
 import {
+  LT,
   T, cardEffectByRarity, displayOptionLabel, displayValue, fixedLabel, mbtiDescription, mbtiDisplay, readCaptionFields,
   readCardFields, renderSelectOptions, slotLabel, suggestCardRarity, syncCardSettingsVisibility, writeCaptionFields, writeCardFields,
 } from './i18n.js';
@@ -318,9 +319,7 @@ import {
   }
 
   function initSlots(){
-    const CAT_LABELS = ST.uiLang==='en'
-      ? {basic:'Basic', body:'Body', bodyhair:'Body Hair', face:'Face', outfit:'Outfit & Socks'}
-      : {basic:'基本', body:'体型・身体', bodyhair:'体毛', face:'顔立ち', outfit:'服装・靴下'};
+    const CAT_LABELS = LT({basic:'基本', body:'体型・身体', bodyhair:'体毛', face:'顔立ち', outfit:'服装・靴下'}, {basic:'Basic', body:'Body', bodyhair:'Body Hair', face:'Face', outfit:'Outfit & Socks'}, {basic:'基本', body:'体型・身体', bodyhair:'体毛', face:'脸部', outfit:'服装・袜子'});
     const cats = [];
     slotDefs.forEach(([key,label,cat])=>{ const c = cat || 'basic'; if(!cats.includes(c)) cats.push(c); });
     const slotHtml = ([key,label]) => `<div class="slot" id="slot-${key}"><button class="lock" data-lock="${key}">${T('lock')}</button><button class="dice" data-dice="${key}" title="${T('diceTitle')}">🎲</button>${key==='name' ? '' : `<button class="edit" data-edit="${key}" title="${T('editTitle')}">✎</button>`}<small>${slotLabel(key,label)}</small><div class="value">？？？</div><div class="meta">${T('clickLock')}</div></div>`;
@@ -1080,12 +1079,12 @@ import {
   function occupationOptionsHTML(selected, includeRandom=true){
     const en = (typeof ST.uiLang!=='undefined' && ST.uiLang==='en');
     const esc = v=>String(v).replace(/"/g,'&quot;');
-    let h = includeRandom ? `<option value="ランダム"${selected==='ランダム'?' selected':''}>${en?'Random':'ランダム'}</option>` : '';
+    let h = includeRandom ? `<option value="ランダム"${selected==='ランダム'?' selected':''}>${displayOptionLabel('role','ランダム')}</option>` : '';
     if(selected && selected!=='ランダム' && !OCC_CAT[selected]) h += `<option value="${esc(selected)}" selected>${selected}</option>`;
     for(const cat of OCC_CAT_ORDER){
       const items = OCCUPATIONS.filter(([,c])=>c===cat);
       if(!items.length) continue;
-      const lab = OCC_CAT_LABELS[cat] ? (en?OCC_CAT_LABELS[cat].en:OCC_CAT_LABELS[cat].ja) : cat;
+      const lab = OCC_CAT_LABELS[cat] ? LT(OCC_CAT_LABELS[cat].ja, OCC_CAT_LABELS[cat].en, OCC_CAT_LABELS[cat].zh) : cat;
       h += `<optgroup label="${esc(lab)}">` + items.map(([n])=>`<option value="${esc(n)}"${String(selected)===n?' selected':''}>${(typeof displayOptionLabel==='function') ? displayOptionLabel('role', n) : n}</option>`).join('') + `</optgroup>`;
     }
     return h;

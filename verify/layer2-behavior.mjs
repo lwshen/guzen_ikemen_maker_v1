@@ -131,9 +131,11 @@ const FLOWS = {
     await page.waitForFunction(p => document.getElementById('promptBox').value !== p, promptText);
     await snap();
   },
-  // UI language round-trip with an existing result (re-init path)
+  // UI language round-trip with an existing result (re-init path, all 3 langs)
   langswitch: async (page, snap) => {
     await page.selectOption('#makerLanguage', 'en');
+    await snap();
+    await page.selectOption('#makerLanguage', 'zh');
     await snap();
     await page.selectOption('#makerLanguage', 'ja');
     await snap();
@@ -150,7 +152,7 @@ async function runScenario(browser, baseURL, { seed, lang, modes, group, friend,
   await page.addInitScript(initScript(seed));
   await page.goto(baseURL, { waitUntil: 'load' });
 
-  if (lang === 'en') await page.selectOption('#makerLanguage', 'en');
+  if (lang !== 'ja') await page.selectOption('#makerLanguage', lang);
   if (group) await page.selectOption('#initialGroupSize', '3人グループ');
   await page.check('#instantMode');
 
@@ -201,6 +203,7 @@ const scenarios = [];
 for (let s = 1; s <= SEEDS; s++) scenarios.push({ seed: s, lang: 'ja', modes: ['full'] });
 for (let s = 1; s <= Math.min(10, SEEDS); s++) {
   scenarios.push({ seed: 100 + s, lang: 'en', modes: ['full'] });
+  if (s <= 5) scenarios.push({ seed: 900 + s, lang: 'zh', modes: ['full'] });
   scenarios.push({ seed: 200 + s, lang: 'ja', modes: ['rare'] });
   scenarios.push({ seed: 300 + s, lang: 'ja', modes: ['full', 'face'] });
   scenarios.push({ seed: 400 + s, lang: 'ja', modes: ['full', 'outfit'] });
@@ -216,7 +219,7 @@ Object.keys(FLOWS).forEach((flow, fi) => {
 
 const UPDATE_GOLDEN = process.argv.includes('--update-golden');
 const GOLDEN_PATH = path.join(ROOT, 'verify', 'golden', 'en-scenarios.json');
-const isGolden = sc => sc.lang === 'en' || sc.flow === 'langswitch';
+const isGolden = sc => sc.lang !== 'ja' || sc.flow === 'langswitch';
 const golden = fs.existsSync(GOLDEN_PATH) ? JSON.parse(fs.readFileSync(GOLDEN_PATH, 'utf-8')) : {};
 const goldenOut = {};
 

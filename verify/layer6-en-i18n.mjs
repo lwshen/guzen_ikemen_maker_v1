@@ -1,8 +1,11 @@
-// Layer 6: EN-mode i18n completeness — with the UI switched to English, the
-// controlled surfaces must contain no Japanese: every select option label,
-// the initial-settings field labels, copy buttons, and the prompt-pane
-// headings. (Character DATA such as names, the profile's Japanese free text,
-// and the deliberately bilingual language-picker label are out of scope.)
+// Layer 6: non-Japanese-mode i18n completeness. For each UI language, the
+// controlled surfaces (select option labels, field labels, buttons, headings)
+// must contain no Japanese remnants:
+//   en — no Japanese characters at all (kana or kanji)
+//   zh — no KANA (kanji are shared between Chinese and Japanese, so kana is
+//        the only reliable "untranslated Japanese" signal)
+// Character DATA such as names, the profile's Japanese free text, and the
+// deliberately bilingual language-picker label are out of scope.
 //
 // This is the check that would have caught the untranslated V3.1-V3.4
 // options upstream. Run after `npm run build`.
@@ -13,7 +16,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const JA = /[぀-ゟ゠-ヿ一-鿿]/;
+const CHECKS = [
+  { lang: 'en', pattern: /[぀-ゟ゠-ヿ一-鿿]/, what: 'Japanese' },
+  // U+30FB ・ (interpunct) is excluded: it is punctuation, legitimately used in
+  // the Chinese copy; real untranslated Japanese always carries kana LETTERS
+  { lang: 'zh', pattern: /[぀-ゟ゠-ヺー-ヿ]/, what: 'kana' },
+];
 
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8' };
 const server = http.createServer((req, res) => {
@@ -27,40 +35,47 @@ const server = http.createServer((req, res) => {
 await new Promise(r => server.listen(0, '127.0.0.1', r));
 
 const browser = await chromium.launch();
-const page = await browser.newPage();
-const errors = [];
-page.on('pageerror', e => errors.push(String(e)));
-await page.goto(`http://127.0.0.1:${server.address().port}/`, { waitUntil: 'load' });
-await page.selectOption('#makerLanguage', 'en');
-await page.check('#instantMode');
-await page.click('#startBtn');
-await page.waitForFunction(() => document.getElementById('promptBox').value !== '');
+let failures = 0, jsErrors = 0;
+for (const { lang, pattern, what } of CHECKS) {
+  const page = await browser.newPage();
+  const errors = [];
+  page.on('pageerror', e => errors.push(String(e)));
+  await page.goto(`http://127.0.0.1:${server.address().port}/`, { waitUntil: 'load' });
+  await page.selectOption('#makerLanguage', lang);
+  await page.check('#instantMode');
+  await page.click('#startBtn');
+  await page.waitForFunction(() => document.getElementById('promptBox').value !== '');
 
-const problems = await page.evaluate(jaSrc => {
-  const JA = new RegExp(jaSrc);
-  const out = [];
-  // 1. every select option label (language picker excluded: bilingual by design)
-  for (const s of document.querySelectorAll('select')) {
-    if (s.id === 'makerLanguage') continue;
-    for (const o of s.options) if (JA.test(o.textContent))
-      out.push(`select#${s.id || 'data-fixed=' + s.dataset.fixed} option: ${o.textContent.trim().slice(0, 40)}`);
-  }
-  // 2. field labels, buttons, headings, pane descriptions, chips
-  for (const el of document.querySelectorAll('label > span, button, h2, h3, .pane-desc, .chip, .flow-step, .dtype-btn')) {
-    if (el.id === 'makerLanguageLabel') continue; // bilingual by design
-    const t = el.textContent.trim();
-    if (t && JA.test(t)) out.push(`${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}: ${t.slice(0, 40)}`);
-  }
-  return [...new Set(out)];
-}, JA.source);
+  const problems = await page.evaluate(patSrc => {
+    const PAT = new RegExp(patSrc);
+    const out = [];
+    // 1. every select option label (language picker excluded: bilingual by design)
+    for (const s of document.querySelectorAll('select')) {
+      if (s.id === 'makerLanguage') continue;
+      for (const o of s.options) if (PAT.test(o.textContent))
+        out.push(`select#${s.id || 'data-fixed=' + s.dataset.fixed} option: ${o.textContent.trim().slice(0, 40)}`);
+      for (const og of s.querySelectorAll('optgroup')) if (PAT.test(og.label))
+        out.push(`select#${s.id} optgroup: ${og.label.slice(0, 40)}`);
+    }
+    // 2. field labels, buttons, headings, pane descriptions, chips
+    for (const el of document.querySelectorAll('label > span, button, h2, h3, .pane-desc, .chip, .flow-step, .dtype-btn')) {
+      if (el.id === 'makerLanguageLabel') continue; // bilingual by design
+      const t = el.textContent.trim();
+      if (t && PAT.test(t)) out.push(`${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}: ${t.slice(0, 40)}`);
+    }
+    return [...new Set(out)];
+  }, pattern.source);
+  await page.close();
 
-await browser.close(); server.close();
-if (errors.length) { console.log('JS errors:', errors.join('; ')); }
-if (problems.length) {
-  console.log(problems.slice(0, 30).join('\n'));
-  console.log(`\n${problems.length} Japanese remnants in EN mode\nRESULT: FAIL`);
-  process.exit(1);
+  if (errors.length) { jsErrors++; console.log(`${lang}: JS errors:`, errors.join('; ')); }
+  if (problems.length) {
+    failures++;
+    console.log(problems.slice(0, 30).join('\n'));
+    console.log(`${lang}: ${problems.length} ${what} remnants`);
+  } else {
+    console.log(`${lang} mode: no ${what} remnants in selects/labels/buttons/headings`);
+  }
 }
-console.log('EN mode: no Japanese remnants in selects/labels/buttons/headings');
-console.log('RESULT: ALL PASS');
-process.exit(errors.length ? 1 : 0);
+await browser.close(); server.close();
+console.log(failures || jsErrors ? 'RESULT: FAIL' : 'RESULT: ALL PASS');
+process.exit(failures || jsErrors ? 1 : 0);
