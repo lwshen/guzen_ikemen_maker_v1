@@ -533,6 +533,7 @@ import {
     if(has('lovecount')){ const r = chooseInnerLoveCount(c); c.loveCountText = r[0]; M.lovecount = r[1]; }
     if(has('weekfreq')){ const r = chooseInnerWeekFreq(c); c.weekFreqText = r[0]; M.weekfreq = r[1]; }
     if(has('selffreq')){ const r = chooseInnerSelfFreq(c); c.selfFreqText = r[0]; M.selffreq = r[1]; }
+    if(has('expcount')){ const r = chooseInnerExpCount(c); c.expCountText = r[0]; M.expcount = r[1]; }
     if(has('drink')){ const r = chooseInnerDrink(c); c.drinkText = r[0]; M.drink = r[1]; }
     if(has('smoke')){ const r = chooseInnerSmoke(c); c.smokeText = r[0]; M.smoke = r[1]; }
     if(has('friend')){ const r = chooseInnerFriend(c); c.friendText = r[0]; M.friend = r[1]; }
@@ -597,6 +598,7 @@ import {
         [en?'Gambling History':'ギャンブル歴', V(c.gambleText,'gamble'), 'gambleText','icv-adult'],
         [en?'Adult-Venue Experience':'風俗経験', V(c.fuzokuText,'fuzoku'), 'fuzokuText','icv-adult'],
         [en?'First Experience':'初めての体験', V(c.firstExpText,'firstexp'), 'firstExpText','icv-adult'],
+        [en?'Partner Count':'経験人数', V(c.expCountText,'expcount'), 'expCountText','icv-adult'],
         [en?'Weekly Pace (Partner)':'週頻度（相手あり）', V(c.weekFreqText,'weekfreq'), 'weekFreqText','icv-adult'],
         [en?'Weekly Pace (Solo)':'週頻度（セルフ）', V(c.selfFreqText,'selffreq'), 'selfFreqText','icv-adult']
       ]
@@ -649,6 +651,7 @@ import {
       gambleText: ['なし（興味なし）','宝くじを年末だけ','競馬をレジャー程度','パチンコ経験あり（今はしない）','学生時代に雀荘へ通った','パチスロに熱かった時期がある','現役でパチンコ通い','競艇・競輪もたしなむ','株・FXで手痛い授業料を払った','借金を作って足を洗った','麻雀は打てるが賭けない主義','ソシャゲのガチャが実質ギャンブルだと気づいている'],
       firstExpText: ['二十歳前後','大学時代','社会人1年目','20代半ば','20代後半','成人してすぐ','30代（遅咲き）','まだない','まだない（興味もない）','ノーコメント（言わぬが花）','忘れたことにしている','秘密（大人になってから話すやつ）'],
       weekFreqText: ['夫婦円満ペース（月数回）','週1をキープ','最近はご無沙汰気味','レス気味だが仲は良い','記念日限定','聞くな（察してほしい）','週1〜2（会える日次第）','週末集中型','遠距離につき月イチ','まだそういう関係ではない','なし（相手がいない）','ゼロ更新中（記録継続）','たまに（アプリで会う人と）','気の置けない友人がいる（察してほしい）','ご縁があれば（現在は素振りのみ）','なし（そもそも求めていない）','もう数えていない（安らか）','ノーコメント'],
+      expCountText: ['0人（まだ経験がない）','1人（妻だけ）','1人（最初で最後になるかもしれない一人）','2人（手堅い人数）','3人（全員ちゃんと交際した相手）','5人（片手では収まらなくなった）','8人（ワンナイト含む・本人調べ）','12人（途中から数え方が雑）','25人（もう思い出せない顔もある）','60人（プロ含む。もはや概算）','150人（三桁。本人は真顔）'],
       selfFreqText: ['週2〜3（本人談）','週1','ほぼ毎日（若さ）','月数回（省エネ）','賢者モード長期継続中','ノーカウント主義','週1（内緒）','月数回（こっそり）','ほぼ卒業した','会えない週の補完程度','恋人に誓って控えめ','ほぼなし（性欲も控えめ）','月数回（健康維持）','もう数えていない（安らか）'],
       drinkText: ['飲まない（下戸）','飲まない（あえて）','付き合い程度','週末だけ','晩酌が日課（ビール1本）','晩酌が日課（ハイボール派）','ザル（記憶は残るタイプ）','ザル（記憶が飛ぶタイプ）','休肝日を週2で死守','禁酒中（今週から）','家では飲まない主義','クラフトビール沼','日本酒をゆっくり派','ノンアル愛好家'],
       smokeText: ['吸わない','吸わない（匂いも苦手）','元喫煙者（禁煙5年目）','元喫煙者（禁煙成功・今は匂いに敏感）','加熱式タバコ','紙巻き1日数本','紙巻き1日一箱','たまにもらいタバコ','飲んだ時だけ吸う','減煙中（1日数本まで来た）','葉巻をごくたまに（気取り）'],
@@ -728,7 +731,7 @@ import {
       if(S.past){ col.push(`生い立ち（${c.pastUpbringing||''}）`); }
       const sub = [];
       if(S.mind) sub.push(`本音の欲望（${c.innerDesire||''}）`);
-      if(S.adult) sub.push(`夜の顔（飲酒：${c.drinkText||''}／喫煙：${c.smokeText||''}／ギャンブル歴：${c.gambleText||'なし'}／風俗経験：${c.fuzokuText||'なし'}／初めての体験：${c.firstExpText||''}／週頻度：相手あり ${c.weekFreqText||''}・セルフ ${c.selfFreqText||''}）`);
+      if(S.adult) sub.push(`夜の顔（飲酒：${c.drinkText||''}／喫煙：${c.smokeText||''}／ギャンブル歴：${c.gambleText||'なし'}／風俗経験：${c.fuzokuText||'なし'}／初めての体験：${c.firstExpText||''}／経験人数：${c.expCountText||''}／週頻度：相手あり ${c.weekFreqText||''}・セルフ ${c.selfFreqText||''}）`);
       if(S.past && c.pastTrauma && c.pastTrauma!=='トラウマ：なし') sub.push(`過去（${c.pastTrauma}）`);
       parts.push(`自虐まじりの小コラムでは${col.join('、')}に軽く触れ${sub.length ? `、${sub.join('や')}は誌面に直接書かず行間の匂わせ程度にとどめる` : 'る'}。`);
     }
@@ -743,6 +746,7 @@ import {
   function chooseInnerFuzoku(c){
     const age = Number(c.age)||25;
     if(age<20) return ['なし', null];
+    if(/童貞/.test(String(c.complexText||''))) return [pick(['なし（機会がない）','なし（勇気が出ない）','誘われて断った']), null];
     const lt = String(c.loveTarget||'');
     const married = /既婚|再婚/.test(String(c.maritalText||''));
     let list;
@@ -776,9 +780,11 @@ import {
   // --- 初めての体験（成人後表現のみ・具体描写なし） ---
   function chooseInnerFirstExp(c){
     const age = Number(c.age)||25;
+    if(/童貞/.test(String(c.complexText||''))) return ['まだない（タイミングを逃し続けたと本人談）', 'rare'];
     if(age<20) return [/興味がない/.test(String(c.loveTarget||'')) ? 'まだない（興味もない）' : pick(['まだない','秘密（大人になってから話すやつ）']), null];
     let list = [['二十歳前後',7],['大学時代',6],['社会人1年目',4],['20代半ば',4],['20代後半',2.5],['成人してすぐ',3],['ノーコメント（言わぬが花）',3,'d'],['忘れたことにしている',1.5,'d']];
     if(age>=27) list.push(['30代（遅咲き）',age>=32?2:0.8]);
+    if(/女性経験の少なさ/.test(String(c.complexText||''))) list = list.map(x=>/20代後半|30代|成人してすぐ/.test(x[0])?[x[0],x[1]*3,x[2]]:(/二十歳前後|大学時代/.test(x[0])?[x[0],x[1]*0.3,x[2]]:x));
     const married = /既婚|再婚/.test(String(c.maritalText||''));
     if(/興味がない/.test(String(c.loveTarget||''))) list = married ? [['ノーコメント（家庭の事情）',5],['二十歳前後',2]] : [['まだない（興味もない）',6],['ノーコメント',2]];
     else if(!married){ const still = age>=25 ? [['まだない',age>=30?1.2:2,'r']] : [['まだない',4]]; list = list.concat(still); }
@@ -870,6 +876,7 @@ import {
     const age = Number(c.age)||25;
     const lt = String(c.loveTarget||''), fe = String(c.firstExpText||'');
     const married = /既婚|再婚/.test(String(c.maritalText||''));
+    if(/童貞/.test(String(c.complexText||''))) return [pick(['0人','1人（手をつないで終わった清い交際）']), null];
     if(/興味がない/.test(lt) && !married) return ['0人（そもそも求めていない）', null];
     if(/二次元|推し/.test(lt)) return [married ? '1人（妻ひと筋。推しは推し）' : pick(['0人（三次元は対象外）','1人（昔いた。それで悟った）']), null];
     if(/まだない/.test(fe) && !married){
@@ -881,6 +888,7 @@ import {
     else if(age<25) list = [['1人',4],['2人',4],['3人',3],['片手で足りる',2.5],['0人',2],['5〜6人',1,'d']];
     else if(age<35) list = [['1人',2.5],['2人',3],['3人',3.5],['片手で足りる',4],['5〜6人',2.5],['10人前後',1,'d'],['0人',0.8,'r']];
     else list = [['2人',2.5],['3人',3],['片手で足りる',4],['5〜6人',3],['10人前後',1.5,'d'],['二桁（途中で数えるのをやめた）',0.8,'d'],['1人',2],['0人',0.4,'r']];
+    if(/女性経験の少なさ/.test(String(c.complexText||''))) list = list.filter(x=>!/片手|5〜6|10人|二桁/.test(x[0]));
     const playful = ['ホスト系','ギャル男系','やりらふぃー系','韓国風','ストリート系'].includes(String(c.vibe||''));
     if(playful) list = list.map(x=>/10人|二桁|5〜6/.test(x[0])?[x[0],x[1]*3,x[2]]:(/^0人|^1人/.test(x[0])?[x[0],x[1]*0.35,x[2]]:x));
     if(/^E/.test(String(c.mbti||''))) list = list.map(x=>/片手|5〜6|10人/.test(x[0])?[x[0],x[1]*1.4,x[2]]:x);
@@ -902,6 +910,56 @@ import {
   }
 
   // --- 資産（収入×年齢×性癖連動） ---
+  // --- 経験人数（実数＋コメント・二桁三桁あり） ---
+  function chooseInnerExpCount(c){
+    const age = Number(c.age)||25;
+    const lt = String(c.loveTarget||''), fe = String(c.firstExpText||''), fz = String(c.fuzokuText||'');
+    const married = /既婚|再婚/.test(String(c.maritalText||''));
+    const vibe = String(c.vibe||'');
+    if(/童貞/.test(String(c.complexText||''))) return ['0人（まだ経験がない）', null];
+    if(/まだない/.test(fe)) return [/興味がない/.test(lt) ? '0人（求めてもいない）' : '0人（まだ経験がない）', null];
+    if(/興味がない/.test(lt) && !married) return ['0人（求めていない）', null];
+    const lcText = String(c.loveCountText||'');
+    let loveN;
+    const dm = lcText.match(/^(\d+)人/);
+    if(dm) loveN = Number(dm[1]);
+    else if(/片手で足りる/.test(lcText)) loveN = rnd(4,5);
+    else if(/5〜6人/.test(lcText)) loveN = rnd(5,6);
+    else if(/10人前後/.test(lcText)) loveN = rnd(8,12);
+    else if(/二桁/.test(lcText)) loveN = rnd(10,25);
+    else loveN = rnd(1,3);
+    const faithful = /一途/.test(lt) || /石橋を叩いて/.test(String(c.principleText||''));
+    const playful = ['ホスト系','ギャル男系','やりらふぃー系'].includes(vibe) || /惚れっぽい/.test(lt);
+    let n, comment = '', badge = null;
+    if(loveN>=3 && !married && Math.random()<0.03){
+      n = rnd(0,1); comment = '交際は多いが最後までは慎重派'; badge='gap';
+    } else if(married && (faithful || /妻ひと筋/.test(lcText) || Math.random()<0.35)){
+      n = Math.max(1, loveN); comment = n===1 ? '妻だけ' : '独身時代を含めて。結婚してからは妻ひと筋';
+    } else if(faithful){
+      n = loveN; comment = '付き合った人としか経験がない';
+    } else if(playful){
+      n = Math.round(loveN * (1.5 + Math.random()*1.8)) + rnd(0,3); comment = 'ワンナイト含む・本人調べ';
+    } else {
+      n = loveN + (Math.random()<0.35 ? rnd(1,2) : 0);
+      comment = n===loveN ? '全員ちゃんと交際した相手' : '数え方には諸説ある';
+    }
+    if(/付き合いで1回だけ/.test(fz)){ n += 1; comment = 'うち1人はお店の人'; }
+    else if(/若い頃に数回|卒業した/.test(fz)){ n += rnd(2,4); comment = 'プロを含めた概算'; }
+    else if(/たまに行く|行きつけ/.test(fz)){ n += rnd(6,25); comment = 'プロ含む。もはや概算'; badge = badge||'rare'; }
+    const cap = Math.max(1, (age-17)) * 7;
+    n = Math.min(n, cap);
+    if((vibe==='ホスト系' || /ホスト/.test(String(c.role||''))) && age>=23){
+      if(Math.random()<0.10){ n = Math.min(rnd(30,90), cap); comment = '接客業時代の武勇伝込み'; badge='rare'; }
+      if(Math.random()<0.03){ n = rnd(100,300); comment = 'ホスト界隈の伝説（本人談・盛りあり）'; badge='rare'; }
+    } else if(playful && age>=25 && Math.random()<0.04){ n = Math.min(rnd(20,45), cap); comment = '20代を全力で遊んだ結果'; badge='rare'; }
+    if(loveN===0 && n>0){ comment = '交際経験はなし。その場限りで済ませてきた'; badge='gap'; }
+    if(married && n>=15 && !badge) badge='gap';
+    if(!comment){
+      comment = n===0?'まだ経験がない': n===1?'最初で最後になるかもしれない一人': n<=4?'手堅い人数': n<=9?'片手では収まらなくなった': n<=29?'途中から数え方が雑': n<=99?'もう思い出せない顔もある':'三桁。本人は真顔';
+    }
+    return [`${n}人（${comment}）`, badge];
+  }
+
   function chooseInnerAsset(c){
     const age = Number(c.age)||25, y = Number(c.eraYear)||2026;
     const cat = innerRoleCat(c.role);

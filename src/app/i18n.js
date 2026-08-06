@@ -93,7 +93,7 @@ import {
   // never pass through displayOptionLabel. Original Japanese labels are kept in
   // data-ja on first run, then rendered per current language via the table.
   function translateStaticSelectOptions(){
-    const ids = ['initialFacePresetOut','initialIkemenIndex','initialBodyHairMode','initialSportsInfluence',
+    const ids = ['initialSnapMode','initialFacePresetOut','initialIkemenIndex','initialBodyHairMode','initialSportsInfluence',
       'initialHeightBase','initialPromptDetail','initialBioCaption','profileSheetWearSel'];
     for(const id of ids){
       const sel = document.getElementById(id);
@@ -379,8 +379,8 @@ import {
 
   function applyUiLanguage(){
     document.documentElement.lang = ST.uiLang==='ja' ? 'ja' : ST.uiLang==='zh' ? 'zh' : 'en';
-    document.querySelector('.badge').textContent = 'GUZEN SLOT SYSTEM / V3.2.0';
-    document.querySelector('.title').textContent = 'Guzen Ikemen Maker V3.2.0';
+    document.querySelector('.badge').textContent = 'GUZEN SLOT SYSTEM / V3.2.2';
+    document.querySelector('.title').textContent = 'Guzen Ikemen Maker V3.2.2';
     document.querySelector('.subtitle').textContent = T('subtitle');
     const heroNotice = document.getElementById('heroNotice'); if(heroNotice) heroNotice.textContent = T('heroNotice');
     const tabMap = {slot:'tab_slot', result:'tab_result', history:'tab_history', settings:'tab_settings'};
