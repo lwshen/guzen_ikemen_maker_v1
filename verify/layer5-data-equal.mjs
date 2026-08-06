@@ -47,7 +47,7 @@ const SUBSET_MODE = new Set(['valueTranslations', 'uiText',
 // post-freeze exports that never existed in the frozen baseline
 const POST_FREEZE_EXPORTS = new Set(['valueTranslationsZh', 'sceneTranslationsZh',
   'FRIEND_REL_ZH', 'FRIEND_HIER_ZH', 'INNER_CATS_ZH',
-  'SPORT_MUSCLE_ZH', 'SPORT_STAGES_ZH', 'ERA_LABEL_ZH', 'SCENE_MOD_ZH']);
+  'SPORT_MUSCLE_ZH', 'SPORT_STAGES_ZH', 'ERA_LABEL_ZH', 'SCENE_MOD_ZH', 'FOOT_AXIS_LABEL_ZH']);
 
 // every baseline entry must exist unchanged in `cur`; additions are allowed;
 // arrays are compared exactly (subset semantics are ambiguous for lists)

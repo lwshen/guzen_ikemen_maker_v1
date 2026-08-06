@@ -80,6 +80,17 @@ for (const { lang, pattern, what } of CHECKS) {
   };
   await spin(OCCUPATIONS[0]);
 
+  // conditional panels only exist in the DOM once their derived type is picked;
+  // the foot-focus config panel hid an untranslated axis/option family for
+  // several rounds because nothing ever rendered it during the scan
+  const openConditionalPanels = async () => {
+    for (const dtype of ['偶然足元強調場面シート', 'キャラクタープロフィールシート', 'トレーディングカード']) {
+      await page.evaluate(d => document.querySelector(`#derivedTypeGrid [data-dtype="${d}"]`)?.click(), dtype);
+      await page.waitForTimeout(60);
+      await scan();
+    }
+  };
+
   const problemSet = new Set();
   const scan = async () => (await page.evaluate(patSrc => {
     const PAT = new RegExp(patSrc);
@@ -103,7 +114,8 @@ for (const { lang, pattern, what } of CHECKS) {
   }, pattern.source)).forEach(f => problemSet.add(f));
 
   await scan();
-  for (const occ of OCCUPATIONS.slice(1)) { await spin(occ); await scan(); }
+  await openConditionalPanels();
+  for (const occ of OCCUPATIONS.slice(1)) { await spin(occ); await scan(); await openConditionalPanels(); }
   const problems = [...problemSet];
   await page.close();
 

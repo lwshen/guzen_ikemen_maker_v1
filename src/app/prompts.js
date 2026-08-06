@@ -2,6 +2,7 @@
 // Split from the verbatim V3.2.0 baseline (Phase 4 stage B) — bodies unchanged
 // except top-level state rewritten to ST.* (see state.js).
 import {
+  FOOT_AXIS_LABEL_ZH,
   FRIEND_REL_ZH, FRIEND_HIER_ZH,
   BODYHAIR_KEYS, BODY_ASYMS, FACE_EXTRA_DEFAULTS, FOOT_CFG_AXES, FOOT_FEATURES, FOOT_WIDTHS, IKEMEN_AXIS_LABELS, IKEMEN_DELTAS,
   OCCUPATIONS, POSTURES, SOLE_TYPES, SOLE_WRINKLES, SPORT_EXP_POOL, TOE_CURLS, TOE_LINES, TRAINING_LEVELS,
@@ -557,7 +558,7 @@ ${promptTargetGuide(b, false)}`;
     const randomLabel = LT('ランダム（おまかせ）', 'Random (auto)', '随机（自动）');
     form.innerHTML = FOOT_CFG_AXES.map(([axis, ja, en])=>{
       const opts = ['ランダム'].concat(footAxisOptions(axis));
-      return `<label class="field"><span>${ST.uiLang==='en' ? en : ja}</span><select data-foot-axis="${axis}">${opts.map(v=>`<option value="${v}"${cfg[axis]===v?' selected':''}>${v==='ランダム' ? randomLabel : v}</option>`).join('')}</select></label>`;
+      return `<label class="field"><span>${LT(ja, en, FOOT_AXIS_LABEL_ZH[axis])}</span><select data-foot-axis="${axis}">${opts.map(v=>`<option value="${v}"${cfg[axis]===v?' selected':''}>${v==='ランダム' ? randomLabel : (displayValue('footCfg', v) || v)}</option>`).join('')}</select></label>`;
     }).join('');
     form.querySelectorAll('[data-foot-axis]').forEach(sel=>{
       sel.onchange = () => { const cfg2 = footCfg(ST.current); cfg2[sel.dataset.footAxis] = sel.value; ST.current.footScene = cfg2; renderAll(); };
