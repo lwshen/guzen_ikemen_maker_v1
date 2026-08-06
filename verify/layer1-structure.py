@@ -43,7 +43,7 @@ check('data-* set (static html)', da(old.split('<script>')[0]) == da(new_html),
 # 3. data modules: every extracted constant exported exactly once in src/data
 missing, dupes = [], []
 for e in manifest['extracted']:
-    n = sum(len(re.findall(rf"^export const {e['name']} =", s, re.M)) for s in data_src.values())
+    n = sum(len(re.findall(rf"^export const {e['name']}\s*=", s, re.M)) for s in data_src.values())
     if n == 0: missing.append(e['name'])
     if n > 1: dupes.append(e['name'])
 check(f"all {len(manifest['extracted'])} data constants exported once in src/data",

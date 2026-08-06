@@ -2,6 +2,7 @@
 // Split from the verbatim V3.2.0 baseline (Phase 4 stage B) — bodies unchanged
 // except top-level state rewritten to ST.* (see state.js).
 import {
+  SMILE_EYES, SMILE_STYLES, CHEEK_SMILES, MOUTH_CORNERS,
   BODY_ASYMS, DICE_GROUPS, ETHNIC_HAIR_WEIGHTS, FOOT_FEATURES, FOOT_WIDTHS, FRIEND_HIER_DELTA, FRIEND_HIER_EN, FRIEND_RELATIONS,
   FRIEND_REL_EN, FRIEND_REL_ZH, FRIEND_HIER_ZH, INNER_DEPS, INNER_FIELD_GEN, OCCUPATIONS, POSTURES, SOLE_TYPES, SOLE_WRINKLES, SPORTS,
   SPORT_BODY, SPORT_EXP_POOL, STRICT_HAIR_OCC, TOE_CURLS, TOE_LINES, TRAINING_BODY, TRAINING_EXCL, TRAINING_LEVELS,
@@ -11,6 +12,7 @@ import {
   STORAGE_KEY, drawProfileMeasurement, pick, rnd, sleep, uniqId, weighted,
 } from './core.js';
 import {
+  chooseSmileTraits, smileLine,
   SPORT_STAGES, ageAppearanceByAge, avgHeight, bioLine, bodyRealismLine, bodyTypeDesc, buildBioHook, buildEncounterScene,
   calcFootWidth, calcWeight, chooseAge, chooseBody, chooseEyeShape, chooseEyebrow, chooseEyelash, chooseEyelid,
   chooseFaceAgeCompatible, chooseFaceSpacing, chooseFacialHair, chooseGlasses, chooseOutfitByMbti, chooseRoleByMbti, chooseSkin, chooseSkinDetail,
@@ -287,6 +289,8 @@ import {
       accessories: base.accessories || generateAccessories({eraYear, age, role, vibe, incomeText: base.incomeText, season, outfitType, sportsHistory: sportsHistoryArr}, false),
       holidayAccessories: base.holidayAccessories || generateAccessories({eraYear, age, role, vibe, incomeText: base.incomeText, season, holidayOutfitType, sportsHistory: sportsHistoryArr, holidayShoes: hCoord.shoes, holidayBottom: hCoord.bottom}, true),
       facePresetOut: base.facePresetOut || (initial.facePresetOut || '含める'),
+      snapMode: base.snapMode || (initial.snapMode || '通常（スタジオ演出）'),
+      smileEyes: base.smileEyes || null, smileStyle: base.smileStyle || null, cheekSmile: base.cheekSmile || null, mouthCorner: base.mouthCorner || null,
       topBrand: coord.topBrand||'', bottomBrand: coord.bottomBrand||'', shoesBrand: coord.shoesBrand||'', outerBrand: coord.outerBrand||'', tie: coord.tie||'', coat: coord.coat||'', suitSilhouette: coord.silhouette||'', eraFashionNote: coord.eraNote||'', styleNote: coord.styleNote||'',
       holidayTopBrand: hCoord.topBrand||'', holidayBottomBrand: hCoord.bottomBrand||'', holidayShoesBrand: hCoord.shoesBrand||'', holidayOuterBrand: hCoord.outerBrand||'', holidayEraFashionNote: hCoord.eraNote||'', holidayStyleNote: hCoord.styleNote||'',
       occupationMode, occInfluence, holidayPersona, sportName, sportsHistory: sportsHistoryArr, trainingLevel, season, avgHeightBase: heightAvgBase, workUniform: (uniform && !fixed.outfitType && !base.outfitType) ? uniform[0] : '', workUniformEn: (uniform && !fixed.outfitType && !base.outfitType) ? uniform[1] : '', headwear: (uniform && !fixed.outfitType && !base.outfitType) ? (uniform[7] || '') : '', headwearOn: base.headwearOn !== undefined ? base.headwearOn : true, derivedMode: initial.derivedMode || '参照画像前提（簡潔版）', ikemenIndexMode: initial.ikemenIndexMode || '表示しない', bodyHairMode: initial.bodyHairMode || '詳細指定', catchphraseMode: initial.catchphraseMode || '結果画面のみ表示',
@@ -301,6 +305,7 @@ import {
     };
     if(partialMode==='face' && ST.current){ Object.assign(c, ST.current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,false), facePreset:c.facePreset, ageAppearance:c.ageAppearance, faceLine:c.faceLine, eyes:c.eyes, tearBags:c.tearBags, nose:c.nose, mouth:c.mouth, lips:c.lips, mouthPos:c.mouthPos, faceSpacing:c.faceSpacing, faceRatio:c.faceRatio, faceAsym:c.faceAsym, skin:c.skin, facialHair:c.facialHair, hairStyle:c.hairStyle, hairColor:c.hairColor, sceneIdea:buildEncounterScene({role:c.role, outfitType:ST.current.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
     applyMuscleFashion(c);
+    if(!c.smileEyes) Object.assign(c, chooseSmileTraits(c));
     if(partialMode==='outfit' && ST.current){ Object.assign(c, ST.current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,false), outfitType:c.outfitType,outfitBrand:c.outfitBrand,jacket:c.jacket,top:c.top,bottom:c.bottom,holidayOutfitType:c.holidayOutfitType,holidayOutfitBrand:c.holidayOutfitBrand,holidayJacket:c.holidayJacket,holidayTop:c.holidayTop,holidayBottom:c.holidayBottom,holidayShoes:c.holidayShoes,holidaySockBrand:c.holidaySockBrand,holidaySockType:c.holidaySockType,holidaySockColor:c.holidaySockColor,holidaySockUse:c.holidaySockUse,boxerBrand:c.boxerBrand,boxerColor:c.boxerColor,mainWearMode:c.mainWearMode,underwearType:c.underwearType,underwearColor:c.underwearColor,shoes:c.shoes,sockBrand:c.sockBrand,sockType:c.sockType,sockShape:c.sockShape,sockMaterial:c.sockMaterial,sockColor:c.sockColor,sockUse:c.sockUse,sceneIdea:buildEncounterScene({role:c.role, outfitType:c.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
     if(!groupCtx) Object.keys(ST.locks).forEach(k=>{ if(ST.locks[k] && ST.current && ST.current[k]!==undefined) c[k]=ST.current[k]; });
     c.personality = mbtiDescription(c.mbti, false);
@@ -571,7 +576,7 @@ ${promptTargetGuide(lead, false)}`;
     if(english){
       return `[OUTPUT FORMAT] Create one 16:9 "handoff reference sheet". Panels: full body front / full body side / face front / face side / face front with teeth visible (an "eee" expression, mouth stretched wide sideways to show the upper and lower rows of teeth, dental-reference style — in every other panel teeth appear only as naturally visible when smiling) / bare feet front view / soles (shown by the person himself sitting and presenting his own feet toward the viewer — never as detached, disembodied soles) / an enlarged full-sole view (the same feet as the person panels, detailed enough that the skin ridges of the soles, creases, and arch contours are readable, always oriented toes-up, as a matter-of-fact non-sexual reference enlargement). Every panel must show exactly the same person.${soleDetailLine(c, true)}
 [INFO PANEL] (clean readable typography; list ONLY these items) Name "${nameKana(c)}" / Photo year: ${c.eraYear || '2026'} / Born: ${(Number(c.eraYear)||2026)-(Number(c.age)||25)} (age ${c.age}) / Height ${c.height}, Weight ${c.weight} / Body type "${displayValue('bodyType', c.bodyType)}" / Physique guide "about ${headCount(c)} heads tall" / Foot size ${c.footSize} / Foot width "${fw}". Keep all text crisp and unbroken.
-[PERSON] Photo year: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} ${c.age} years old, ${c.nationality}, ${c.ethnicity}. ${facePresetPhrase(c, true)} ${eyeAreaLine(c, true)} Nose: ${c.nose}. Base expression: ${c.mouth}.${faceExtraLine(c, true)} Facial symmetry: ${displayValue('faceAsym', c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)} Hair: ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}.
+[PERSON] Photo year: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} ${c.age} years old, ${c.nationality}, ${c.ethnicity}. ${facePresetPhrase(c, true)} ${eyeAreaLine(c, true)} Nose: ${c.nose}. Base expression: ${c.mouth}.${smileLine(c,true)}${faceExtraLine(c, true)} Facial symmetry: ${displayValue('faceAsym', c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)} Hair: ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}.
 [PHYSIQUE] ${physiqueSpec(c, true, true)} Hip shape: ${displayValue('hipShape', c.hipShape || '標準的な丸みの臀部')} (a neutral body-reference note; never emphasized or staged).${muscleLine(c, true)}${trainingLine(c, true)}${bodyRealismLine(c, true)}
 [FEET] Foot shape: ${c.footShape}; ${footWidthDesc(c, true)}.${footFeatureLine(c, true, true)} In the barefoot panels, render toes with correct counts and joints; show exactly one pair of soles belonging to him only.
 [OUTFIT IN SHEET] Underwear (${underwearDesc(c, true)}) only, as a neutral body-reference presentation in the flat, matter-of-fact tone of clothing-catalog product photos — no sexual staging, emphasis, or posing. No outerwear, tops, bottoms, shoes, or socks.
@@ -581,7 +586,7 @@ ${promptTargetGuide(c, true)}`;
     }
     return `【出力形式】16:9の「参考画像作成シート（引継ぎ用）」を1枚作成する。パネル構成：全身前面／全身側面／顔正面／顔側面／顔正面（歯が見える：「イー」と口を横に広げて上下の歯列を見せる、歯科の資料撮影風の即物的な表情。このパネル以外では歯は笑ったときに自然に見える範囲のみ）／裸足の正面／足裏（人物が座って自分の足裏をこちらへ見せる姿として描き、足裏だけが切り離されて描写された状態にしない）／足裏の全体拡大（人物パネルと同一の足。足裏の指紋＝皮膚の隆線やしわ、土踏まずの起伏が分かる精細さ。常につま先が上・かかとが下の向き。資料用の即物的で非性的な拡大）。全パネルを完全に同一人物として一致させる。${soleDetailLine(c, false)}
 【情報欄】（読みやすい文字組で、次の項目のみ記載）氏名「${nameKana(c)}」／撮影年代：${eraLabel(c.eraYear)}／生年：${eraLabel((Number(c.eraYear)||2026)-(Number(c.age)||25))}（${c.age}歳）／身長${c.height}・体重${c.weight}／体型「${c.bodyType}」／体格の目安「約${headCount(c)}頭身」／足サイズ${c.footSize}／ワイズ「${fw}」${c.bioCaptionMode==='情報欄に入れる' ? `／ひとこと：「${c.bioText || bioLine(c, false)}」` : ''}。文字は崩さない。
-【人物】撮影年代：${eraLabel(c.eraYear)}。${countryLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。${sportsHistoryLine(c, false)}${facePresetPhrase(c)}${eyeAreaLine(c, false)}鼻は${c.nose}、基本表情は${c.mouth}。${faceExtraLine(c, false)}左右差は${c.faceAsym || 'ほぼ対称（ごく自然な左右差）'}。${realismSpec(c, false)}${teethLine(c, false)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。
+【人物】撮影年代：${eraLabel(c.eraYear)}。${countryLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。${sportsHistoryLine(c, false)}${facePresetPhrase(c)}${eyeAreaLine(c, false)}鼻は${c.nose}、基本表情は${c.mouth}。${smileLine(c,false)}${faceExtraLine(c, false)}左右差は${c.faceAsym || 'ほぼ対称（ごく自然な左右差）'}。${realismSpec(c, false)}${teethLine(c, false)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。
 【体格】${physiqueSpec(c, false, true)}臀部は${c.hipShape || '標準的な丸みの臀部'}（体型確認のための中立的な記載であり、強調や演出はしない）。${muscleLine(c, false)}${trainingLine(c, false)}${bodyRealismLine(c, false)}
 【足】足の形は${c.footShape}。${footWidthDesc(c, false)}。${footFeatureLine(c, false, true)}裸足パネルでは指の本数・関節を正確に描き、足裏は本人の1人分のみとする。
 【服装】基準服装は${underwearDesc(c, false)}のみ。体型確認のための中立的な資料表現であり、衣料品カタログの商品写真と同じ即物的なトーンで描く。性的な演出・強調・ポーズは一切しない。上着・トップス・ボトムス・靴・靴下は描写しない。
@@ -653,6 +658,11 @@ ${promptTargetGuide(c, false)}`;
       if(key==='accessoriesEdit' || key==='holidayAccessoriesEdit') return ['なし','ビジネス腕時計','タフネス系デジタル腕時計','スマートウォッチ','機械式の高級腕時計','シンプルな腕時計','革ベルトの腕時計','シルバーチェーンネックレス','華奢なシルバーネックレス','喜平ネックレス','片耳のシルバーピアス','両耳の小ぶりなピアス','左薬指に結婚指輪','ミサンガ','アンクレット'];
       if(key==='holidayStyleNote') return ['—','清潔感重視のベーシックな着こなし','柄物や差し色をその日の気分で','モノトーン中心・機能優先','柔らかい色味と肌ざわり重視','サイズ感が微妙に合っていない','古着ミックスの味のある風合い'];
       if(key==='facePresetOut') return ['含める','含めない'];
+      if(key==='snapMode') return pools.snapModes;
+      if(key==='smileEyes') return SMILE_EYES;
+      if(key==='smileStyle') return SMILE_STYLES;
+      if(key==='cheekSmile') return CHEEK_SMILES;
+      if(key==='mouthCorner') return MOUTH_CORNERS;
     }
     if(key==='height') return rangeOpts(155, 196, 1, 'cm');
     if(key==='weight') return rangeOpts(45, 110, 1, 'kg');
@@ -818,7 +828,7 @@ ${promptTargetGuide(c, false)}`;
     if(opts && opts.name) f.name = opts.name;
     f.friendOf = {name: baseC.name, age: baseC.age, role: baseC.role, relation: relName, hierarchy: hierName};
     f.friendBase = baseC;
-    const history = loadHistory(); history.unshift({...baseC, appVersion:'V3.2.0'});
+    const history = loadHistory(); history.unshift({...baseC, appVersion:'V3.2.2'});
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0,50)));
     ST.currentGroup = null; ST.activeMember = 0;
     ST.current = f;

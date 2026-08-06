@@ -694,6 +694,26 @@
    "name": "PROMPT_PANES",
    "file": "data-core.js",
    "indexHtmlLine": 7660
+  },
+  {
+   "name": "SMILE_EYES",
+   "file": "data-core.js",
+   "indexHtmlLine": 3694
+  },
+  {
+   "name": "SMILE_STYLES",
+   "file": "data-core.js",
+   "indexHtmlLine": 3695
+  },
+  {
+   "name": "CHEEK_SMILES",
+   "file": "data-core.js",
+   "indexHtmlLine": 3696
+  },
+  {
+   "name": "MOUTH_CORNERS",
+   "file": "data-core.js",
+   "indexHtmlLine": 3697
   }
  ],
  "skipped": [

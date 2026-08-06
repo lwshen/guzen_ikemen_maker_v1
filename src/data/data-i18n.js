@@ -494,12 +494,14 @@ Object.assign(valueTranslations, {
 // Field labels for the V3.1-V3.4 settings (missing from BOTH branches upstream;
 // the ja values must equal the static HTML text so JA display is unchanged)
 Object.assign(uiText.ja.fieldLabels, {
+  initialSnapMode: '撮影演出（派生）',
   initialTraining: '筋トレ習慣', initialFacePresetOut: '顔立ちプリセット出力',
   initialIkemenIndex: 'イケメン指数', initialBodyHairMode: '体毛表現',
   initialSportsInfluence: '経験競技の体型影響', initialHeightBase: '身長ベース',
   initialPromptDetail: 'プロンプト最適化', initialBioCaption: 'ひとこと背景',
 });
 Object.assign(uiText.en.fieldLabels, {
+  initialSnapMode: 'Photo Style (Derived)',
   initialTraining: 'Training Habit', initialFacePresetOut: 'Face-Preset Output',
   initialIkemenIndex: 'Handsome Index', initialBodyHairMode: 'Body Hair Style',
   initialSportsInfluence: 'Sports Body Influence', initialHeightBase: 'Height Base',
@@ -511,3 +513,61 @@ uiText.ja.flowStep1 = '基準カードで画像を生成';
 uiText.en.flowStep1 = 'Generate an image from the base card';
 uiText.ja.flowStep2 = 'その画像を添付して派生出力';
 uiText.en.flowStep2 = 'Attach that image for derived outputs';
+
+// ============================================================================
+// EN entries for the V3.2.1/V3.2.2 upstream features (smile module, cheek pool,
+// snap modes, new face presets / hair finishes). Upstream ships ja/en prose in
+// the generators but left these VALUES untranslated, same as its earlier waves.
+// ============================================================================
+Object.assign(valueTranslations, {
+  // smile: eyes
+  '笑うと目が糸のように細くなり三日月形に消える': 'eyes narrowing to crescent slits when he smiles',
+  '笑うと目尻が下がって垂れ目になる': 'outer corners dropping into puppy eyes when he smiles',
+  '笑っても目の形はあまり変わらない（口で笑うタイプ）': 'eye shape barely changing when he smiles (he smiles with his mouth)',
+  '笑うと目尻に若い笑い皺が寄る': 'faint young laugh lines gathering at the outer corners',
+  '笑うと片目だけ強く細くなる': 'one eye narrowing much more than the other',
+  '笑うと下まぶたが持ち上がる涙袋笑い': 'lower lids lifting into a tear-bag smile',
+  '笑うと目を見開いて輝かせる': 'eyes widening and lighting up when he smiles',
+  '笑うと細まりつつ目に光をたたえる': 'eyes narrowing yet holding a glint of light',
+  // smile: style
+  '上の歯をしっかり見せる満面のくしゃ笑い': 'a full crinkled grin showing his upper teeth',
+  '八重歯がのぞく笑い': 'a smile that reveals a fang-like canine',
+  '口角だけ上げる控えめな笑み': 'a restrained smile lifting only the mouth corners',
+  '歯を見せない照れ笑い': 'a bashful closed-mouth smile',
+  '笑うと鼻に軽くしわが寄る': 'a light crinkle across the nose when he smiles',
+  '声が出そうな大口の笑い': 'a wide-open laugh you can almost hear',
+  '口角が左右非対称に上がるニヒルな笑み': 'a wry smile with unevenly raised corners',
+  'はにかんで口元を手で隠しがちな笑い': 'a shy smile he tends to hide behind his hand',
+  'ふっと息が漏れるような笑い方': 'a quiet laugh that escapes as a breath',
+  'にっと横に大きく広がる笑い': 'a grin that spreads wide across his face',
+  // smile: cheeks / corners
+  '笑うと頬がリンゴのように高く盛り上がる': 'cheeks rising apple-high when he smiles',
+  '笑うと頬に縦の笑いジワが入る': 'vertical laugh creases forming on his cheeks',
+  '笑ってもシャープな頬のまま': 'cheeks staying sharp even when he smiles',
+  '笑うと頬とえくぼが連動してへこむ': 'cheeks and dimples denting together when he smiles',
+  '頬全体が柔らかく持ち上がる': 'the whole cheek lifting softly',
+  '地顔でも口角が上がり気味（常に機嫌よく見える）': 'mouth corners naturally upturned at rest (he always looks in a good mood)',
+  '口角は水平でニュートラル': 'level, neutral mouth corners',
+  'への字気味（笑うと印象が激変する）': 'slightly downturned corners (his smile transforms the impression)',
+  '片側だけわずかに上がる': 'one corner sitting slightly higher',
+  // cheeks (V3.2.2 pool)
+  'ハリのある引き締まった頬': 'firm, taut cheeks',
+  '子供の頃の面影が残る丸い頬': 'round cheeks that still recall his boyhood',
+  '餅のように柔らかそうな頬': 'cheeks that look soft as mochi',
+  '薄くシャープな頬': 'thin, sharp cheeks',
+  '頬骨の下がすっと影になる頬': 'cheeks that shadow crisply under the bone',
+  '年齢なりに少し位置が下がった頬': 'cheeks sitting a little lower with age',
+  'たるみはじめた頬': 'cheeks just beginning to slacken',
+  // new face presets / hair finishes / skin detail / snap modes
+  '弟系童顔（笑顔が武器）': 'Little-brother baby face (his smile is the weapon)',
+  '垂れ目パピー系': 'Droopy-eyed puppy type',
+  '愛嬌くしゃ笑い顔': 'Endearing crinkle-smile face',
+  'セットなしの自然に崩れた無造作': 'unstyled, naturally fallen and tousled',
+  '湿気でラフにうねった': 'roughly waved by humidity',
+  '寝癖が少し残るラフさ': 'a roughness that keeps a hint of bed head',
+  '風にラフに乱れた': 'roughly tousled by the wind',
+  '血色のよい上気した頬': 'flushed, well-colored cheeks',
+  '通常（スタジオ演出）': 'Standard (studio direction)',
+  '他撮りスナップ風': 'Candid snapshot by someone else',
+  '自撮り風': 'Selfie style',
+});

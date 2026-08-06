@@ -2,11 +2,13 @@
 // Split from the verbatim V3.2.0 baseline (Phase 4 stage B) — bodies unchanged
 // except top-level state rewritten to ST.* (see state.js).
 import {
+  HIGH_TRAIN,
   ACC_HI_PIERCE, ACC_NO_PIERCE, ACC_WORK_OFF, ATHLETIC_OCC, BODY_ASYM_EN, BRAND_SINCE, BRIDGE_HOOK, CULT_MEM,
   ERA_HOOK, FACE_EXTRA_DEFAULTS, FASHION_CASUAL_TAGS, FOOT_ANGLES, FOOT_COZY, FOOT_FABRICS, FOOT_FEATURES, FOOT_OCC_CAT_SCENES,
   FOOT_OCC_SCENES, FOOT_POSTURES, FOOT_PROPS, FOOT_SCENES, FOOT_SCENE_MIGRATION, FOOT_SHOE_STATES, FOOT_SOCK_STATES, FOOT_WIDTHS,
   FREE_HAIR_OCC, FVOCAB, MBTI_INTRO, NAMES_BY_YEAR, NATION_NAMES, OCCUPATIONS, OCC_CAT_HOOK, OCC_CAT_LABELS,
   OCC_CAT_ORDER, OCC_CAT_SCENES, OCC_HOOK, OCC_MBTI_CAT, OCC_SCENES, POSTER_FOOT, POSTURE_EN, SOLE_TYPES,
+  SMILE_EYES, SMILE_STYLES, CHEEK_SMILES, MOUTH_CORNERS,
   SOLE_WRINKLES, SPORTS, SPORT_EXP_WEIGHTS, SPORT_MEM, SPORT_MUSCLE, SPORT_MUSCLE_ZH, SPORT_SKELETON, SPORT_STAGES_ZH, STRICT_HAIR_OCC, TOE_CURLS,
   TOE_LINES, TRAINING_DESC, TRAINING_LEVELS, TRAIN_HOOK, UNDERWEAR_COLOR_EN, UNIFORM_VARIANTS, VIBE_AGE_MAX, VIBE_OCC,
   pools, slotDefs, valueTranslations,
@@ -201,6 +203,7 @@ import {
       derivedMode: document.getElementById('initialDerivedMode')?.value || '参照画像前提（簡潔版）',
       season: document.getElementById('initialSeason')?.value || 'ランダム',
       facePresetOut: document.getElementById('initialFacePresetOut')?.value || '含める',
+      snapMode: document.getElementById('initialSnapMode')?.value || '通常（スタジオ演出）',
       heightBase: document.getElementById('initialHeightBase')?.value || '平均身長ベース',
       ikemenIndexMode: document.getElementById('initialIkemenIndex')?.value || '表示しない',
       bodyHairMode: document.getElementById('initialBodyHairMode')?.value || '詳細指定',
@@ -434,10 +437,10 @@ import {
       '爽やか系': { facePresets:[['普通顔',4],['親しみやすい大学生系',4],['日本の若手俳優風',3],['爽やか知的アナウンサー系',2]], hairStyles:[['短髪',3],['アップバング',3],['センターパート',2],['ニュアンスパーマ',2]], hairColors:[['黒',4],['ブルーブラック',3],['黒に近いダークブラウン',2]], outfits:[['大学生カジュアル',3],['社会人カジュアル',3],['ジャケットスタイル',2],['私服通学風',2]], bodyTypes:[['標準体型',4],['細身',3],['スーツ映え体型',2]] },
       '真面目系': { facePresets:[['真面目系',5],['スーツ映え社会人系',4],['普通顔',3]], hairStyles:[['ビジネス短髪',4],['サイドパート',4],['短髪',2]], hairColors:[['黒',5],['ブルーブラック',3]], outfits:[['紺スーツ',4],['グレースーツ',3],['ジャケットスタイル',3],['社会人カジュアル',2]], bodyTypes:[['標準体型',4],['スーツ映え体型',4],['細身',2]] },
       'ワイルド系': { facePresets:[['ワイルド系',5],['体育会系スポーツ男子',3],['清潔感のある若手俳優風',2]], hairStyles:[['ツイストパーマ',3],['スパイラルパーマ',3],['アップバング',2],['ウルフミディアム',2]], hairColors:[['黒',3],['黒に近いダークブラウン',3],['自然な茶髪',2]], outfits:[['ストリート系',4],['社会人カジュアル',2],['スポーツ練習着',2]], bodyTypes:[['筋肉質',4],['引き締まったスポーツ体型',3],['がっしり体型',2]] },
-      'スポーツ系': { facePresets:[['体育会系スポーツ男子',5],['大学サッカー部系',4],['普通顔',2]], hairStyles:[['短髪',4],['アップバング',3],['ソフトツーブロック',2]], hairColors:[['黒',4],['ブルーブラック',2]], outfits:[['スポーツ練習着',5],['大学生カジュアル',2],['私服通学風',2]], bodyTypes:[['引き締まったスポーツ体型',4],['サッカー選手体型',4],['筋肉質',3],['痩せマッチョ',2]] },
+      'スポーツ系': { facePresets:[['弟系童顔（笑顔が武器）',2],['垂れ目パピー系',1.5],['体育会系スポーツ男子',5],['大学サッカー部系',4],['普通顔',2]], hairStyles:[['短髪',4],['アップバング',3],['ソフトツーブロック',2]], hairColors:[['黒',4],['ブルーブラック',2]], outfits:[['スポーツ練習着',5],['大学生カジュアル',2],['私服通学風',2]], bodyTypes:[['引き締まったスポーツ体型',4],['サッカー選手体型',4],['筋肉質',3],['痩せマッチョ',2]] },
       'きれいめ系': { facePresets:[['スーツ映え社会人系',4],['高身長モデル系',3],['日本の若手俳優風',3]], hairStyles:[['センターパート',3],['サイドパート',3],['韓国風センターパート',2],['ビジネス短髪',2]], hairColors:[['黒',3],['ブルーブラック',3],['アッシュブラウン',2]], outfits:[['ジャケットスタイル',4],['社会人カジュアル',3],['紺スーツ',2]], bodyTypes:[['細身',3],['スーツ映え体型',3],['高身長モデル体型',2]] },
       'カジュアル系': { facePresets:[['親しみやすい大学生系',4],['普通顔',4],['日本の若手俳優風',2]], hairStyles:[['マッシュ',3],['センターパート',2],['ソフトツーブロック',3],['ニュアンスパーマ',2]], hairColors:[['黒',3],['黒に近いダークブラウン',2],['自然な茶髪',2]], outfits:[['大学生カジュアル',4],['私服通学風',4],['ストリート系',2],['社会人カジュアル',2]], bodyTypes:[['標準体型',4],['細身',3],['やせ型',2]] },
-      '韓国風': { facePresets:[['韓国アイドル風',6],['中性系',3],['高身長モデル系',2]], hairStyles:[['韓国風センターパート',5],['センターパート',3],['ニュアンスパーマ',2]], hairColors:[['黒',3],['ブルーブラック',3],['グレージュ',2]], outfits:[['きれいめカジュアル',1],['ジャケットスタイル',3],['大学生カジュアル',2],['社会人カジュアル',2]], bodyTypes:[['細身',4],['高身長モデル体型',3],['標準体型',2]] },
+      '韓国風': { facePresets:[['弟系童顔（笑顔が武器）',2],['垂れ目パピー系',1.5],['韓国アイドル風',6],['中性系',3],['高身長モデル系',2]], hairStyles:[['韓国風センターパート',5],['センターパート',3],['ニュアンスパーマ',2]], hairColors:[['黒',3],['ブルーブラック',3],['グレージュ',2]], outfits:[['きれいめカジュアル',1],['ジャケットスタイル',3],['大学生カジュアル',2],['社会人カジュアル',2]], bodyTypes:[['細身',4],['高身長モデル体型',3],['標準体型',2]] },
       '中性系': { facePresets:[['中性系',6],['韓国アイドル風',3],['普通顔',2]], hairStyles:[['センターパート',3],['マッシュ',3],['ロング寄りミディアム',2],['ウルフミディアム',2]], hairColors:[['黒',3],['ブルーブラック',2],['グレージュ',2],['アッシュブラウン',2]], outfits:[['大学生カジュアル',3],['ストリート系',2],['社会人カジュアル',2],['ジャケットスタイル',2]], bodyTypes:[['細身',4],['やせ型',3],['高身長モデル体型',2]] },
       '大人っぽい系': { facePresets:[['落ち着いた大人系',5],['スーツ映え社会人系',4],['高身長モデル系',2]], hairStyles:[['サイドパート',3],['ビジネス短髪',3],['センターパート',2]], hairColors:[['黒',4],['黒に近いダークブラウン',2],['アッシュブラウン',1]], outfits:[['紺スーツ',4],['グレースーツ',3],['ジャケットスタイル',3],['社会人カジュアル',2]], bodyTypes:[['スーツ映え体型',4],['標準体型',3],['高身長モデル体型',2]] },
       'やりらふぃー系': { facePresets:[['やりらふぃー系',5],['ワイルド系',3],['日本の若手俳優風',2],['普通顔',1]], hairStyles:[['ツイストパーマ',4],['波巻きパーマ',4],['スパイラルパーマ',3],['アップバング',2],['ウルフミディアム',2]], hairColors:[['黒',3],['明るめブラウン',4],['アッシュブラウン',3],['自然な茶髪',3]], outfits:[['ストリート系',5],['大学生カジュアル',3],['私服通学風',3],['スポーツ練習着',1]], bodyTypes:[['細身',3],['痩せマッチョ',3],['標準体型',2],['引き締まったスポーツ体型',2]] },
@@ -477,7 +480,7 @@ import {
     if(['ブサイク系','ホスト系','おじさん系','ヤンキー系','ギャル男系','韓国風'].includes(vibe)) return facePreset;
     if(vibe==='大人っぽい系' || ageAppearance==='少し大人びて見える') return weighted([[facePreset,4],['落ち着いた大人系',4],['スーツ映え社会人系',3],['真面目系',2]]);
     if(vibe==='スポーツ系') return weighted([[facePreset,4],['体育会系スポーツ男子',3],['大学サッカー部系',3],['普通顔',2]]);
-    if(ageAppearance==='やや若く見える') return weighted([[facePreset,4],['親しみやすい大学生系',4],['普通顔',3],['日本の若手俳優風',2],['韓国アイドル風',2]]);
+    if(ageAppearance==='やや若く見える') return weighted([[facePreset,4],['親しみやすい大学生系',4],['普通顔',3],['日本の若手俳優風',2],['韓国アイドル風',2],['弟系童顔（笑顔が武器）',2.5],['垂れ目パピー系',1.5]]);
     return weighted([[facePreset,7],['普通顔',2],['真面目系',1],['清潔感のある若手俳優風',1]]);
   }
 
@@ -547,7 +550,7 @@ import {
     return sc;
   }
 
-  /* ===== V3.2.0 時代別ファッション語彙エンジン（年タグ＋近接年代ウィンドウ） ===== */
+  /* ===== V3.2.2 時代別ファッション語彙エンジン（年タグ＋近接年代ウィンドウ） ===== */
   // 項目: [名称, from, peak, to, tags]  tags: c=カジュアル s=ストリート k=きれいめ f=古着 o=オフィス可 p=スポーツ / アウターのみ W=冬 L=春秋 S=夏羽織
   // --- 台形近接ウィンドウ：from-3で立ち上がり、peakで最大、to+8まで残存（15%へ減衰） ---
   function eraItemW(it, y){
@@ -682,7 +685,7 @@ import {
     return res;
   }
 
-  // ===== V3.2.0 コーデ部位ヘルパー・アクセサリー・季節連動 =====
+  // ===== V3.2.2 コーデ部位ヘルパー・アクセサリー・季節連動 =====
   const COORD_TYPE_TAG = FASHION_CASUAL_TAGS;
 
   function eraOptionsFor(kind, c, holiday){
@@ -1037,6 +1040,35 @@ import {
     assignPartBrands(res, outfitType, profile, eraYear, vibe);
     res.styleNote = Math.random() < 0.5 ? mbtiStyleNote(mbti) : '';
     return res;
+  }
+
+  // ===== V3.2.2 笑い方（表情変化）モジュール =====
+  function chooseSmileTraits(c){
+    const fp=String(c.facePreset||''), vibe=String(c.vibe||'');
+    const cute=/童顔|パピー|くしゃ笑い|たれ目|犬系|親しみ|大学生/.test(fp)||['韓国風','スポーツ系','元気系','爽やか系'].includes(vibe);
+    const cool=/クール|ミステリアス|塩顔|しょうゆ|モデル/.test(fp)||['クール系','ミステリアス系','紳士系'].includes(vibe);
+    const W=(arr,f)=>weighted(arr.map(v=>[v,f(v)]));
+    return {
+      smileEyes: W(SMILE_EYES,v=>/糸のよう|垂れ目になる|涙袋笑い/.test(v)?(cute?5:cool?0.6:2):/変わらない|見開いて/.test(v)?(cool?4:1):2),
+      smileStyle: W(SMILE_STYLES,v=>/くしゃ笑い|大口|八重歯|横に大きく/.test(v)?(cute?5:cool?0.5:2):/控えめ|照れ笑い|ニヒル|息が漏れる/.test(v)?(cool?4:1.5):2),
+      cheekSmile: W(CHEEK_SMILES,v=>{ const hollow=/こけ|薄くシャープ|影になる/.test(String(c.cheek||'')); if(/リンゴ|柔らかく持ち上がる/.test(v)) return hollow?0.4:(cute?5:1.5); if(/シャープ/.test(v)) return hollow?4:(cool?4:1); return 2; }),
+      mouthCorner: W(MOUTH_CORNERS,v=>/上がり気味/.test(v)?(cute?4:2):/への字/.test(v)?(cool?2.5:1):2)
+    };
+  }
+  function smileLine(c, english=false){
+    if(!c.smileEyes) return '';
+    if(english) return ` Smile traits: ${c.smileEyes}; ${c.smileStyle}; ${c.cheekSmile}; ${c.mouthCorner}.`;
+    return `笑い方の特徴：${c.smileEyes}。${c.smileStyle}。${c.cheekSmile}。${c.mouthCorner}。`;
+  }
+  function snapLine(c, english=false){
+    const m = c && c.snapMode;
+    if(m==='他撮りスナップ風') return english
+      ? `\n[PHOTO STYLE] Candid snapshot taken by a friend: slightly low angle, phone-flash feel at night, mild motion blur and slight defocus, everyday cluttered background allowed — an unposed split-second moment, not studio-perfect.`
+      : `\n【撮影演出】友人が撮った日常スナップ風にする：ローアングル気味の画角、夜ならスマホのフラッシュ感、軽い手ブレとわずかなピンボケ、生活感のある背景の粗さを許容し、作り込んでいない一瞬の空気を出す。ポーズは自然でカメラを意識しすぎない。`;
+    if(m==='自撮り風') return english
+      ? `\n[PHOTO STYLE] Selfie style: arm's-length wide-angle framing with slight perspective distortion, eyes to the lens, ambient indoor light, casual close distance.`
+      : `\n【撮影演出】自撮り風にする：腕を伸ばした広角気味の画角（軽いパース歪み）、視線はレンズへ、室内の環境光、顔がやや大きめに写るカジュアルな距離感。`;
+    return '';
   }
 
   function applyEraFashionTwist(res, outfitType, eraYear){
@@ -1602,6 +1634,16 @@ import {
     return weighted([['短めで控えめなまつ毛',3],['標準的な長さのまつ毛',6],['やや長めのまつ毛',2.5],['長めで濃いまつ毛',1.2],['細くまばらなまつ毛',1.5]]);
   }
 
+  function chooseCheek(c){
+    const age = Number(c.age)||30, bt = String(c.bodyType||''), fp = String(c.facePreset||'');
+    const highTrain = (typeof HIGH_TRAIN!=='undefined') && HIGH_TRAIN.includes(c.trainingLevel);
+    const soft = /ぽっちゃり|がっちり|ビール腹|恰幅|腹だけ/.test(bt), slim = /細身|痩せ|やせ型|華奢|陸上長距離/.test(bt);
+    const cute = /童顔|パピー|くしゃ笑い|犬系|親しみ/.test(fp);
+    let l = [['標準的な頬',5],['頬骨が高めの頬',2],['ややこけた頬',slim?3:0.8],['ふっくらした頬',soft?4:1.2],['ハリのある引き締まった頬',highTrain?4:1.5],['子供の頃の面影が残る丸い頬',cute?4:(age<=27?1.5:0.3)],['餅のように柔らかそうな頬',soft?2.5:0.6],['薄くシャープな頬',slim?2.5:1],['頬骨の下がすっと影になる頬',slim&&age>=25?2:0.7]];
+    if(age>=45) l.push(['年齢なりに少し位置が下がった頬',2.5],['たるみはじめた頬',soft?2.5:1.2]);
+    return weighted(l);
+  }
+
   function chooseFaceExtras(c){
     const age = Number(c.age) || 30;
     const bt = String(c.bodyType || '');
@@ -1617,7 +1659,7 @@ import {
     out.ear = weighted([['標準的な耳',8],['立ち耳',2],['寝た耳',2],['福耳',1.5],['小ぶりな耳',1.5],['柔道耳（軽度の耳介の厚み）', grap>=2?2.5:0]]);
     out.forehead = weighted([['標準的な広さの額',6],['狭めの額',2],['広めの額',2.5]]);
     out.hairline = weighted([['直線的な生え際',5],['ゆるいM字の生え際', age>=30?3:1.5],['富士額の生え際',1.5],['やや後退気味の生え際', age>=40?2:0]]);
-    out.cheek = weighted([['標準的な頬',6],['頬骨が高めの頬', /細マッチョ|クライマー|陸上長距離|細身/.test(bt)?2.5:1.5],['ややこけた頬', /やせ型|華奢|陸上長距離/.test(bt)?2.5:0.8],['ふっくらした頬', /ぽっちゃり|腹だけ/.test(bt)?3:1.2]]);
+    out.cheek = chooseCheek(c);
     out.dimple = weighted([['えくぼなし',8],['片側にえくぼ',1.2],['両側にえくぼ',1.5]]);
     out.mole = weighted([['ほくろなし',10],['目尻の下の泣きぼくろ',1.2],['口元のほくろ',1.2],['顎のほくろ',1],['頬のほくろ',1.2],['首すじのほくろ',1]]);
     out.hairTexture = (c?.ethnicity)==='黒人系' ? weighted([['強いカールのアフロテクスチャ',6],['細かいカールヘア',4],['強いくせ毛',2]]) : weighted([['直毛', ea?5:2.5],['やわらかい猫っ毛',3],['硬めの剛毛',3],['ゆるいくせ毛',2.5],['強いくせ毛', ea?1:2]]);
@@ -2479,7 +2521,7 @@ import {
     const feats = [];
     const hairFeat = {'金髪（ブリーチ）':['金髪の','bleached-blond'],'ブリーチベージュ':['ブリーチヘアの','bleach-haired'],'ハイトーンアッシュ':['ハイトーンの','high-tone-haired'],'シルバーアッシュ':['シルバーヘアの','silver-haired'],'メッシュ入りブラック':['メッシュヘアの','highlight-streaked'],'インナーカラー（アッシュ）':['インナーカラーの','inner-colored'],'プリン気味の伸びた茶髪':['プリン頭の','grown-out-dyed'],'オレンジブラウン':['オレンジヘアの','orange-haired'],'白髪まじり':['白髪まじりの','graying'],'ロマンスグレー':['ロマンスグレーの','silver-gray'],'ごま塩頭':['ごま塩頭の','salt-and-pepper'],'ほぼ白髪':['白髪の','white-haired']};
     if(hairFeat[c.hairColor]) feats.push(hairFeat[c.hairColor]);
-    const faceFeat = {'ワイルド系':['ワイルド顔の','wild-faced'],'ブサイク系':['愛嬌のある顔の','charmingly homely'],'ホスト系':['ホスト顔の','host-club-faced'],'おじさん系':['おじさん顔の','middle-aged-faced'],'昭和顔（濃い顔立ち）':['昭和顔の','Showa-faced'],'塩顔系':['塩顔の','subtle-featured'],'韓国アイドル風':['アイドル顔の','idol-faced'],'高身長モデル系':['モデル顔の','model-faced'],'やんちゃ系':['やんちゃ顔の','mischievous-faced'],'ソース顔':['ソース顔の','bold-featured'],'しょうゆ顔':['しょうゆ顔の','refined-featured'],'ミステリアス系':['ミステリアスな','mysterious'],'クール系':['クールな','cool-looking'],'彫りの深い縄文系':['彫りの深い','deep-featured'],'たれ目系':['たれ目の','droopy-eyed'],'つり目系':['つり目の','sharp-eyed']};
+    const faceFeat = {'ワイルド系':['ワイルド顔の','wild-faced'],'ブサイク系':['愛嬌のある顔の','charmingly homely'],'ホスト系':['ホスト顔の','host-club-faced'],'おじさん系':['おじさん顔の','middle-aged-faced'],'昭和顔（濃い顔立ち）':['昭和顔の','Showa-faced'],'塩顔系':['塩顔の','subtle-featured'],'韓国アイドル風':['アイドル顔の','idol-faced'],'高身長モデル系':['モデル顔の','model-faced'],'やんちゃ系':['やんちゃ顔の','mischievous-faced'],'ソース顔':['ソース顔の','bold-featured'],'しょうゆ顔':['しょうゆ顔の','refined-featured'],'ミステリアス系':['ミステリアスな','mysterious'],'クール系':['クールな','cool-looking'],'彫りの深い縄文系':['彫りの深い','deep-featured'],'たれ目系':['たれ目の','droopy-eyed'],'つり目系':['つり目の','sharp-eyed'],'弟系童顔（笑顔が武器）':['童顔の','baby-faced'],'垂れ目パピー系':['垂れ目の','puppy-eyed'],'愛嬌くしゃ笑い顔':['くしゃ笑いの','crinkle-smiling']};
     if(faceFeat[c.facePreset]) feats.push(faceFeat[c.facePreset]);
     const bodyFeat = {'ビール腹':['ビール腹の','beer-bellied'],'ラグビー選手体型':['ラグビー体型の','rugby-built'],'華奢な体型':['華奢な','delicately built'],'細マッチョ':['細マッチョの','lean-muscled'],'ぽっちゃり':['ぽっちゃり','chubby'],'筋肉質':['筋肉質な','muscular'],'高身長モデル体型':['高身長','tall'],'隠れ筋肉質':['脱いだらすごい','secretly muscular'],'腹だけぽっちゃり':['お腹だけゆるい','belly-soft'],'柔道家体型':['柔道家体型の','judo-built'],'骨太体型':['骨太な','big-boned']};
     if(bodyFeat[c.bodyType]) feats.push(bodyFeat[c.bodyType]);
@@ -2590,7 +2632,7 @@ import {
       if(S.daily) catLines.push(`【日常・嗜好】健康：${c.healthText}／趣味：${c.hobbyText}／マイブーム：${c.myBoomText}／好物：${c.foodLikeText}・苦手：${c.foodHateText}`);
       if(S.mind) catLines.push(`【内面】行動原理：${c.principleText}／夢：${c.innerDream}／本音の欲望：${c.innerDesire}／弱点：${c.weaknessMind}・${c.weaknessBody}／才能：${c.innerTalent}／コンプレックス：${c.complexText}／許せないこと：${c.unforgivableText}／コーデ基準：${c.fashionSenseText}`);
       if(S.past) catLines.push(`【過去・人間関係】${c.pastUpbringing}／${c.pastTrauma}／思い出：${c.memoryText}／親友：${String(c.friendText||'').replace(/〔.*?〕/,'')}／恋愛対象：${c.loveTarget}／恋愛経験：${c.loveCountText}`);
-      if(S.adult) catLines.push(`【オトナの事情（小さく・婉曲表現で）】飲酒：${c.drinkText}／喫煙：${c.smokeText}／ギャンブル歴：${c.gambleText}／風俗経験：${c.fuzokuText}／初めての体験：${c.firstExpText}／週頻度：相手あり ${c.weekFreqText}・セルフ ${c.selfFreqText}`);
+      if(S.adult) catLines.push(`【オトナの事情（小さく・婉曲表現で）】飲酒：${c.drinkText}／喫煙：${c.smokeText}／ギャンブル歴：${c.gambleText}／風俗経験：${c.fuzokuText}／初めての体験：${c.firstExpText}／経験人数：${c.expCountText}／週頻度：相手あり ${c.weekFreqText}・セルフ ${c.selfFreqText}`);
       const linesJa = catLines.join('。 ');
       if(english){
         const blocks = [
@@ -2701,6 +2743,10 @@ import {
   }
 
 export {
+  chooseCheek,
+  chooseSmileTraits,
+  smileLine,
+  snapLine,
   muscleDevLineZh,
   initManualControls,
   initInitialSettings,

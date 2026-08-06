@@ -178,9 +178,9 @@ import {
 
   INNER_DEPS.family = ['complex'];
 
-  INNER_DEPS.lover = ['weekfreq','selffreq','fashionsense'];
+  INNER_DEPS.lover = ['weekfreq','selffreq','fashionsense','expcount'];
 
-  INNER_DEPS.marital.push('fashionsense');
+  INNER_DEPS.marital.push('fashionsense','expcount');
 
   INNER_DEPS.health = ['smoke','drink'];
 
@@ -192,7 +192,13 @@ import {
 
   INNER_DEPS.marital.push('lovecount');
 
-  INNER_DEPS.firstexp = ['lovecount'];
+  INNER_DEPS.firstexp = ['lovecount','expcount'];
+
+  INNER_DEPS.complex = (INNER_DEPS.complex||[]).concat(['firstexp','fuzoku','lovecount','expcount']);
+
+  INNER_DEPS.fuzoku = ['expcount'];
+
+  INNER_DEPS.lovecount = ['expcount'];
 
   INNER_DEPS.gamble = ['asset'];
 
