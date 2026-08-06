@@ -2,7 +2,10 @@
 // Split from the verbatim V3.2.0 baseline (Phase 4 stage B) — bodies unchanged
 // except top-level state rewritten to ST.* (see state.js).
 import {
-  FRIEND_RELATIONS, HIGH_TRAIN, INNER_BLOOD_DIST, INNER_CATS, INNER_COMPLEX_GENERIC, INNER_DEPS, INNER_DESIRES, INNER_DIALECTS,
+  LT,
+} from './i18n.js';
+import {
+  FRIEND_RELATIONS, HIGH_TRAIN, INNER_BLOOD_DIST, INNER_CATS, INNER_CATS_ZH, INNER_COMPLEX_GENERIC, INNER_DEPS, INNER_DESIRES, INNER_DIALECTS,
   INNER_DREAMS, INNER_DREAM_CAT, INNER_FASHION_SENSE, INNER_FOOD_HATE, INNER_FOOD_LIKE, INNER_FRIEND_FREQ, INNER_FRIEND_MEET, INNER_HEALTH_BASE,
   INNER_HEALTH_MID, INNER_HOBBY_BY_VIBE, INNER_HOBBY_GENERIC, INNER_INCOME_TABLE, INNER_JP_PREFS, INNER_LIVING_MARRIED, INNER_LIVING_SINGLE, INNER_LOVER_NONE,
   INNER_LOVER_YES, INNER_LOVE_BASE, INNER_LOVE_NOTES, INNER_LOVE_NOTE_ANY, INNER_LOVE_NOTE_BI, INNER_LOVE_NOTE_F, INNER_LOVE_NOTE_M, INNER_MEMORY_BASE,
@@ -600,8 +603,8 @@ import {
     };
     const allOn = INNER_CATS.every(([k])=>ST.innerCatShow[k]);
     const ctrl = `<div class="inner-ctrl">`
-      + `<button class="pf-btn inner-allbtn" data-icat-all="${allOn?'0':'1'}">${allOn ? (en?'Hide all':'すべて隠す') : (en?'Show all':'すべて表示')}</button>`
-      + INNER_CATS.map(([k,ja,enT,cls])=>`<button class="icat-chip ${cls}${ST.innerCatShow[k]?' on':''}" data-icat="${k}">${en?enT:ja}</button>`).join('')
+      + `<button class="pf-btn inner-allbtn" data-icat-all="${allOn?'0':'1'}">${allOn ? LT('すべて隠す','Hide all','全部隐藏') : LT('すべて表示','Show all','全部显示')}</button>`
+      + INNER_CATS.map(([k,ja,enT,cls])=>`<button class="icat-chip ${cls}${ST.innerCatShow[k]?' on':''}" data-icat="${k}">${LT(ja, enT, INNER_CATS_ZH[k])}</button>`).join('')
       + `</div>`;
     const rows = [['__HEAD__', ctrl]];
     let shown = 0;
@@ -612,7 +615,7 @@ import {
       rows.push(...CAT_ROWS[k]);
     }
     if(!shown) rows.push(['__HEAD__', `<p class="notice" style="margin:8px 0 2px">${en?'Nothing is shown yet. Tap the category chips above to reveal items — only the shown categories are reflected in the magazine-page / profile-sheet prompts.':'まだ何も表示されていません。上のカテゴリボタンを押すと項目が表示されます。表示したカテゴリだけが雑誌ページ／プロフィールシートの指示文に反映されます。'}</p>`]);
-    return ['inner', en ? 'Inner / Background (only shown categories go into magazine & profile-sheet prompts)' : '内面・背景（表示中のカテゴリのみ雑誌ページ／プロフィールシートに反映）', rows];
+    return ['inner', LT('内面・背景（表示中のカテゴリのみ雑誌ページ／プロフィールシートに反映）', 'Inner / Background (only shown categories go into magazine & profile-sheet prompts)', '内在・背景（仅显示中的类别会写入杂志页／档案页提示词）'), rows];
   }
 
   // --- ✎編集用プール（新項目） ---

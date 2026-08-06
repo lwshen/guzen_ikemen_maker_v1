@@ -84,8 +84,18 @@ check('no <link> tags', links == [], str(links))
 check('one hashed module script', len(scripts) == 1
       and re.fullmatch(r'<script type="module" src="/_astro/[^"]+\.js">', scripts[0]) is not None, str(scripts))
 
-# 10. body region byte-identical
-check('body region verbatim', old_body in new_html)
+# 10. body region byte-identical, modulo the registered intentional static-HTML
+# divergences from the frozen baseline (the shim list mirrors layer 3's
+# BASELINE_SHIM approach: every entry must be a deliberate, documented change)
+BODY_SHIMS = [
+    # zh UI language added post-freeze (2026-08-05)
+    ('<option value="en">English</option>', '<option value="en">English</option><option value="zh">中文</option>'),
+]
+shimmed_body = old_body
+for a, b in BODY_SHIMS:
+    assert a in shimmed_body, f'shim source not found: {a}'
+    shimmed_body = shimmed_body.replace(a, b)
+check('body region verbatim (with registered shims)', shimmed_body in new_html)
 
 print()
 print('RESULT:', 'ALL PASS' if not fails else f'{len(fails)} FAILURES: {fails}')

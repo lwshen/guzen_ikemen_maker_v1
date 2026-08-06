@@ -3,6 +3,7 @@
 // except top-level state rewritten to ST.* (see state.js).
 import {
   captionFieldLabelMap, cardFieldLabelMap, fixedFieldLabelMap, sceneTranslations, slotLabelMap, uiCardTitles, uiText, valueTranslations,
+  valueTranslationsZh, sceneTranslationsZh, SCENE_MOD_ZH,
 } from '../data/index.js';
 import {
   renderFriendPanel,
@@ -21,36 +22,71 @@ import {
   renderAll, updateCharCounts,
 } from './ui.js';
 
-  function T(key){ return uiText[ST.uiLang][key]; }
+  function T(key){
+    const table = uiText[ST.uiLang] || uiText.ja;
+    return table[key] !== undefined ? table[key] : uiText.ja[key];
+  }
 
   function slotLabel(key, fallback){ return (slotLabelMap[key]||{})[ST.uiLang] || fallback; }
 
   function fixedLabel(key, fallback){ return (fixedFieldLabelMap[key]||{})[ST.uiLang] || fallback; }
 
+  // per-language value tables; Japanese values ARE the internal representation
+  const VALUE_I18N = { en: valueTranslations, zh: valueTranslationsZh };
+  const SCENE_I18N = { en: sceneTranslations, zh: sceneTranslationsZh };
+
+  // language pick helper for inline UI strings: LT(ja, en, zh); omit zh to fall
+  // back to Japanese. Args evaluate eagerly - literals only, never calls that
+  // consume randomness (would shift the seeded PRNG sequence).
+  function LT(ja, en, zh){
+    if(ST.uiLang==='en') return en;
+    if(ST.uiLang==='zh') return zh===undefined ? ja : zh;
+    return ja;
+  }
+
+  // scenes may carry a weather/time prefix (buildEncounterScene, sceneMods), so
+  // look the sentence up with the prefix split off and translated separately
+  function sceneDisplay(value){
+    const table = SCENE_I18N[ST.uiLang] || {};
+    const raw = String(value);
+    if(table[raw]) return table[raw];
+    for(const [modJa, modZh] of Object.entries(SCENE_MOD_ZH)){
+      if(raw.startsWith(modJa)){
+        const rest = raw.slice(modJa.length);
+        const restT = table[rest];
+        if(!restT) return raw;
+        return (ST.uiLang==='zh' ? modZh : '') + restT;
+      }
+    }
+    return raw;
+  }
+
   function displayValue(key, value){
     if(value===undefined || value===null) return value;
     if(key==='captionMode') return captionModeDisplay(value);
-    if(ST.uiLang!=='en') return value;
-    if(key==='age') return `${value} years old`;
-    if(key==='eraYear') return `${value} CE`;
-    if(key==='sceneIdea') return sceneTranslations[String(value)] || value;
-    return valueTranslations[String(value)] || value;
+    if(ST.uiLang==='ja') return value;
+    const vt = VALUE_I18N[ST.uiLang] || {};
+    if(key==='age') return ST.uiLang==='zh' ? `${value}岁` : `${value} years old`;
+    if(key==='eraYear') return ST.uiLang==='zh' ? `${value}年` : `${value} CE`;
+    if(key==='sceneIdea') return sceneDisplay(value);
+    return vt[String(value)] || value;
   }
 
   function displayOptionLabel(key, value){
     if(key==='captionMode') return captionModeDisplay(value);
     // the ランダム sentinel must never be run through per-key templates
     // (upstream showed 「ランダム歳」/「ランダム years old」 in the fixed-age select)
-    if(String(value)==='ランダム') return ST.uiLang==='en' ? (valueTranslations['ランダム'] || value) : value;
-    if(ST.uiLang!=='en'){
+    if(String(value)==='ランダム') return ST.uiLang==='ja' ? value : ((VALUE_I18N[ST.uiLang] || {})['ランダム'] || value);
+    if(ST.uiLang==='ja'){
       if(key==='age') return `${value}歳`;
       if(key==='eraYear') return eraLabel(value);
       return value;
     }
-    if(key==='age') return `${value} years old`;
-    if(key==='eraYear') return `${value} CE`;
-    if(key==='sceneIdea') return sceneTranslations[String(value)] || value;
-    return valueTranslations[String(value)] || value;
+    const vt = VALUE_I18N[ST.uiLang] || {};
+    if(key==='age') return ST.uiLang==='zh' ? `${value}岁` : `${value} years old`;
+    if(key==='eraYear') return ST.uiLang==='zh' ? `${value}年` : `${value} CE`;
+    if(key==='sceneIdea') return sceneDisplay(value);
+    return vt[String(value)] || value;
   }
 
   // post-freeze fix: eight selects ship hardcoded static <option> labels that
@@ -64,7 +100,8 @@ import {
       if(!sel) continue;
       for(const o of sel.options){
         if(!o.dataset.ja) o.dataset.ja = o.textContent;
-        o.textContent = ST.uiLang==='en' ? (valueTranslations[o.dataset.ja] || valueTranslations[o.value] || o.dataset.ja) : o.dataset.ja;
+        const vt = VALUE_I18N[ST.uiLang];
+        o.textContent = vt ? (vt[o.dataset.ja] || vt[o.value] || o.dataset.ja) : o.dataset.ja;
       }
     }
   }
@@ -91,15 +128,26 @@ import {
       ISTJ:'sincere and steady', ISFJ:'gentle and attentive', ESTJ:'practical and dependable', ESFJ:'friendly and cooperative',
       ISTP:'quiet and hands-on', ISFP:'soft and natural', ESTP:'action-oriented and upbeat', ESFP:'charismatic and approachable'
     };
+    const zh = {
+      INTJ:'有战略眼光、独立心强', INTP:'逻辑性强、求知欲旺盛', ENTJ:'果断、天生领导气质', ENTP:'点子多、喜欢新刺激',
+      INFJ:'理想主义、思虑周全', INFP:'感受力强、自有节奏', ENFJ:'会照顾人、善于社交', ENFP:'开朗自由的气氛担当',
+      ISTJ:'诚实可靠、稳重', ISFJ:'温和、体贴入微', ESTJ:'务实、值得信赖', ESFJ:'协调性高、平易近人',
+      ISTP:'寡言、动手能力强', ISFP:'自然随性、温柔', ESTP:'行动派、自带节奏', ESFP:'华丽、自来熟'
+    };
+    if(english==='zh') return zh[code] || code;
     return (english?en:ja)[code] || code;
   }
 
   function mbtiDisplay(c){
     if(!c?.mbti) return '';
-    return `${c.mbti} / ${mbtiDescription(c.mbti, ST.uiLang==='en')}`;
+    return `${c.mbti} / ${mbtiDescription(c.mbti, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en')}`;
   }
 
   function captionModeDisplay(mode){
+    if(ST.uiLang==='zh'){
+      const mapZh = {'表記する':'显示规格文字','画像下部に1行で表記':'图像底部单行标注','カード風ミニプロフィールを下部に表示':'底部显示卡片式迷你档案','スタイリッシュなタグ型で表示':'时尚标签式显示','表記しない':'不显示文字'};
+      return mapZh[mode] || '不显示文字';
+    }
     if(ST.uiLang!=='en') return mode || '表記しない';
     const map = {'表記する':'Show spec text','画像下部に1行で表記':'One-line footer text','カード風ミニプロフィールを下部に表示':'Mini profile card at the bottom','スタイリッシュなタグ型で表示':'Stylish tag-style display','表記しない':'No text overlay'};
     return map[mode] || 'No text overlay';
@@ -108,7 +156,7 @@ import {
   function getCaptionFieldLabelsArray(c, english=false){
     const labels = [];
     const fields = c?.captionFields || {name:true,era:true,height:true,weight:true,footSize:true,mbti:true};
-    Object.entries(captionFieldLabelMap).forEach(([k,map])=>{ if(fields[k]) labels.push(english?map.en:map.ja); });
+    Object.entries(captionFieldLabelMap).forEach(([k,map])=>{ if(fields[k]) labels.push(english==='zh' ? (map.zh ?? map.ja) : english?map.en:map.ja); });
     return labels;
   }
 
@@ -219,7 +267,7 @@ import {
     document.querySelectorAll('[data-card-label]').forEach(el=>{
       const key = el.dataset.cardLabel;
       const map = cardFieldLabelMap[key];
-      if(map) el.textContent = ST.uiLang==='en' ? map.en : map.ja;
+      if(map) el.textContent = LT(map.ja, map.en, map.zh);
     });
     const i=document.getElementById('initialCardFieldsLabel'); if(i) i.textContent = ST.uiLang==='en' ? 'Card information fields' : 'カード内表示項目';
     const m=document.getElementById('manualCardFieldsLabel'); if(m) m.textContent = ST.uiLang==='en' ? 'Card information fields' : 'カード内表示項目';
@@ -278,6 +326,7 @@ import {
 
   function buildBodyHairSummary(c, english=false){
     if(c && c.bodyHairMode === '自然な表現（簡潔）'){
+      if(english==='zh') return '体毛按年龄・体质相应的自然范围整体低调描绘（既不过度无毛化，也不过度刻画）。';
       return english
         ? 'Body hair: a natural, age-appropriate amount overall, kept subtle — neither artificially hairless nor excessive.'
         : '体毛は年齢・体質相応の自然な範囲で、全体に控えめに描く（過度な無毛化も過剰な描写もしない）。';
@@ -285,6 +334,10 @@ import {
     if(!c) return '';
     const partsJa = [`体毛は全体として${c.bodyHairOverall}`];
     const areasJa = [['胸毛',c.chestHair],['腹毛',c.abdominalHair],['へそ下',c.lowerAbdomenHair],['腕毛',c.armHair],['すね毛',c.shinHair],['もも毛',c.thighHair],['脇毛',c.armpitHair],['手の甲・指毛',c.handFingerHair],['足の甲・指毛',c.footToeHair],['背中',c.backHair]];
+    if(english==='zh'){
+      const partZh = {'胸毛':'胸毛','腹毛':'腹毛','へそ下':'脐下','腕毛':'手臂毛','すね毛':'小腿毛','もも毛':'大腿毛','脇毛':'腋毛','手の甲・指毛':'手背・手指毛','足の甲・指毛':'脚背・脚趾毛','背中':'背部'};
+      return `体毛整体${displayValue('bodyHairOverall',c.bodyHairOverall)}。${areasJa.map(([k,v])=>`${partZh[k]||k}为${displayValue('bodyHairLevel',v)}`).join('、')}。体毛表现为非性向，作为成年男性的自然身体特征来描绘。`;
+    }
     if(!english) return `${partsJa[0]}。${areasJa.map(([k,v])=>`${k}は${v}`).join('、')}。体毛表現は非性的で、成人男性の自然な身体特徴として描写する。`;
     const areasEn = [['chest hair',c.chestHair],['abdominal hair',c.abdominalHair],['lower abdomen hair',c.lowerAbdomenHair],['arm hair',c.armHair],['shin hair',c.shinHair],['thigh hair',c.thighHair],['armpit hair',c.armpitHair],['hand and finger hair',c.handFingerHair],['foot and toe hair',c.footToeHair],['back hair',c.backHair]];
     return `Body hair overall is ${displayValue('bodyHairOverall',c.bodyHairOverall)}. ${areasEn.map(([k,v])=>`${k}: ${displayValue('bodyHairLevel',v)}`).join('; ')}. Depict body hair non-sexually as a natural adult male body feature.`;
@@ -294,7 +347,7 @@ import {
     document.querySelectorAll('[data-caption-label]').forEach(el=>{
       const key = el.dataset.captionLabel;
       const map = captionFieldLabelMap[key];
-      if(map) el.textContent = ST.uiLang==='en' ? map.en : map.ja;
+      if(map) el.textContent = LT(map.ja, map.en, map.zh);
     });
     const i=document.getElementById('initialCaptionFieldsLabel'); if(i) i.textContent = ST.uiLang==='en' ? 'Image text fields' : '画像内に表示する項目';
     const m=document.getElementById('manualCaptionFieldsLabel'); if(m) m.textContent = ST.uiLang==='en' ? 'Image text fields' : '画像内に表示する項目';
@@ -302,7 +355,7 @@ import {
 
   function setUiCardTitles(){
     document.querySelectorAll('[data-ui-card]').forEach(card=>{
-      const m=uiCardTitles[card.dataset.uiCard]; const h=card.querySelector('h3'); if(m&&h) h.textContent=ST.uiLang==='en'?m.en:m.ja;
+      const m=uiCardTitles[card.dataset.uiCard]; const h=card.querySelector('h3'); if(m&&h) h.textContent=LT(m.ja, m.en, m.zh);
     });
   }
 
@@ -325,7 +378,7 @@ import {
   }
 
   function applyUiLanguage(){
-    document.documentElement.lang = ST.uiLang==='ja' ? 'ja' : 'en';
+    document.documentElement.lang = ST.uiLang==='ja' ? 'ja' : ST.uiLang==='zh' ? 'zh' : 'en';
     document.querySelector('.badge').textContent = 'GUZEN SLOT SYSTEM / V3.2.0';
     document.querySelector('.title').textContent = 'Guzen Ikemen Maker V3.2.0';
     document.querySelector('.subtitle').textContent = T('subtitle');
@@ -401,7 +454,7 @@ import {
     const setPill=document.querySelector('#tab-settings .section-title .pill'); if(setPill) setPill.textContent=T('settingsPill');
     const setNotice=document.querySelector('#tab-settings .notice'); if(setNotice) setNotice.textContent=T('settingsNotice');
     Object.entries(T('fieldLabels')).forEach(([id,label])=>setFieldLabel(id,label));
-    const makerLabel=document.getElementById('makerLanguageLabel'); if(makerLabel) makerLabel.textContent = ST.uiLang==='ja' ? 'メーカー言語 / App Language' : 'App Language / メーカー言語';
+    const makerLabel=document.getElementById('makerLanguageLabel'); if(makerLabel) makerLabel.textContent = ST.uiLang==='ja' ? 'メーカー言語 / App Language' : ST.uiLang==='zh' ? 'App Language / 界面语言' : 'App Language / メーカー言語';
     setCaptionCheckboxLabels();
     setCardCheckboxLabels();
     setUiCardTitles();
@@ -414,6 +467,7 @@ import {
 
 export {
   T,
+  LT,
   slotLabel,
   fixedLabel,
   displayValue,

@@ -2,7 +2,7 @@
 // Split from the verbatim V3.2.0 baseline (Phase 4 stage B) — bodies unchanged
 // except top-level state rewritten to ST.* (see state.js).
 import {
-  EYE_MIGRATION, INNER_CATS, PROMPT_PANES, TOE_CURLS, pools,
+  ERA_LABEL_ZH, EYE_MIGRATION, INNER_CATS, PROMPT_PANES, TOE_CURLS, pools,
 } from '../data/index.js';
 import {
   STORAGE_KEY, ensureProfileMeasurements, profileMeasurementCLabel, weighted,
@@ -15,9 +15,10 @@ import {
   accWorkNote, bioLine, buildBioHook, calcFootWidth, catchphrase, chooseEyeShape, chooseEyebrow, chooseEyelash,
   chooseEyelid, chooseFaceExtras, chooseFootFeature, chooseFrameAxes, chooseHipShape, chooseSoleType, chooseSoleWrinkle, chooseTeethAlign,
   chooseTeethColor, chooseToeLine, eraLabel, eraProfile, generateSportsHistory, getInitial, headCount, muscleLine,
-  muscleSummary, nameKana, sportsHistoryText, underwearDesc,
+  muscleDevLineZh, muscleSummary, nameKana, sportsHistoryText, underwearDesc,
 } from './generate.js';
 import {
+  LT,
   T, buildBodyHairSummary, captionModeDisplay, cardEffectByRarity, displayOptionLabel, displayValue, getCaptionFieldLabelsArray, mbtiDescription,
   mbtiDisplay, slotLabel, syncCardSettingsVisibility, writeCaptionFields, writeCardFields,
 } from './i18n.js';
@@ -35,7 +36,7 @@ import {
 
   /* ===== V3.1 線画プレビュー（密テンプレート方式・髪なし） ===== */
   function renderProfile(){
-    if(!ST.current){ const ib0=document.getElementById('innerAboveTabs'); if(ib0) ib0.innerHTML=''; els.profileView.innerHTML=`<p class="notice">${ST.uiLang==='ja'?'まだ結果がありません。':'No result yet.'}</p>`; els.promptBox.value=''; document.getElementById('outfitPromptBox').value=''; document.getElementById('scenePromptBox').value=''; return; }
+    if(!ST.current){ const ib0=document.getElementById('innerAboveTabs'); if(ib0) ib0.innerHTML=''; els.profileView.innerHTML=`<p class="notice">${LT('まだ結果がありません。', 'No result yet.', '还没有结果。')}</p>`; els.promptBox.value=''; document.getElementById('outfitPromptBox').value=''; document.getElementById('scenePromptBox').value=''; return; }
     if(!ST.current.personality && ST.current.mbti) ST.current.personality = mbtiDescription(ST.current.mbti, false);
     migrateUniformFields(ST.current);
     if(ST.current.cardWearMode === '提案服装') ST.current.cardWearMode = '職業服装';
@@ -82,56 +83,56 @@ import {
       ST.current._limbFootAdj = true;
     }
     const L=T('rows');
-    const mainWear = ST.uiLang==='en' ? `${underwearDesc(ST.current, true)} only` : `${underwearDesc(ST.current, false)}のみ`;
+    const mainWear = ST.uiLang==='en' ? `${underwearDesc(ST.current, true)} only` : ST.uiLang==='zh' ? `仅穿${underwearDesc(ST.current, 'zh')}` : `${underwearDesc(ST.current, false)}のみ`;
     const sections = [
-      ['basic', L.basic, [[L.name,ST.current.name,'name'],[L.age,displayValue('age',ST.current.age),'age'],[L.era, ST.uiLang==='en' ? `${ST.current.eraYear || '2026'} (${eraProfile(ST.current.eraYear || '2026').labelEn})${ST.current.season ? ` / ${displayValue('season', ST.current.season) || ST.current.season}` : ''}` : `${eraLabel(ST.current.eraYear)}（${eraProfile(ST.current.eraYear || '2026').labelJa}）${ST.current.season ? `・${ST.current.season}` : ''}`,'eraYear'],[L.natEth,`${displayValue('nationality',ST.current.nationality)} / ${displayValue('ethnicity',ST.current.ethnicity)}`,'nationality,ethnicity'],[L.roleVibe,`${displayValue('role',ST.current.role)} / ${displayValue('vibe',ST.current.vibe)}${ST.current.occupationMode ? `（${ST.uiLang==='en' ? displayValue('occupationMode', ST.current.occupationMode) || ST.current.occupationMode : ST.current.occupationMode}）` : ''}`,'role,vibe'],[ST.uiLang==='en' ? 'Sports Background' : '経験競技スポーツ', sportsHistoryText(ST.current, ST.uiLang==='en'), 'sportsHistory']].concat(ST.current.groupSetting ? [[L.group, `${displayValue('groupSetting',ST.current.groupSetting) || ST.current.groupSetting} / ${displayValue('groupPosition',ST.current.groupPosition) || ST.current.groupPosition}`]] : []).concat(ST.current.friendOf ? [[L.friendRow, friendRelationText(ST.current, ST.uiLang==='en')]] : []).concat([[L.mbti,`<span class="mini-badge">${mbtiDisplay(ST.current)}</span>`,'mbti']])],
+      ['basic', L.basic, [[L.name,ST.current.name,'name'],[L.age,displayValue('age',ST.current.age),'age'],[L.era, ST.uiLang==='en' ? `${ST.current.eraYear || '2026'} (${eraProfile(ST.current.eraYear || '2026').labelEn})${ST.current.season ? ` / ${displayValue('season', ST.current.season) || ST.current.season}` : ''}` : ST.uiLang==='zh' ? `${ST.current.eraYear || '2026'}年（${ERA_LABEL_ZH[eraProfile(ST.current.eraYear || '2026').labelJa] || eraProfile(ST.current.eraYear || '2026').labelJa}）${ST.current.season ? `・${displayValue('season', ST.current.season)}` : ''}` : `${eraLabel(ST.current.eraYear)}（${eraProfile(ST.current.eraYear || '2026').labelJa}）${ST.current.season ? `・${ST.current.season}` : ''}`,'eraYear'],[L.natEth,`${displayValue('nationality',ST.current.nationality)} / ${displayValue('ethnicity',ST.current.ethnicity)}`,'nationality,ethnicity'],[L.roleVibe,`${displayValue('role',ST.current.role)} / ${displayValue('vibe',ST.current.vibe)}${ST.current.occupationMode ? `（${ST.uiLang==='en' ? displayValue('occupationMode', ST.current.occupationMode) || ST.current.occupationMode : ST.current.occupationMode}）` : ''}`,'role,vibe'],[LT('経験競技スポーツ', 'Sports Background', '运动经历'), sportsHistoryText(ST.current, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en'), 'sportsHistory']].concat(ST.current.groupSetting ? [[L.group, `${displayValue('groupSetting',ST.current.groupSetting) || ST.current.groupSetting} / ${displayValue('groupPosition',ST.current.groupPosition) || ST.current.groupPosition}`]] : []).concat(ST.current.friendOf ? [[L.friendRow, friendRelationText(ST.current, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en')]] : []).concat([[L.mbti,`<span class="mini-badge">${mbtiDisplay(ST.current)}</span>`,'mbti']])],
       buildInnerSection(ST.current, L),
-      ['face', L.faceSection, [[L.face,`${displayValue('facePreset',ST.current.facePreset)} / ${displayValue('ageAppearance',ST.current.ageAppearance)}`,'facePreset,ageAppearance'],[L.faceLine,displayValue('faceLine',ST.current.faceLine),'faceLine'],[slotLabel('eyebrow','眉'),`${displayValue('eyebrow',ST.current.eyebrow||'標準的なゆるいアーチ眉')}／${displayValue('eyebrowDensity',ST.current.eyebrowDensity||'標準的な濃さの眉')}`,'eyebrow,eyebrowDensity'],[ST.uiLang==='en' ? 'Eyelid / Shape / Impression' : 'まぶた / 目の形 / 印象',`${displayValue('eyelid',ST.current.eyelid||'末広二重')}／${displayValue('eyeShape',ST.current.eyeShape||'標準的な目の形')}／${displayValue('eyes',ST.current.eyes)}`,'eyelid,eyeShape,eyes'],[ST.uiLang==='en' ? 'Eyelashes / Tear Bags' : 'まつ毛 / 涙袋',`${displayValue('eyelash',ST.current.eyelash||'標準的な長さのまつ毛')}／${displayValue('tearBags',ST.current.tearBags)}`,'eyelash,tearBags'],[L.nose,displayValue('nose',ST.current.nose),'nose'],[slotLabel('mouth','基本表情'),displayValue('mouth',ST.current.mouth),'mouth'],[ST.uiLang==='en' ? 'Teeth Align / Color' : '歯並び / 歯の色', `${displayValue('teethAlign',ST.current.teethAlign||'ほぼ整った歯列')} / ${displayValue('teethColor',ST.current.teethColor||'自然な白さの歯')}`, 'teethAlign,teethColor'],[slotLabel('lips','唇の形状'),displayValue('lips',ST.current.lips || '標準的な厚さの唇'),'lips'],[slotLabel('mouthPos','口の位置'),displayValue('mouthPos',ST.current.mouthPos || '標準的な位置・大きさの口'),'mouthPos'],[slotLabel('faceSpacing','パーツ配置'),displayValue('faceSpacing',ST.current.faceSpacing || '標準的な配置'),'faceSpacing'],[slotLabel('faceRatio','目鼻口比率'),displayValue('faceRatio',ST.current.faceRatio || '標準的なバランスの比率'),'faceRatio'],[slotLabel('faceAsym','顔の左右差'),displayValue('faceAsym',ST.current.faceAsym || 'ほぼ対称（ごく自然な左右差）'),'faceAsym'],[ST.uiLang==='en' ? 'Chin / Jaw' : '顎先 / エラ',`${displayValue('jawChin',ST.current.jawChin||'標準的な顎先')}／${displayValue('jawAngle',ST.current.jawAngle||'ほどよく張ったエラ')}`,'jawChin,jawAngle'],[ST.uiLang==='en' ? 'Ears / Brow' : '耳 / 彫り',`${displayValue('ear',ST.current.ear||'標準的な耳')}／${displayValue('browRidge',ST.current.browRidge||'彫りは標準的')}`,'ear,browRidge'],[ST.uiLang==='en' ? 'Forehead / Hairline' : '額 / 生え際',`${displayValue('forehead',ST.current.forehead||'標準的な広さの額')}／${displayValue('hairline',ST.current.hairline||'直線的な生え際')}`,'forehead,hairline'],[ST.uiLang==='en' ? 'Cheeks / Dimples' : '頬 / えくぼ',`${displayValue('cheek',ST.current.cheek||'標準的な頬')}／${displayValue('dimple',ST.current.dimple||'えくぼなし')}`,'cheek,dimple'],[ST.uiLang==='en' ? 'Mole / Under-eye' : 'ほくろ / クマ',`${displayValue('mole',ST.current.mole||'ほくろなし')}／${displayValue('eyeBags',ST.current.eyeBags||'クマなし')}`,'mole,eyeBags'],[ST.uiLang==='en' ? 'Throat / Lip Tone' : 'のどぼとけ / 唇の血色',`${displayValue('adamsApple',ST.current.adamsApple||'標準的なのどぼとけ')}／${displayValue('lipTone',ST.current.lipTone||'標準的な血色の唇')}`,'adamsApple,lipTone'],[L.skin,displayValue('skin',ST.current.skin),'skin'],[ST.uiLang==='en' ? 'Skin Details' : '肌の特徴',`${displayValue('skinDetail',ST.current.skinDetail || 'なし（クリアな肌）')}${ST.current.skinDetail2 && ST.current.skinDetail2 !== 'なし（クリアな肌）' ? `／${displayValue('skinDetail',ST.current.skinDetail2)}` : ''}`,'skinDetail,skinDetail2'],[L.facialHair,`${displayValue('facialHair',ST.current.facialHair)}${ST.current.facialHair!=='なし' ? `（${displayValue('facialHairGroom',ST.current.facialHairGroom||'自然に整えている')}）` : ''}`,'facialHair,facialHairGroom'],[L.glasses, displayValue('glasses', ST.current.glasses || 'なし'),'glasses'],[L.hair,`${displayValue('hairColor',ST.current.hairColor)}・${displayValue('hairStyle',ST.current.hairStyle)}（${displayValue('hairTexture',ST.current.hairTexture||'直毛')}）`,'hairColor,hairStyle,hairTexture'],[ST.uiLang==='en' ? 'Bangs / Styling / Volume' : '前髪・整髪・毛量',`${displayValue('bangs',ST.current.bangs||'指定なし')}／${displayValue('hairFinish',ST.current.hairFinish||'指定なし')}／${displayValue('hairVolume',ST.current.hairVolume||'標準的な毛量')}`,'bangs,hairFinish,hairVolume']]],
-      ['body', L.bodySection, [[L.hw,`${ST.current.height} / ${ST.current.weight}`,'height,weight'],[L.body,displayValue('bodyType',ST.current.bodyType),'bodyType'],[ST.uiLang==='en' ? 'Physique Guide' : '体格の目安', `${ST.uiLang==='en' ? `about ${headCount(ST.current)} heads tall` : `約${headCount(ST.current)}頭身`}`],[ST.uiLang==='en' ? 'Shoulders' : '肩幅', displayValue('shoulderWidth', ST.current.shoulderWidth || '普通'), 'shoulderWidth'],[ST.uiLang==='en' ? 'Waist Pos / Legs / Arms' : '腰位置 / 脚長 / 腕長', `${displayValue('waistPos',ST.current.waistPos||'標準')} / ${displayValue('legLength',ST.current.legLength||'標準')} / ${displayValue('armLength',ST.current.armLength||'標準')}`, 'waistPos,legLength,armLength'],[ST.uiLang==='en' ? 'Frame / Neck / Limbs' : '骨格 / 首 / 手足サイズ感', `${displayValue('frame',ST.current.frame||'標準')} / ${displayValue('neckLength',ST.current.neckLength||'標準')} / ${displayValue('limbSize',ST.current.limbSize||'標準')}`, 'frame,neckLength,limbSize'],[ST.uiLang==='en' ? 'Hip Shape' : '臀部の形状', displayValue('hipShape', ST.current.hipShape || '標準的な丸みの臀部'), 'hipShape'],[ST.uiLang==='en' ? 'Muscle Development' : '発達部位', muscleSummary(ST.current, ST.uiLang==='en')],[ST.uiLang==='en' ? 'Training Habit' : '筋トレ習慣', displayValue('trainingLevel', ST.current.trainingLevel || 'なし'), 'trainingLevel'],[ST.uiLang==='en' ? 'Muscle Development' : '発達部位', (muscleLine(ST.current, false) || 'なし（競技経験の影響なし）').replace(/^発達部位：/,'').split('。')[0], 'muscleTone'],[L.foot,ST.current.footSize,'footSize'],[ST.uiLang==='en' ? 'Foot Width' : 'ワイズ（足幅）', displayValue('footWidth', ST.current.footWidth || calcFootWidth(ST.current)), 'footWidth'],[L.footShape,displayValue('footShape',ST.current.footShape),'footShape'],[ST.uiLang==='en' ? 'Foot Traits' : '足の特徴', displayValue('footFeature', ST.current.footFeature || '特徴なし・整った足'), 'footFeature'],[ST.uiLang==='en' ? 'Sole Type' : '足裏タイプ', displayValue('soleType', ST.current.soleType || '均整なめらか型'), 'soleType'],[ST.uiLang==='en' ? 'Toe Alignment' : '指の並び・向き', displayValue('toeLine', ST.current.toeLine || 'まっすぐ前を向いたそろった並び'), 'toeLine'],[ST.uiLang==='en' ? 'Creases / Curl' : 'しわ・反り', `${displayValue('soleWrinkle',ST.current.soleWrinkle || '標準的なしわ')}／${displayValue('toeCurl',ST.current.toeCurl || '指がフラットに伸びた状態')}`, 'soleWrinkle,toeCurl']]],
-      ['bodyhair', L.bodyHairSection, [[L.bodyHair, buildBodyHairSummary(ST.current, ST.uiLang==='en'),'bodyHairAll']]],
+      ['face', L.faceSection, [[L.face,`${displayValue('facePreset',ST.current.facePreset)} / ${displayValue('ageAppearance',ST.current.ageAppearance)}`,'facePreset,ageAppearance'],[L.faceLine,displayValue('faceLine',ST.current.faceLine),'faceLine'],[slotLabel('eyebrow','眉'),`${displayValue('eyebrow',ST.current.eyebrow||'標準的なゆるいアーチ眉')}／${displayValue('eyebrowDensity',ST.current.eyebrowDensity||'標準的な濃さの眉')}`,'eyebrow,eyebrowDensity'],[LT('まぶた / 目の形 / 印象', 'Eyelid / Shape / Impression', '眼睑 / 眼形 / 印象'),`${displayValue('eyelid',ST.current.eyelid||'末広二重')}／${displayValue('eyeShape',ST.current.eyeShape||'標準的な目の形')}／${displayValue('eyes',ST.current.eyes)}`,'eyelid,eyeShape,eyes'],[LT('まつ毛 / 涙袋', 'Eyelashes / Tear Bags', '睫毛 / 卧蚕'),`${displayValue('eyelash',ST.current.eyelash||'標準的な長さのまつ毛')}／${displayValue('tearBags',ST.current.tearBags)}`,'eyelash,tearBags'],[L.nose,displayValue('nose',ST.current.nose),'nose'],[slotLabel('mouth','基本表情'),displayValue('mouth',ST.current.mouth),'mouth'],[LT('歯並び / 歯の色', 'Teeth Align / Color', '牙齿排列 / 颜色'), `${displayValue('teethAlign',ST.current.teethAlign||'ほぼ整った歯列')} / ${displayValue('teethColor',ST.current.teethColor||'自然な白さの歯')}`, 'teethAlign,teethColor'],[slotLabel('lips','唇の形状'),displayValue('lips',ST.current.lips || '標準的な厚さの唇'),'lips'],[slotLabel('mouthPos','口の位置'),displayValue('mouthPos',ST.current.mouthPos || '標準的な位置・大きさの口'),'mouthPos'],[slotLabel('faceSpacing','パーツ配置'),displayValue('faceSpacing',ST.current.faceSpacing || '標準的な配置'),'faceSpacing'],[slotLabel('faceRatio','目鼻口比率'),displayValue('faceRatio',ST.current.faceRatio || '標準的なバランスの比率'),'faceRatio'],[slotLabel('faceAsym','顔の左右差'),displayValue('faceAsym',ST.current.faceAsym || 'ほぼ対称（ごく自然な左右差）'),'faceAsym'],[LT('顎先 / エラ', 'Chin / Jaw', '下巴 / 下颌角'),`${displayValue('jawChin',ST.current.jawChin||'標準的な顎先')}／${displayValue('jawAngle',ST.current.jawAngle||'ほどよく張ったエラ')}`,'jawChin,jawAngle'],[LT('耳 / 彫り', 'Ears / Brow', '耳朵 / 轮廓深度'),`${displayValue('ear',ST.current.ear||'標準的な耳')}／${displayValue('browRidge',ST.current.browRidge||'彫りは標準的')}`,'ear,browRidge'],[LT('額 / 生え際', 'Forehead / Hairline', '额头 / 发际线'),`${displayValue('forehead',ST.current.forehead||'標準的な広さの額')}／${displayValue('hairline',ST.current.hairline||'直線的な生え際')}`,'forehead,hairline'],[LT('頬 / えくぼ', 'Cheeks / Dimples', '脸颊 / 酒窝'),`${displayValue('cheek',ST.current.cheek||'標準的な頬')}／${displayValue('dimple',ST.current.dimple||'えくぼなし')}`,'cheek,dimple'],[LT('ほくろ / クマ', 'Mole / Under-eye', '痣 / 黑眼圈'),`${displayValue('mole',ST.current.mole||'ほくろなし')}／${displayValue('eyeBags',ST.current.eyeBags||'クマなし')}`,'mole,eyeBags'],[LT('のどぼとけ / 唇の血色', 'Throat / Lip Tone', '喉结 / 唇色'),`${displayValue('adamsApple',ST.current.adamsApple||'標準的なのどぼとけ')}／${displayValue('lipTone',ST.current.lipTone||'標準的な血色の唇')}`,'adamsApple,lipTone'],[L.skin,displayValue('skin',ST.current.skin),'skin'],[LT('肌の特徴', 'Skin Details', '皮肤特征'),`${displayValue('skinDetail',ST.current.skinDetail || 'なし（クリアな肌）')}${ST.current.skinDetail2 && ST.current.skinDetail2 !== 'なし（クリアな肌）' ? `／${displayValue('skinDetail',ST.current.skinDetail2)}` : ''}`,'skinDetail,skinDetail2'],[L.facialHair,`${displayValue('facialHair',ST.current.facialHair)}${ST.current.facialHair!=='なし' ? `（${displayValue('facialHairGroom',ST.current.facialHairGroom||'自然に整えている')}）` : ''}`,'facialHair,facialHairGroom'],[L.glasses, displayValue('glasses', ST.current.glasses || 'なし'),'glasses'],[L.hair,`${displayValue('hairColor',ST.current.hairColor)}・${displayValue('hairStyle',ST.current.hairStyle)}（${displayValue('hairTexture',ST.current.hairTexture||'直毛')}）`,'hairColor,hairStyle,hairTexture'],[LT('前髪・整髪・毛量', 'Bangs / Styling / Volume', '刘海・造型・发量'),`${displayValue('bangs',ST.current.bangs||'指定なし')}／${displayValue('hairFinish',ST.current.hairFinish||'指定なし')}／${displayValue('hairVolume',ST.current.hairVolume||'標準的な毛量')}`,'bangs,hairFinish,hairVolume']]],
+      ['body', L.bodySection, [[L.hw,`${ST.current.height} / ${ST.current.weight}`,'height,weight'],[L.body,displayValue('bodyType',ST.current.bodyType),'bodyType'],[LT('体格の目安', 'Physique Guide', '体格参考'), `${LT(`約${headCount(ST.current)}頭身`, `about ${headCount(ST.current)} heads tall`, `约${headCount(ST.current)}头身`)}`],[LT('肩幅', 'Shoulders', '肩宽'), displayValue('shoulderWidth', ST.current.shoulderWidth || '普通'), 'shoulderWidth'],[LT('腰位置 / 脚長 / 腕長', 'Waist Pos / Legs / Arms', '腰线 / 腿长 / 臂长'), `${displayValue('waistPos',ST.current.waistPos||'標準')} / ${displayValue('legLength',ST.current.legLength||'標準')} / ${displayValue('armLength',ST.current.armLength||'標準')}`, 'waistPos,legLength,armLength'],[LT('骨格 / 首 / 手足サイズ感', 'Frame / Neck / Limbs', '骨架 / 脖颈 / 手脚大小'), `${displayValue('frame',ST.current.frame||'標準')} / ${displayValue('neckLength',ST.current.neckLength||'標準')} / ${displayValue('limbSize',ST.current.limbSize||'標準')}`, 'frame,neckLength,limbSize'],[LT('臀部の形状', 'Hip Shape', '臀形'), displayValue('hipShape', ST.current.hipShape || '標準的な丸みの臀部'), 'hipShape'],[LT('発達部位', 'Muscle Development', '肌肉发达部位'), muscleSummary(ST.current, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en')],[LT('筋トレ習慣', 'Training Habit', '健身习惯'), displayValue('trainingLevel', ST.current.trainingLevel || 'なし'), 'trainingLevel'],[LT('発達部位', 'Muscle Development', '肌肉发达部位'), ST.uiLang==='zh' ? muscleDevLineZh(ST.current) : (muscleLine(ST.current, false) || 'なし（競技経験の影響なし）').replace(/^発達部位：/,'').split('。')[0], 'muscleTone'],[L.foot,ST.current.footSize,'footSize'],[LT('ワイズ（足幅）', 'Foot Width', '足宽（楦宽）'), displayValue('footWidth', ST.current.footWidth || calcFootWidth(ST.current)), 'footWidth'],[L.footShape,displayValue('footShape',ST.current.footShape),'footShape'],[LT('足の特徴', 'Foot Traits', '足部特征'), displayValue('footFeature', ST.current.footFeature || '特徴なし・整った足'), 'footFeature'],[LT('足裏タイプ', 'Sole Type', '脚底类型'), displayValue('soleType', ST.current.soleType || '均整なめらか型'), 'soleType'],[LT('指の並び・向き', 'Toe Alignment', '脚趾排列・朝向'), displayValue('toeLine', ST.current.toeLine || 'まっすぐ前を向いたそろった並び'), 'toeLine'],[LT('しわ・反り', 'Creases / Curl', '纹路・弯曲'), `${displayValue('soleWrinkle',ST.current.soleWrinkle || '標準的なしわ')}／${displayValue('toeCurl',ST.current.toeCurl || '指がフラットに伸びた状態')}`, 'soleWrinkle,toeCurl']]],
+      ['bodyhair', L.bodyHairSection, [[L.bodyHair, buildBodyHairSummary(ST.current, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en'),'bodyHairAll']]],
       ['main', L.mainSection, [[L.main, mainWear, (ST.current.mainWearMode||'ボクサーパンツのみ')!=='時代に合った下着の種類' ? 'baseWearType,boxerColor,boxerBrand' : 'underwearType,underwearColor,boxerBrand']]],
       ['outfit', L.outfitSection, (()=>{
         const en2 = ST.uiLang==='en';
-        const B=(b)=>b?`${b}・`:'';
+        const B=(b)=>b?`${displayValue('outfitBrand',b)}・`:'';
         const isSuit = ['紺スーツ','黒スーツ','グレースーツ','三つ揃いスーツ'].includes(ST.current.outfitType);
         const rows=[[L.weekdayOutfit,`${displayValue('outfitBrand',ST.current.outfitBrand)}・${displayValue('outfitType',ST.current.outfitType)}`,'outfitType']];
         rows.push(...buildUniformEditRows(ST.current, L));
         if(!ST.current.workUniform){
-          rows.push([en2?'Work Outer':'上着（平日）', `${ST.current.coat?`${B(ST.current.outerBrand)}${ST.current.coat}／中は`:''}${ST.current.jacket||'指定なし'}`, 'jacket']);
-          rows.push([en2?'Work Top':'トップス（平日）', `${B(ST.current.topBrand)}${ST.current.top}`, 'top']);
-          rows.push([en2?'Work Bottom':'ボトムス（平日）', `${B(ST.current.bottomBrand)}${ST.current.bottom}`, 'bottom']);
-          rows.push([en2?'Work Shoes':'靴（平日）', `${B(ST.current.shoesBrand)}${ST.current.shoes}`, 'shoes']);
+          rows.push([LT('上着（平日）','Work Outer','外套（工作日）'), `${ST.current.coat?`${B(ST.current.outerBrand)}${displayValue('coat',ST.current.coat)}${LT('／中は',' / inner: ','／内搭')}`:''}${displayValue('jacket',ST.current.jacket||'指定なし')}`, 'jacket']);
+          rows.push([LT('トップス（平日）','Work Top','上装（工作日）'), `${B(ST.current.topBrand)}${displayValue('top',ST.current.top)}`, 'top']);
+          rows.push([LT('ボトムス（平日）','Work Bottom','下装（工作日）'), `${B(ST.current.bottomBrand)}${displayValue('bottom',ST.current.bottom)}`, 'bottom']);
+          rows.push([LT('靴（平日）','Work Shoes','鞋子（工作日）'), `${B(ST.current.shoesBrand)}${displayValue('shoes',ST.current.shoes)}`, 'shoes']);
           if(isSuit){
-            rows.push([en2?'Tie':'ネクタイ', ST.current.tie||'ノータイ', 'tie']);
-            rows.push([en2?'Suit Silhouette':'シルエット', ST.current.suitSilhouette||'—', 'suitSilhouette']);
+            rows.push([LT('ネクタイ','Tie','领带'), displayValue('tie', ST.current.tie||'ノータイ'), 'tie']);
+            rows.push([LT('シルエット','Suit Silhouette','西装廓形'), displayValue('suitSilhouette', ST.current.suitSilhouette||'—'), 'suitSilhouette']);
           }
         }
         rows.push([L.sock,`${displayValue('sockBrand',ST.current.sockBrand)}・${displayValue('sockType',ST.current.sockType)}・${displayValue('sockColor',ST.current.sockColor)}`,'sockType']);
-        rows.push([en2?'Accessories (Work)':'アクセサリー（平日）', ((ST.current.accessories||[]).join('・')||'なし')+accWorkNote(ST.current), 'accessoriesEdit']);
+        rows.push([LT('アクセサリー（平日）','Accessories (Work)','配饰（工作日）'), ((ST.current.accessories||[]).map(a=>displayValue('accessory',a)).join('・')||displayValue('accessory','なし'))+accWorkNote(ST.current), 'accessoriesEdit']);
         if(ST.current.holidayOutfitType){
           rows.push([L.holidayOutfit,`${displayValue('outfitBrand',ST.current.holidayOutfitBrand)}・${displayValue('outfitType',ST.current.holidayOutfitType)}${ST.current.holidayGapSuit?'⚡':''}`,'holidayOutfitType']);
-          rows.push([en2?'Casual Outer':'上着（休日）', `${ST.current.holidayOuterBrand?`${ST.current.holidayOuterBrand}・`:''}${ST.current.holidayJacket||'指定なし'}`, 'holidayJacket']);
-          rows.push([en2?'Casual Top':'トップス（休日）', `${ST.current.holidayTopBrand?`${ST.current.holidayTopBrand}・`:''}${ST.current.holidayTop||''}`, 'holidayTop']);
-          rows.push([en2?'Casual Bottom':'ボトムス（休日）', `${ST.current.holidayBottomBrand?`${ST.current.holidayBottomBrand}・`:''}${ST.current.holidayBottom||''}`, 'holidayBottom']);
-          rows.push([en2?'Casual Shoes':'靴（休日）', `${ST.current.holidayShoesBrand?`${ST.current.holidayShoesBrand}・`:''}${ST.current.holidayShoes||''}`, 'holidayShoes']);
+          rows.push([LT('上着（休日）','Casual Outer','外套（休息日）'), `${ST.current.holidayOuterBrand?`${displayValue('outfitBrand',ST.current.holidayOuterBrand)}・`:''}${displayValue('holidayJacket',ST.current.holidayJacket||'指定なし')}`, 'holidayJacket']);
+          rows.push([LT('トップス（休日）','Casual Top','上装（休息日）'), `${ST.current.holidayTopBrand?`${displayValue('outfitBrand',ST.current.holidayTopBrand)}・`:''}${displayValue('holidayTop',ST.current.holidayTop||'')}`, 'holidayTop']);
+          rows.push([LT('ボトムス（休日）','Casual Bottom','下装（休息日）'), `${ST.current.holidayBottomBrand?`${displayValue('outfitBrand',ST.current.holidayBottomBrand)}・`:''}${displayValue('holidayBottom',ST.current.holidayBottom||'')}`, 'holidayBottom']);
+          rows.push([LT('靴（休日）','Casual Shoes','鞋子（休息日）'), `${ST.current.holidayShoesBrand?`${displayValue('outfitBrand',ST.current.holidayShoesBrand)}・`:''}${displayValue('holidayShoes',ST.current.holidayShoes||'')}`, 'holidayShoes']);
           rows.push([L.holidaySock,`${displayValue('sockBrand',ST.current.holidaySockBrand)}・${displayValue('sockType',ST.current.holidaySockType)}・${displayValue('sockColor',ST.current.holidaySockColor)}`]);
-          rows.push([en2?'Accessories (Casual)':'アクセサリー（休日）', ((ST.current.holidayAccessories||[]).join('・')||'なし'), 'holidayAccessoriesEdit']);
-          const memo=[ST.current.holidayGapSuit?(en2?'Suit even on days off':'休日なのにスーツ（本人は私服のつもり）'):'',ST.current.holidayStyleNote||ST.current.styleNote,ST.current.muscleFashionNote,ST.current.senseFashionNote].filter(Boolean).join('。');
-          rows.push([en2?'Styling Memo':'着こなしメモ', memo||'—', 'holidayStyleNote']);
+          rows.push([LT('アクセサリー（休日）','Accessories (Casual)','配饰（休息日）'), ((ST.current.holidayAccessories||[]).map(a=>displayValue('accessory',a)).join('・')||displayValue('accessory','なし')), 'holidayAccessoriesEdit']);
+          const memo=[ST.current.holidayGapSuit?(en2?'Suit even on days off':displayValue('styleNote','休日なのにスーツ（本人は私服のつもり）')):'',displayValue('styleNote',ST.current.holidayStyleNote||ST.current.styleNote),displayValue('styleNote',ST.current.muscleFashionNote),displayValue('styleNote',ST.current.senseFashionNote)].filter(Boolean).join(LT('。','. ','。'));
+          rows.push([LT('着こなしメモ','Styling Memo','穿搭笔记'), memo||'—', 'holidayStyleNote']);
         }
         return rows;
       })()],
-      ['output', L.outputSection, [[L.background,displayValue('background',ST.current.background),'background'],[L.output,`${displayValue('outputType',ST.current.outputType)} / ${displayValue('count',ST.current.count)}`],[L.promptTarget,`<span class="mini-badge">${ST.current.promptTarget || 'ChatGPT'}</span>`],[L.imageText, ST.current.captionMode==='表記しない' ? captionModeDisplay(ST.current.captionMode) : `${captionModeDisplay(ST.current.captionMode)} / ${getCaptionFieldLabelsArray(ST.current, ST.uiLang==='en').join(', ')}`],[ST.uiLang==='en'?'Face Preset in Prompt':'顔立ちプリセット出力', ST.current.facePresetOut||'含める', 'facePresetOut'],[L.cardSetting, `${displayValue('cardStyle',ST.current.cardStyle)} / ${ST.current.cardRarity} / ${displayValue('cardTheme',ST.current.cardTheme)} / ${displayValue('cardLayout',ST.current.cardLayout)} / ${displayValue('cardWearMode',ST.current.cardWearMode || 'ボクサーパンツのみ')} / ${displayValue('cardEffect',cardEffectByRarity(ST.current.cardRarity))}`]]],
+      ['output', L.outputSection, [[L.background,displayValue('background',ST.current.background),'background'],[L.output,`${displayValue('outputType',ST.current.outputType)} / ${displayValue('count',ST.current.count)}`],[L.promptTarget,`<span class="mini-badge">${ST.current.promptTarget || 'ChatGPT'}</span>`],[L.imageText, ST.current.captionMode==='表記しない' ? captionModeDisplay(ST.current.captionMode) : `${captionModeDisplay(ST.current.captionMode)} / ${getCaptionFieldLabelsArray(ST.current, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en').join(', ')}`],[LT('顔立ちプリセット出力', 'Face Preset in Prompt', '脸型预设输出'), displayValue('facePresetOut', ST.current.facePresetOut||'含める'), 'facePresetOut'],[L.cardSetting, `${displayValue('cardStyle',ST.current.cardStyle)} / ${ST.current.cardRarity} / ${displayValue('cardTheme',ST.current.cardTheme)} / ${displayValue('cardLayout',ST.current.cardLayout)} / ${displayValue('cardWearMode',ST.current.cardWearMode || 'ボクサーパンツのみ')} / ${displayValue('cardEffect',cardEffectByRarity(ST.current.cardRarity))}`]]],
       ['scene', L.sceneSection, [[L.scene,displayValue('sceneIdea',ST.current.sceneIdea),'sceneIdea']]]
     ];
     const pcIcons = {basic:'👤', inner:'🎭', face:'🙂', body:'📐', bodyhair:'🧔', main:'🩳', outfit:'👕', output:'🖨️', scene:'🎬'};
     const pcSpan2 = {output:true, scene:true, inner:true};
     const cpMode = ST.current.catchphraseMode || '結果画面のみ表示';
     const measurementHtml = `<div class="measurement-panel">
-      <div class="measurement-title">${ST.uiLang==='en' ? 'PROFILE-ONLY A / B / C' : '完成プロフィール限定 A / B / C'}</div>
-      <div class="measurement-row"><b>A</b><span class="measurement-value">${Number(ST.current.measurementA).toFixed(1)}cm</span><button class="measurement-reroll" data-p-dice="measurementA" title="${ST.uiLang==='en'?'Reroll A only':'Aだけ再抽選'}">🎲 ${ST.uiLang==='en'?'Reroll A':'Aを再抽選'}</button></div>
-      <div class="measurement-row"><b>B</b><span class="measurement-value">${Number(ST.current.measurementB).toFixed(1)}cm</span><button class="measurement-reroll" data-p-dice="measurementB" title="${ST.uiLang==='en'?'Reroll B only':'Bだけ再抽選'}">🎲 ${ST.uiLang==='en'?'Reroll B':'Bを再抽選'}</button></div>
-      <div class="measurement-row"><b>C</b><span class="measurement-value">${profileMeasurementCLabel(ST.current.measurementC, ST.uiLang==='en')}</span><button class="measurement-reroll" data-p-dice="measurementC" title="${ST.uiLang==='en'?'Reroll C only':'Cだけ再抽選'}">🎲 ${ST.uiLang==='en'?'Reroll C':'Cを再抽選'}</button></div>
+      <div class="measurement-title">${LT('完成プロフィール限定 A / B / C', 'PROFILE-ONLY A / B / C', '仅完成档案显示 A / B / C')}</div>
+      <div class="measurement-row"><b>A</b><span class="measurement-value">${Number(ST.current.measurementA).toFixed(1)}cm</span><button class="measurement-reroll" data-p-dice="measurementA" title="${LT('Aだけ再抽選', 'Reroll A only', '仅重抽 A')}">🎲 ${LT('Aを再抽選', 'Reroll A', '重抽 A')}</button></div>
+      <div class="measurement-row"><b>B</b><span class="measurement-value">${Number(ST.current.measurementB).toFixed(1)}cm</span><button class="measurement-reroll" data-p-dice="measurementB" title="${LT('Bだけ再抽選', 'Reroll B only', '仅重抽 B')}">🎲 ${LT('Bを再抽選', 'Reroll B', '重抽 B')}</button></div>
+      <div class="measurement-row"><b>C</b><span class="measurement-value">${profileMeasurementCLabel(ST.current.measurementC, ST.uiLang==='en')}</span><button class="measurement-reroll" data-p-dice="measurementC" title="${LT('Cだけ再抽選', 'Reroll C only', '仅重抽 C')}">🎲 ${LT('Cを再抽選', 'Reroll C', '重抽 C')}</button></div>
     </div>`;
     const cpHtml = (cpMode !== '表示しない' ? `<div class="catchphrase">――${catchphrase(ST.current, ST.uiLang==='en')}</div>` : '') + `<div class="bio-hook" style="margin:0 0 12px;font-size:14px;color:#cfe0f5;line-height:1.6;border-left:3px solid var(--blue);padding-left:10px">${ST.uiLang==='en' ? bioLine(ST.current, true) : (ST.current.bioText || bioLine(ST.current, false))}<br><span style="font-size:12px;color:#9fb0c7">${nameKana(ST.current)}：${ST.current.height}／${ST.current.weight}／${String(ST.current.footSize).endsWith('cm') ? ST.current.footSize : ST.current.footSize + 'cm'}</span> <button class="pf-btn" data-p-dice="bioText" title="🎲">🎲</button></div>` + measurementHtml;
     const badges = cpHtml + `<div class="badge-row">
@@ -141,8 +142,8 @@ import {
     </div>`;
     const bd = rarityBreakdown(ST.current);
     const rr = scoreRarity(ST.current);
-    const ikm = ST.current.ikemenIndexMode === '表示する' ? (()=>{ const sc = ikemenScore(ST.current); return `<div class="subcard" style="margin:0 0 12px"><h3>${ST.uiLang==='en' ? 'Handsome Index' : 'イケメン指数'} <span class="pill" style="margin-left:8px">${sc} / 100 — ${ikemenRank(sc, ST.uiLang==='en')}</span></h3><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">${ikemenBreakdown(ST.current).map(([l,d])=>`<span class="pill">${displayValue('ikemenRule',l)} ${d>0?'+':''}${d}</span>`).join('') || `<span class="notice">${ST.uiLang==='en' ? 'All standard features.' : 'すべて標準的な造形。'}</span>`}</div><p class="notice" style="margin:6px 0 0">${ST.uiLang==='en' ? 'Standard features score exactly 50. Computed from 19 facial axes; never written into prompts.' : '標準的な造形がちょうど50ptになる設計です（顔の19軸から算出。プロンプトには含めません）。'}</p></div>` })() : '';
-    const bdHtml = ikm + `<div class="subcard" style="margin:0 0 12px"><h3>${ST.uiLang==='en' ? 'Rarity Breakdown' : 'レア内訳'} <span class="pill" style="margin-left:8px">${rr[0]} pt / ${rr[1]}</span></h3><div style="display:flex;flex-wrap:wrap;gap:4px">${bd.length ? bd.map(([l,p])=>`<span class="pill">${displayValue('rareRule',l)} +${p}</span>`).join('') : `<span class="notice">${ST.uiLang==='en' ? 'No rare points this time.' : '今回はレア該当なし。'}</span>`}</div></div>`;
+    const ikm = ST.current.ikemenIndexMode === '表示する' ? (()=>{ const sc = ikemenScore(ST.current); return `<div class="subcard" style="margin:0 0 12px"><h3>${LT('イケメン指数', 'Handsome Index', '帅哥指数')} <span class="pill" style="margin-left:8px">${sc} / 100 — ${ikemenRank(sc, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en')}</span></h3><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">${ikemenBreakdown(ST.current).map(([l,d])=>`<span class="pill">${displayValue('ikemenRule',l)} ${d>0?'+':''}${d}</span>`).join('') || `<span class="notice">${LT('すべて標準的な造形。', 'All standard features.', '五官全部为标准造型。')}</span>`}</div><p class="notice" style="margin:6px 0 0">${LT('標準的な造形がちょうど50ptになる設計です（顔の19軸から算出。プロンプトには含めません）。', 'Standard features score exactly 50. Computed from 19 facial axes; never written into prompts.', '标准造型恰好为 50 分（由 19 个面部维度计算，不会写入提示词）。')}</p></div>` })() : '';
+    const bdHtml = ikm + `<div class="subcard" style="margin:0 0 12px"><h3>${LT('レア内訳', 'Rarity Breakdown', '稀有度明细')} <span class="pill" style="margin-left:8px">${rr[0]} pt / ${rr[1]}</span></h3><div style="display:flex;flex-wrap:wrap;gap:4px">${bd.length ? bd.map(([l,p])=>`<span class="pill">${displayValue('rareRule',l)} +${p}</span>`).join('') : `<span class="notice">${LT('今回はレア該当なし。', 'No rare points this time.', '本次没有命中稀有项。')}</span>`}</div></div>`;
     const pfBtns = (pk)=>{ const hasPool = pk === 'sportsHistory' || pk.split(',').some(k=>{ const p = slotEditPool(k); return p && p.length; }); return `<span class="pf-actions">${hasPool ? `<button class="pf-btn" data-p-edit="${pk}" title="${T('editTitle')}">✎</button>` : ''}<button class="pf-btn" data-p-dice="${pk}" title="🎲">🎲</button></span>`; };
     const renderPCard = ([key,title,rows])=>`<div class="profile-card pc-${key}"><h3><span class="pc-icon">${pcIcons[key]||''}</span>${title}${key==='scene' ? ` <button class="dice" style="position:static;margin-left:auto" data-scene-edit title="${T('editTitle')}">✎</button>` : ''}</h3><div class="pc-rows">${rows.map(r=>{const [k,v,pk,cc]=r; if(k==='__HEAD__') return v; const cls=cc?` ${cc}`:''; return pk ? `<div class="kv kv3${cls}"><b>${k}</b><span>${v}</span>${pfBtns(pk)}</div>` : `<div class="kv${cls}"><b>${k}</b><span>${v}</span></div>`;}).join('')}</div></div>`;
     const bySec = k => sections.find(s=>s[0]===k);
@@ -219,7 +220,7 @@ import {
   function renderHistory(){
     const h = loadHistory();
     const order = h.map((c,i)=>i).sort((a,b)=>((h[b].fav?1:0)-(h[a].fav?1:0)) || a-b);
-    els.historyList.innerHTML = h.length ? order.map(i=>{ const c=h[i]; return `<div class="history-item${c.fav?' faved':''}"><b>${c.fav?'★ ':''}${c.name} / ${ST.uiLang==='en'? displayValue('age',c.age): c.age+'歳'} / ${c.height} / ${displayValue('bodyType',c.bodyType)}</b><p class="notice">${displayValue('facePreset',c.facePreset)}・${displayValue('outfitType',c.outfitType)}・${displayValue('sockType',c.sockType)}・${scoreRarity(c)[1]}${c.appVersion?` <span class="mini-badge" style="font-size:10px;padding:2px 6px">${c.appVersion}</span>`:''}</p><button class="fav-btn" data-fav="${i}" title="favorite">${c.fav?T('favOn'):T('favOff')}</button><button class="btn dark" data-load="${i}">${T('loadBtn')}</button></div>`; }).join('') : `<p class="notice">${T('noHistory')}</p>`;
+    els.historyList.innerHTML = h.length ? order.map(i=>{ const c=h[i]; return `<div class="history-item${c.fav?' faved':''}"><b>${c.fav?'★ ':''}${c.name} / ${LT(c.age+'歳', displayValue('age',c.age), c.age+'岁')} / ${c.height} / ${displayValue('bodyType',c.bodyType)}</b><p class="notice">${displayValue('facePreset',c.facePreset)}・${displayValue('outfitType',c.outfitType)}・${displayValue('sockType',c.sockType)}・${scoreRarity(c)[1]}${c.appVersion?` <span class="mini-badge" style="font-size:10px;padding:2px 6px">${c.appVersion}</span>`:''}</p><button class="fav-btn" data-fav="${i}" title="favorite">${c.fav?T('favOn'):T('favOff')}</button><button class="btn dark" data-load="${i}">${T('loadBtn')}</button></div>`; }).join('') : `<p class="notice">${T('noHistory')}</p>`;
     document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{ST.current=h[Number(b.dataset.load)]; ST.currentGroup=null; ST.activeMember=0; renderAll(); switchTab('result');});
     document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{ const i=Number(b.dataset.fav); h[i].fav=!h[i].fav; localStorage.setItem(STORAGE_KEY, JSON.stringify(h)); renderHistory(); });
   }
@@ -239,9 +240,7 @@ import {
 
   function renderPromptTabs(){
     const bar = document.getElementById('promptTabs'); if(!bar) return;
-    const labels = ST.uiLang==='en'
-      ? {main:'🪪 Base Card', derived:'🎨 Derived Output', outfit:'👔 Work Outfit', outfitHoliday:'👕 Casual Outfit', scene:'🎬 Scene', friendPair:'🤝 Friend Two-shot', group:'👥 Group Photo'}
-      : {main:'🪪 基準カード', derived:'🎨 派生出力', outfit:'👔 職業服装', outfitHoliday:'👕 私服服装', scene:'🎬 場面差分', friendPair:'🤝 友人ツーショット', group:'👥 集合写真'};
+    const labels = LT({main:'🪪 基準カード', derived:'🎨 派生出力', outfit:'👔 職業服装', outfitHoliday:'👕 私服服装', scene:'🎬 場面差分', friendPair:'🤝 友人ツーショット', group:'👥 集合写真'}, {main:'🪪 Base Card', derived:'🎨 Derived Output', outfit:'👔 Work Outfit', outfitHoliday:'👕 Casual Outfit', scene:'🎬 Scene', friendPair:'🤝 Friend Two-shot', group:'👥 Group Photo'}, {main:'🪪 基准卡', derived:'🎨 派生输出', outfit:'👔 职业服装', outfitHoliday:'👕 便服', scene:'🎬 场景差分', friendPair:'🤝 好友双人照', group:'👥 集体照'});
     const showGroup = !!(ST.currentGroup && ST.currentGroup.members.length>1 && ST.currentGroup.promptMode !== '1つの指示文にまとめて生成');
     const showFriendPair = !!(ST.current && ST.current.friendBase);
     if(ST.promptTab==='group' && !showGroup) ST.promptTab='main';
@@ -255,17 +254,18 @@ import {
     if(f1) f1.classList.toggle('active', ST.promptTab==='main');
     if(f2) f2.classList.toggle('active', ST.promptTab!=='main');
     const at = document.getElementById('promptAreaTitle'); if(at) at.textContent = T('promptAreaTitle');
+    // [icon, jaShort, jaDesc, enShort, enDesc, zhShort, zhDesc]
     const DERIVED_META = {
-      'トレーディングカード':['🃏','トレカ','オリジナルトレカ風の1枚','Trading card','One original trading-card style image'],
-      '人物特集雑誌ページ':['📰','雑誌ページ','架空雑誌の特集誌面。時代でレイアウトが変化','Magazine page','A fictional magazine feature; layout follows the era'],
-      'キャラクタープロフィールシート':['📇','プロフィールシート','全身1枚＋ひとこと背景＋基本＋内面・背景＋A/B/C','Profile sheet','Full-body shot with bio, basics, inner profile and A/B/C'],
-      '街で見かけたイケメンシート：職業編':['📷','街角・職業編','働く姿のスナップ3〜4コマ','Street: at work','3-4 candid panels of him working'],
-      '街で見かけたイケメンシート：オフ編':['🏖','街角・オフ編','私服で過ごすオフのスナップ集','Street: off duty','Candid panels of his day off in casual wear'],
-      '人物ポスター（職業・人物像）':['🖼','ポスター','職業と人物像が伝わる1枚','Poster','A poster that shows who he is at a glance'],
-      '服装リファレンスシート（職業背景）':['👔','服装リファレンス','職業コーデの資料シート（靴下詳細つき）','Outfit reference','Work-outfit reference sheet (with sock detail)'],
-      '偶然足元強調場面シート':['🦶','足元強調場面','靴を脱いだ足元を強調した生活場面','Foot-focus scene','A daily scene emphasizing his socked feet'],
-      '偶然人物ブループリントシート':['📐','ブループリント','設計図風の人物資料','Blueprint','A technical-drawing style character sheet'],
-      '参考画像作成シート（引継ぎ用）':['📋','参考画像シート','引継ぎ用の情報つき資料（歯並び・裸足・足裏パネル入り）','Handoff sheet','A standalone reference sheet with info panel, teeth and barefoot views']
+      'トレーディングカード':['🃏','トレカ','オリジナルトレカ風の1枚','Trading card','One original trading-card style image','集换卡','一张原创集换卡风图片'],
+      '人物特集雑誌ページ':['📰','雑誌ページ','架空雑誌の特集誌面。時代でレイアウトが変化','Magazine page','A fictional magazine feature; layout follows the era','杂志页','架空杂志的特辑版面，版式随时代变化'],
+      'キャラクタープロフィールシート':['📇','プロフィールシート','全身1枚＋ひとこと背景＋基本＋内面・背景＋A/B/C','Profile sheet','Full-body shot with bio, basics, inner profile and A/B/C','档案页','全身1张＋一句话背景＋基本＋内在・背景＋A/B/C'],
+      '街で見かけたイケメンシート：職業編':['📷','街角・職業編','働く姿のスナップ3〜4コマ','Street: at work','3-4 candid panels of him working','街拍・职业篇','工作状态的3〜4格抓拍'],
+      '街で見かけたイケメンシート：オフ編':['🏖','街角・オフ編','私服で過ごすオフのスナップ集','Street: off duty','Candid panels of his day off in casual wear','街拍・休息日篇','便服休息日的抓拍集'],
+      '人物ポスター（職業・人物像）':['🖼','ポスター','職業と人物像が伝わる1枚','Poster','A poster that shows who he is at a glance','海报','一眼看懂职业与人物形象的一张'],
+      '服装リファレンスシート（職業背景）':['👔','服装リファレンス','職業コーデの資料シート（靴下詳細つき）','Outfit reference','Work-outfit reference sheet (with sock detail)','服装参考','职业穿搭资料页（含袜子细节）'],
+      '偶然足元強調場面シート':['🦶','足元強調場面','靴を脱いだ足元を強調した生活場面','Foot-focus scene','A daily scene emphasizing his socked feet','足部特写场景','强调脱鞋后足部的生活场景'],
+      '偶然人物ブループリントシート':['📐','ブループリント','設計図風の人物資料','Blueprint','A technical-drawing style character sheet','蓝图','设计图风的人物资料'],
+      '参考画像作成シート（引継ぎ用）':['📋','参考画像シート','引継ぎ用の情報つき資料（歯並び・裸足・足裏パネル入り）','Handoff sheet','A standalone reference sheet with info panel, teeth and barefoot views','参考图页','交接用的带信息资料（含牙齿・赤脚・脚底面板）']
     };
     const en2 = ST.uiLang === 'en';
     const grid = document.getElementById('derivedTypeGrid');
@@ -275,17 +275,17 @@ import {
       const mainTypes = Object.keys(DERIVED_META);
       grid.innerHTML = mainTypes.map(v=>{
         const m = DERIVED_META[v];
-        return `<button class="dtype-btn${v===cur?' on':''}" data-dtype="${v.replace(/"/g,'&quot;')}"><span class="ic">${m[0]}</span>${en2 ? m[3] : m[1]}</button>`;
+        return `<button class="dtype-btn${v===cur?' on':''}" data-dtype="${v.replace(/"/g,'&quot;')}"><span class="ic">${m[0]}</span>${LT(m[1], m[3], m[5])}</button>`;
       }).join('');
       grid.querySelectorAll('[data-dtype]').forEach(b=>b.onclick=()=>{ ST.derivedType = b.dataset.dtype; renderAll(); });
       const others = ['トレーディングカード'].concat(pools.outputTypes.filter(v=>!v.includes('16:9')));
-      dts.innerHTML = `<option value="">${en2 ? 'Other formats…' : 'その他の形式…'}</option>` + others.filter(v=>!mainTypes.includes(v)).map(v=>`<option value="${v.replace(/"/g,'&quot;')}"${v===cur?' selected':''}>${displayOptionLabel('outputType', v)}</option>`).join('');
+      dts.innerHTML = `<option value="">${LT('その他の形式…', 'Other formats…', '其他格式…')}</option>` + others.filter(v=>!mainTypes.includes(v)).map(v=>`<option value="${v.replace(/"/g,'&quot;')}"${v===cur?' selected':''}>${displayOptionLabel('outputType', v)}</option>`).join('');
       if(mainTypes.includes(cur)) dts.value='';
       dts.onchange = () => { if(dts.value){ ST.derivedType = dts.value; renderAll(); } };
       const lbl = document.getElementById('derivedTypeLabel');
       if(lbl){
         const m = DERIVED_META[cur];
-        lbl.textContent = m ? `${m[0]} ${en2 ? m[3] : cur} — ${en2 ? m[4] : m[2]}` : `📋 ${displayOptionLabel('outputType', cur)}`;
+        lbl.textContent = m ? `${m[0]} ${en2 ? m[3] : ST.uiLang==='zh' ? m[5] : cur} — ${LT(m[2], m[4], m[6])}` : `📋 ${displayOptionLabel('outputType', cur)}`;
       }
       const slot = document.getElementById('derivedCardSettingsSlot');
       const cardCfg = document.querySelector('[data-ui-card="manualCard"]');
@@ -298,12 +298,12 @@ import {
         psCfg.classList.toggle('hidden', cur !== 'キャラクタープロフィールシート');
         const psSel = document.getElementById('profileSheetWearSel');
         if(psSel){ psSel.value = (ST.current && ST.current.profileSheetWear) || '職業服装'; psSel.onchange = ()=>{ if(ST.current){ ST.current.profileSheetWear = psSel.value; renderAll(); } }; }
-        const psLbl = psCfg.querySelector('label span'); if(psLbl) psLbl.textContent = en2 ? 'Profile-sheet outfit' : 'プロフィールシートの服装';
+        const psLbl = psCfg.querySelector('label span'); if(psLbl) psLbl.textContent = LT('プロフィールシートの服装', 'Profile-sheet outfit', '档案页服装');
       }
       const cb = document.getElementById('copyDerivedBtn');
       if(cb && !cb.classList.contains('copied')){
         const m = DERIVED_META[cur];
-        cb.textContent = en2 ? `📋 Copy ${m ? m[3] : 'prompt'}` : `📋 ${m ? m[1] : 'この形式'}用をコピー`;
+        cb.textContent = en2 ? `📋 Copy ${m ? m[3] : 'prompt'}` : ST.uiLang==='zh' ? `📋 复制${m ? m[5] : '此格式'}` : `📋 ${m ? m[1] : 'この形式'}用をコピー`;
       }
     }
     const chip = document.getElementById('promptAreaTarget');
@@ -316,14 +316,13 @@ import {
   function renderSettingChips(){
     const el = document.getElementById('settingChips'); if(!el) return;
     const gi = getInitial();
-    const en = ST.uiLang==='en';
-    const short = (v,n=10) => { const t = en ? (displayValue('outputType', v) || v) : v; return t.length>n ? t.slice(0,n)+'…' : t; };
+    const short = (v,n=10) => { const t = ST.uiLang!=='ja' ? (displayValue('outputType', v) || v) : v; return t.length>n ? t.slice(0,n)+'…' : t; };
     const chips = [
-      [en?'Era':'年代', `${gi.eraYear || '2026'}`],
-      [en?'Mode':'モード', displayValue('groupSize', document.getElementById('initialGroupSize')?.value || '1人（通常）') || '1人'],
-      [en?'Underwear':'下着', displayValue('mainWearMode', gi.mainWearMode) || gi.mainWearMode],
-      [en?'Output':'出力', short(gi.outputType || '', 12)],
-      [en?'Occupation':'職業影響', displayValue('occInfluence', gi.occInfluence) || gi.occInfluence]
+      [LT('年代','Era','年代'), `${gi.eraYear || '2026'}`],
+      [LT('モード','Mode','模式'), displayValue('groupSize', document.getElementById('initialGroupSize')?.value || '1人（通常）') || '1人'],
+      [LT('下着','Underwear','内裤'), displayValue('mainWearMode', gi.mainWearMode) || gi.mainWearMode],
+      [LT('出力','Output','输出'), short(gi.outputType || '', 12)],
+      [LT('職業影響','Occupation','职业影响'), displayValue('occInfluence', gi.occInfluence) || gi.occInfluence]
     ];
     el.innerHTML = chips.map(([k,v])=>`<span class="chip" data-chip><b>${k}</b> ${v}</span>`).join('');
     el.querySelectorAll('[data-chip]').forEach(c=>c.onclick=()=>{ const sec=document.querySelector('section.panel'); if(sec) sec.scrollIntoView({behavior:'smooth'}); });

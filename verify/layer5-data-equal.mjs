@@ -39,7 +39,15 @@ function deepEqual(a, b) {
   return ka.every(k => deepEqual(a[k], b[k]));
 }
 
-const SUBSET_MODE = new Set(['valueTranslations', 'uiText']); // append-only vs baseline
+// append-only vs baseline: value/uiText gained EN entries post-freeze, and the
+// label maps gained a zh field per key when the Chinese UI language was added
+const SUBSET_MODE = new Set(['valueTranslations', 'uiText',
+  'slotLabelMap', 'fixedFieldLabelMap', 'captionFieldLabelMap', 'cardFieldLabelMap', 'uiCardTitles',
+  'OCC_CAT_LABELS']);
+// post-freeze exports that never existed in the frozen baseline
+const POST_FREEZE_EXPORTS = new Set(['valueTranslationsZh', 'sceneTranslationsZh',
+  'FRIEND_REL_ZH', 'FRIEND_HIER_ZH', 'INNER_CATS_ZH',
+  'SPORT_MUSCLE_ZH', 'SPORT_STAGES_ZH', 'ERA_LABEL_ZH', 'SCENE_MOD_ZH']);
 
 // every baseline entry must exist unchanged in `cur`; additions are allowed;
 // arrays are compared exactly (subset semantics are ambiguous for lists)
@@ -58,7 +66,7 @@ for (const { name } of manifest.extracted) {
   const ok = SUBSET_MODE.has(name) ? subsetEqual(expected, data[name]) : deepEqual(expected, data[name]);
   if (!ok) { console.log(`FAIL ${name}: ${SUBSET_MODE.has(name) ? 'baseline entries not preserved' : 'deep-equal mismatch vs baseline'}`); fails++; }
 }
-const extraKeys = Object.keys(data).filter(k => !manifest.extracted.some(e => e.name === k));
+const extraKeys = Object.keys(data).filter(k => !manifest.extracted.some(e => e.name === k) && !POST_FREEZE_EXPORTS.has(k));
 if (extraKeys.length) { console.log(`FAIL unexpected src/data exports: ${extraKeys}`); fails++; }
 
 console.log(`\n${manifest.extracted.length} constants checked, ${fails} failures`);
