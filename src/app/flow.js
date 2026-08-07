@@ -318,7 +318,7 @@ import {
   function slotValue(c,key){
     if(!c) return '？？？';
     if(key==='mbti') return mbtiDisplay(c);
-    if(key==='sportsHistory') return sportsHistoryText(c, ST.uiLang==='en');
+    if(key==='sportsHistory') return sportsHistoryText(c, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en');
     return String(displayValue(key, c[key]) ?? '？？？');
   }
 
@@ -722,15 +722,16 @@ ${promptTargetGuide(c, false)}`;
   }
 
   function buildSportsHistoryEditor(container, onSave){
-    const STR_PRESETS = [['自動（期間から計算）','auto'],['影響なし','0'],['名残程度','0.5'],['ほどよく','1.2'],['しっかり','2.2']];
+    const STR_PRESETS = [[LT('自動（期間から計算）', 'Auto (from span)', '自动（按期间计算）'),'auto'],[LT('影響なし', 'No influence', '无影响'),'0'],[LT('名残程度', 'Faint traces', '略有痕迹'),'0.5'],[LT('ほどよく', 'Moderate', '适中'),'1.2'],[LT('しっかり', 'Strong', '明显'),'2.2']];
     const maxSt = maxStageForAge(Number(ST.current.age)||25);
-    const stages = SPORT_STAGES.slice(0, maxSt+1);
+    const stages = SPORT_STAGES.slice(0, maxSt+1).map(s=>[displayValue('sportStage', s) || s, s]);
+    const NONE = LT('なし', 'None', '无');
     const h = ST.current.sportsHistory || [];
     const mk = (opts, val)=>{ const sel=document.createElement('select'); sel.innerHTML=opts.map(o=>{const [lab,v]=Array.isArray(o)?o:[o,o];return `<option value="${v}"${String(v)===String(val)?' selected':''}>${lab}</option>`;}).join(''); return sel; };
     const rows = [];
     for(let i=0;i<2;i++){
       const e = h[i] || null;
-      const sp = mk(['なし'].concat(SPORT_EXP_POOL), e ? e.name : 'なし');
+      const sp = mk([[NONE,'なし']].concat(SPORT_EXP_POOL.map(n=>[displayValue('sportName', n) || n, n])), e ? e.name : 'なし');
       const fr = mk(stages, e ? SPORT_STAGES[e.from] : '小学校');
       const to = mk(stages, e ? SPORT_STAGES[e.to] : '高校');
       const st = mk(STR_PRESETS, e ? (e.strength===0?'0': e.strength>=2?'2.2': e.strength>=0.8?'1.2':'0.5') : 'auto');
