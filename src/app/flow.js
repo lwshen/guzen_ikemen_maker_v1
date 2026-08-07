@@ -59,6 +59,19 @@ import {
     return M;
   })();
 
+  // One uniform hairstyle list for the editor: the generic pool plus every style any
+  // occupation can grant. `only`/`boost` constrain RANDOM generation; they must not
+  // gate what a user can pick by hand.
+  const HAIRSTYLE_EDIT_POOL = [
+    ...new Set([
+      ...pools.hairStyles,
+      ...Object.values(OCC_HAIRSTYLE).flatMap(o => [
+        ...(o.only || []),
+        ...(o.boost || []).map(([v]) => v),
+      ]),
+    ]),
+  ];
+
   function generateCharacter(partialMode='full', groupCtx=null){
     const fixed = groupCtx ? {} : getFixed();
     if(ST.FRIEND_CTX){ if(ST.FRIEND_CTX.age) fixed.age = ST.FRIEND_CTX.age; if(ST.FRIEND_CTX.nationality) fixed.nationality = ST.FRIEND_CTX.nationality; if(ST.FRIEND_CTX.season) fixed.season = ST.FRIEND_CTX.season; }
@@ -650,13 +663,10 @@ ${promptTargetGuide(c, false)}`;
     if(key==='name') return nameCandidates();
     if(ST.current){
       if(key === 'hairStyle') {
-        // pools.hairStyles is occupation-agnostic, so a style only the occupation
-        // grants (坊主 for 自衛官) became unreachable once you switched away from it.
-        // Offer the occupation's own styles first, then the generic pool.
-        const oh = ST.current.role ? OCC_HAIRSTYLE[ST.current.role] : null;
-        if (!oh) return pools.hairStyles;
-        const own = oh.only || (oh.boost || []).map(([v]) => v);
-        return [...new Set([...own, ...pools.hairStyles])];
+        // pools.hairStyles is occupation-agnostic, so styles only an occupation
+        // granted (坊主 for 自衛官) were unreachable in the editor. Every character
+        // now gets the same full list — no occupation gating on manual edits.
+        return HAIRSTYLE_EDIT_POOL;
       }
       if(key==='jacket') return eraOptionsFor('jacket', ST.current, false);
       if(key==='top') return eraOptionsFor('top', ST.current, false);
