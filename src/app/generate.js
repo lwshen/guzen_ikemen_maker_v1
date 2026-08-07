@@ -1379,6 +1379,8 @@ import {
     const h = (c && c.sportsHistory) || [];
     if(!h.length) return english==='zh' ? '无（文化系・不参加社团）' : english ? 'None (non-athletic)' : 'なし（文化系・帰宅部）';
     if(english==='zh') return h.map(x=>`${displayValue('sportName',x.name)}（${SPORT_STAGES_ZH[SPORT_STAGES[x.from]]||SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+(SPORT_STAGES_ZH[SPORT_STAGES[x.to]]||SPORT_STAGES[x.to])}）`).join('／');
+    if(english) return h.map(x=>{ const f=displayValue('sportStage',SPORT_STAGES[x.from]), t=displayValue('sportStage',SPORT_STAGES[x.to]);
+      return `${displayValue('sportName',x.name)} (${f}${x.from===x.to?'':'–'+t})`; }).join(', ');
     return h.map(x=>`${x.name}（${SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+SPORT_STAGES[x.to]}）`).join('／');
   }
 

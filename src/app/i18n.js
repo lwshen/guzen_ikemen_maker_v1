@@ -66,6 +66,12 @@ import {
     if(key==='captionMode') return captionModeDisplay(value);
     if(ST.uiLang==='ja') return value;
     const vt = VALUE_I18N[ST.uiLang] || {};
+    // composed values (inner profile joins parts with ／) are not in the table as
+    // a whole; translate each part and rejoin so partial coverage still helps
+    if(key==='innerText' && !vt[String(value)] && String(value).includes('／')){
+      const parts = String(value).split('／');
+      if(parts.some(x=>vt[x])) return parts.map(x=>vt[x] || x).join('／');
+    }
     if(key==='age') return ST.uiLang==='zh' ? `${value}岁` : `${value} years old`;
     if(key==='eraYear') return ST.uiLang==='zh' ? `${value}年` : `${value} CE`;
     if(key==='sceneIdea') return sceneDisplay(value);
