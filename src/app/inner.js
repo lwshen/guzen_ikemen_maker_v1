@@ -6,7 +6,6 @@ import {
   LT,
 } from './i18n.js';
 import {
-  INNER_LABEL_ZH,
   FRIEND_RELATIONS, HIGH_TRAIN, INNER_BLOOD_DIST, INNER_CATS, INNER_CATS_ZH, INNER_COMPLEX_GENERIC, INNER_DEPS, INNER_DESIRES, INNER_DIALECTS,
   INNER_DREAMS, INNER_DREAM_CAT, INNER_FASHION_SENSE, INNER_FOOD_HATE, INNER_FOOD_LIKE, INNER_FRIEND_FREQ, INNER_FRIEND_MEET, INNER_HEALTH_BASE,
   INNER_HEALTH_MID, INNER_HOBBY_BY_VIBE, INNER_HOBBY_GENERIC, INNER_INCOME_TABLE, INNER_JP_PREFS, INNER_LIVING_MARRIED, INNER_LIVING_SINGLE, INNER_LOVER_NONE,
@@ -551,60 +550,60 @@ import {
     // values are free-form Japanese phrases; run them through the value table
     // so en/zh entries take effect (missing entries fall back to Japanese)
     const V = (val, key)=>`${(val ? displayValue('innerText', val) : '') || '—'}${innerBadgeHtml(c, key)}`;
-    const friendVal = V(c.friendText,'friend') + (c.friendOf ? '' : ` <button class="pf-btn" data-make-friend title="${LT('この友人を実際に作成（表示された関係・名前を反映）', 'Create this friend for real', INNER_LABEL_ZH['この友人を実際に作成（表示された関係・名前を反映）'])}">👥 ${LT('この友人を作成', 'Create this friend', INNER_LABEL_ZH['この友人を作成'])}</button>`);
+    const friendVal = V(c.friendText,'friend') + (c.friendOf ? '' : ` <button class="pf-btn" data-make-friend title="${LT('この友人を実際に作成（表示された関係・名前を反映）', 'Create this friend for real', '实际创建这位好友（沿用显示的关系与姓名）')}">👥 ${LT('この友人を作成', 'Create this friend', '创建这位好友')}</button>`);
     const CAT_ROWS = {
       basic: [
-        [LT('生年月日', 'Birth Date', INNER_LABEL_ZH['生年月日']), V(c.birthdateText,'birthdate'), 'birthdateText','icv-basic'],
-        [LT('出身地', 'Hometown', INNER_LABEL_ZH['出身地']), V(c.birthplaceText,'birthplace'), 'birthplaceText','icv-basic'],
-        [LT('血液型', 'Blood Type', INNER_LABEL_ZH['血液型']), V(c.bloodType,'blood'), 'bloodType','icv-basic'],
-        [LT('一人称', 'Pronoun', INNER_LABEL_ZH['一人称']), V(c.pronoun,'pronoun'), 'pronoun','icv-basic'],
-        [LT('口調・話し方', 'Speech Style', INNER_LABEL_ZH['口調・話し方']), V(c.speechText,'speech'), 'speechText','icv-basic'],
-        [LT('ニックネーム', 'Nickname', INNER_LABEL_ZH['ニックネーム']), V(c.nicknameText,'nickname'), 'nicknameText','icv-basic']
+        [LT('生年月日', 'Birth Date', '出生年月日'), V(c.birthdateText,'birthdate'), 'birthdateText','icv-basic'],
+        [LT('出身地', 'Hometown', '出生地'), V(c.birthplaceText,'birthplace'), 'birthplaceText','icv-basic'],
+        [LT('血液型', 'Blood Type', '血型'), V(c.bloodType,'blood'), 'bloodType','icv-basic'],
+        [LT('一人称', 'Pronoun', '第一人称'), V(c.pronoun,'pronoun'), 'pronoun','icv-basic'],
+        [LT('口調・話し方', 'Speech Style', '语气・说话方式'), V(c.speechText,'speech'), 'speechText','icv-basic'],
+        [LT('ニックネーム', 'Nickname', '昵称'), V(c.nicknameText,'nickname'), 'nicknameText','icv-basic']
       ],
       life: [
-        [LT('結婚', 'Marital Status', INNER_LABEL_ZH['結婚']), V(c.maritalText,'marital'), 'maritalText','icv-life'],
-        [LT('恋人の有無', 'Partner', INNER_LABEL_ZH['恋人の有無']), V(c.loverText,'lover'), 'loverText','icv-life'],
-        [LT('家族構成', 'Family', INNER_LABEL_ZH['家族構成']), V(c.familyText,'family'), 'familyText','icv-life'],
-        [LT('生活状況', 'Living Situation', INNER_LABEL_ZH['生活状況']), V(c.livingText,'living'), 'livingText','icv-life'],
-        [LT('住居', 'Residence', INNER_LABEL_ZH['住居']), V(c.residenceText,'residence'), 'residenceText','icv-life'],
-        [LT('出自', 'Family Roots', INNER_LABEL_ZH['出自']), V(c.originText,'origin'), 'originText','icv-life'],
-        [LT('学歴', 'Education', INNER_LABEL_ZH['学歴']), V(c.educationText,'education'), 'educationText','icv-life'],
-        [LT('収入', 'Income', INNER_LABEL_ZH['収入']), V(c.incomeText,'income'), 'incomeText','icv-life'],
-        [LT('資産', 'Assets', INNER_LABEL_ZH['資産']), V(c.assetText,'asset'), 'assetText','icv-life']
+        [LT('結婚', 'Marital Status', '婚姻'), V(c.maritalText,'marital'), 'maritalText','icv-life'],
+        [LT('恋人の有無', 'Partner', '恋人'), V(c.loverText,'lover'), 'loverText','icv-life'],
+        [LT('家族構成', 'Family', '家庭构成'), V(c.familyText,'family'), 'familyText','icv-life'],
+        [LT('生活状況', 'Living Situation', '生活状况'), V(c.livingText,'living'), 'livingText','icv-life'],
+        [LT('住居', 'Residence', '居所'), V(c.residenceText,'residence'), 'residenceText','icv-life'],
+        [LT('出自', 'Family Roots', '出身背景'), V(c.originText,'origin'), 'originText','icv-life'],
+        [LT('学歴', 'Education', '学历'), V(c.educationText,'education'), 'educationText','icv-life'],
+        [LT('収入', 'Income', '收入'), V(c.incomeText,'income'), 'incomeText','icv-life'],
+        [LT('資産', 'Assets', '资产'), V(c.assetText,'asset'), 'assetText','icv-life']
       ],
       daily: [
-        [LT('健康状態', 'Health', INNER_LABEL_ZH['健康状態']), V(c.healthText,'health'), 'healthText','icv-daily'],
-        [LT('趣味', 'Hobby', INNER_LABEL_ZH['趣味']), V(c.hobbyText,'hobby'), 'hobbyText','icv-daily'],
-        [LT('マイブーム', 'Current Obsession', INNER_LABEL_ZH['マイブーム']), V(c.myBoomText,'myboom'), 'myBoomText','icv-daily'],
-        [LT('好きな食べ物', 'Favorite Food', INNER_LABEL_ZH['好きな食べ物']), V(c.foodLikeText,'foods'), 'foodLikeText','icv-daily'],
-        [LT('嫌いな食べ物', 'Disliked Food', INNER_LABEL_ZH['嫌いな食べ物']), V(c.foodHateText,'foods'), 'foodHateText','icv-daily']
+        [LT('健康状態', 'Health', '健康状况'), V(c.healthText,'health'), 'healthText','icv-daily'],
+        [LT('趣味', 'Hobby', '兴趣'), V(c.hobbyText,'hobby'), 'hobbyText','icv-daily'],
+        [LT('マイブーム', 'Current Obsession', '近期热衷'), V(c.myBoomText,'myboom'), 'myBoomText','icv-daily'],
+        [LT('好きな食べ物', 'Favorite Food', '爱吃的食物'), V(c.foodLikeText,'foods'), 'foodLikeText','icv-daily'],
+        [LT('嫌いな食べ物', 'Disliked Food', '讨厌的食物'), V(c.foodHateText,'foods'), 'foodHateText','icv-daily']
       ],
       mind: [
-        [LT('行動原理', 'Guiding Principle', INNER_LABEL_ZH['行動原理']), V(c.principleText,'principle'), 'principleText','icv-mind'],
-        [LT('コーデ基準', 'Fashion Policy', INNER_LABEL_ZH['コーデ基準']), V(c.fashionSenseText,'fashionsense'), 'fashionSenseText','icv-mind'],
-        [LT('表向きの夢', 'Public Dream', INNER_LABEL_ZH['表向きの夢']), V(c.innerDream,'dream'), 'innerDream','icv-mind'],
-        [LT('欲望（本音）', 'Hidden Desire', INNER_LABEL_ZH['欲望（本音）']), V(c.innerDesire,'desire'), 'innerDesire','icv-mind'],
-        [LT('弱点（性格 / 身体）', 'Weakness (Mind / Body)', INNER_LABEL_ZH['弱点（性格 / 身体）']), V(`${c.weaknessMind||'—'}／${c.weaknessBody||'—'}`,'weakness'), 'weaknessMind,weaknessBody','icv-mind'],
-        [LT('秀でた才能', 'Talent', INNER_LABEL_ZH['秀でた才能']), V(c.innerTalent,'talent'), 'innerTalent','icv-mind'],
-        [LT('コンプレックス', 'Complex', INNER_LABEL_ZH['コンプレックス']), V(c.complexText,'complex'), 'complexText','icv-mind'],
-        [LT('許せないこと', 'Unforgivable', INNER_LABEL_ZH['許せないこと']), V(c.unforgivableText,'unforgivable'), 'unforgivableText','icv-mind']
+        [LT('行動原理', 'Guiding Principle', '行事准则'), V(c.principleText,'principle'), 'principleText','icv-mind'],
+        [LT('コーデ基準', 'Fashion Policy', '穿搭准则'), V(c.fashionSenseText,'fashionsense'), 'fashionSenseText','icv-mind'],
+        [LT('表向きの夢', 'Public Dream', '对外的梦想'), V(c.innerDream,'dream'), 'innerDream','icv-mind'],
+        [LT('欲望（本音）', 'Hidden Desire', '欲望（真心话）'), V(c.innerDesire,'desire'), 'innerDesire','icv-mind'],
+        [LT('弱点（性格 / 身体）', 'Weakness (Mind / Body)', '弱点（性格 / 身体）'), V(`${c.weaknessMind||'—'}／${c.weaknessBody||'—'}`,'weakness'), 'weaknessMind,weaknessBody','icv-mind'],
+        [LT('秀でた才能', 'Talent', '过人的才能'), V(c.innerTalent,'talent'), 'innerTalent','icv-mind'],
+        [LT('コンプレックス', 'Complex', '情结・自卑处'), V(c.complexText,'complex'), 'complexText','icv-mind'],
+        [LT('許せないこと', 'Unforgivable', '不可原谅之事'), V(c.unforgivableText,'unforgivable'), 'unforgivableText','icv-mind']
       ],
       past: [
-        [LT('過去（生い立ち / トラウマ）', 'Past / Trauma', INNER_LABEL_ZH['過去（生い立ち / トラウマ）']), V(`${c.pastUpbringing||'—'}<br>${c.pastTrauma||'トラウマ：なし'}`,'past'), 'pastUpbringing,pastTrauma','icv-past'],
-        [LT('思い出の出来事', 'Treasured Memory', INNER_LABEL_ZH['思い出の出来事']), V(c.memoryText,'memory'), 'memoryText','icv-past'],
-        [LT('仲の良い友人', 'Close Friend', INNER_LABEL_ZH['仲の良い友人']), friendVal, 'friendText','icv-past'],
-        [LT('恋愛対象', 'Romantic Interest', INNER_LABEL_ZH['恋愛対象']), V(c.loveTarget,'love'), 'loveTarget','icv-past'],
-        [LT('恋愛経験人数', 'Past Relationships', INNER_LABEL_ZH['恋愛経験人数']), V(c.loveCountText,'lovecount'), 'loveCountText','icv-past']
+        [LT('過去（生い立ち / トラウマ）', 'Past / Trauma', '过去（成长经历 / 心理创伤）'), V(`${c.pastUpbringing||'—'}<br>${c.pastTrauma||'トラウマ：なし'}`,'past'), 'pastUpbringing,pastTrauma','icv-past'],
+        [LT('思い出の出来事', 'Treasured Memory', '难忘的往事'), V(c.memoryText,'memory'), 'memoryText','icv-past'],
+        [LT('仲の良い友人', 'Close Friend', '要好的朋友'), friendVal, 'friendText','icv-past'],
+        [LT('恋愛対象', 'Romantic Interest', '恋爱对象'), V(c.loveTarget,'love'), 'loveTarget','icv-past'],
+        [LT('恋愛経験人数', 'Past Relationships', '恋爱经历人数'), V(c.loveCountText,'lovecount'), 'loveCountText','icv-past']
       ],
       adult: [
-        [LT('飲酒', 'Drinking', INNER_LABEL_ZH['飲酒']), V(c.drinkText,'drink'), 'drinkText','icv-adult'],
-        [LT('喫煙', 'Smoking', INNER_LABEL_ZH['喫煙']), V(c.smokeText,'smoke'), 'smokeText','icv-adult'],
-        [LT('ギャンブル歴', 'Gambling History', INNER_LABEL_ZH['ギャンブル歴']), V(c.gambleText,'gamble'), 'gambleText','icv-adult'],
-        [LT('風俗経験', 'Adult-Venue Experience', INNER_LABEL_ZH['風俗経験']), V(c.fuzokuText,'fuzoku'), 'fuzokuText','icv-adult'],
-        [LT('初めての体験', 'First Experience', INNER_LABEL_ZH['初めての体験']), V(c.firstExpText,'firstexp'), 'firstExpText','icv-adult'],
-        [LT('経験人数', 'Partner Count', INNER_LABEL_ZH['経験人数']), V(c.expCountText,'expcount'), 'expCountText','icv-adult'],
-        [LT('週頻度（相手あり）', 'Weekly Pace (Partner)', INNER_LABEL_ZH['週頻度（相手あり）']), V(c.weekFreqText,'weekfreq'), 'weekFreqText','icv-adult'],
-        [LT('週頻度（セルフ）', 'Weekly Pace (Solo)', INNER_LABEL_ZH['週頻度（セルフ）']), V(c.selfFreqText,'selffreq'), 'selfFreqText','icv-adult']
+        [LT('飲酒', 'Drinking', '饮酒'), V(c.drinkText,'drink'), 'drinkText','icv-adult'],
+        [LT('喫煙', 'Smoking', '吸烟'), V(c.smokeText,'smoke'), 'smokeText','icv-adult'],
+        [LT('ギャンブル歴', 'Gambling History', '赌博经历'), V(c.gambleText,'gamble'), 'gambleText','icv-adult'],
+        [LT('風俗経験', 'Adult-Venue Experience', '风俗店经历'), V(c.fuzokuText,'fuzoku'), 'fuzokuText','icv-adult'],
+        [LT('初めての体験', 'First Experience', '初次体验'), V(c.firstExpText,'firstexp'), 'firstExpText','icv-adult'],
+        [LT('経験人数', 'Partner Count', '经验人数'), V(c.expCountText,'expcount'), 'expCountText','icv-adult'],
+        [LT('週頻度（相手あり）', 'Weekly Pace (Partner)', '每周频率（与伴侣）'), V(c.weekFreqText,'weekfreq'), 'weekFreqText','icv-adult'],
+        [LT('週頻度（セルフ）', 'Weekly Pace (Solo)', '每周频率（自己）'), V(c.selfFreqText,'selffreq'), 'selfFreqText','icv-adult']
       ]
     };
     const allOn = INNER_CATS.every(([k])=>ST.innerCatShow[k]);
@@ -620,7 +619,7 @@ import {
       rows.push(['__HEAD__', `<div class="inner-cat ${cls}">${en?enT:ja}</div>`]);
       rows.push(...CAT_ROWS[k]);
     }
-    if(!shown) rows.push(['__HEAD__', `<p class="notice" style="margin:8px 0 2px">${LT('まだ何も表示されていません。上のカテゴリボタンを押すと項目が表示されます。表示したカテゴリだけが雑誌ページ／プロフィールシートの指示文に反映されます。', 'Nothing is shown yet. Tap the category chips above to reveal items — only the shown categories are reflected in the magazine-page / profile-sheet prompts.', INNER_LABEL_ZH['まだ何も表示されていません。上のカテゴリボタンを押すと項目が表示されます。表示したカテゴリだけが雑誌ページ／プロフィールシートの指示文に反映されます。'])}</p>`]);
+    if(!shown) rows.push(['__HEAD__', `<p class="notice" style="margin:8px 0 2px">${LT('まだ何も表示されていません。上のカテゴリボタンを押すと項目が表示されます。表示したカテゴリだけが雑誌ページ／プロフィールシートの指示文に反映されます。', 'Nothing is shown yet. Tap the category chips above to reveal items — only the shown categories are reflected in the magazine-page / profile-sheet prompts.', '目前尚未显示任何内容。点击上方的分类按钮即可展开项目。只有已显示的分类会写入杂志页／档案页的提示词。')}</p>`]);
     return ['inner', LT('内面・背景（表示中のカテゴリのみ雑誌ページ／プロフィールシートに反映）', 'Inner / Background (only shown categories go into magazine & profile-sheet prompts)', '内在・背景（仅显示中的类别会写入杂志页／档案页提示词）'), rows];
   }
 

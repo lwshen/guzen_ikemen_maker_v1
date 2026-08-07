@@ -44,6 +44,14 @@ import {
     return ja;
   }
 
+  // Seven functions serve BOTH the ternary UI language and the binary prompt
+  // language, so they take an explicit 'ja'|'en'|'zh' code rather than a boolean.
+  // langOf() lifts a prompt-side boolean into that domain for the three callers
+  // that forward their own `english` flag. Codes and booleans are never mixed on
+  // the same parameter: passing the string 'zh' to a boolean-only prompt function
+  // would silently read as truthy and render English.
+  function langOf(v){ return v === 'zh' ? 'zh' : v ? 'en' : 'ja'; }
+
   // scenes may carry a weather/time prefix (buildEncounterScene, sceneMods), so
   // look the sentence up with the prefix split off and translated separately
   function sceneDisplay(value){
@@ -121,7 +129,8 @@ import {
     else if(items.length) selectEl.value = String(items[0]);
   }
 
-  function mbtiDescription(code, english=false){
+  function mbtiDescription(code, lang='ja'){
+    const zhMode = lang === 'zh', enMode = lang === 'en';
     const ja = {
       INTJ:'戦略的で独立心が強い', INTP:'論理的で探究心が強い', ENTJ:'決断力がありリーダー気質', ENTP:'発想力豊かで刺激を好む',
       INFJ:'理想志向で思慮深い', INFP:'感受性が高くマイペース', ENFJ:'面倒見がよく社交的', ENFP:'明るく自由なムードメーカー',
@@ -140,13 +149,13 @@ import {
       ISTJ:'诚实可靠、稳重', ISFJ:'温和、体贴入微', ESTJ:'务实、值得信赖', ESFJ:'协调性高、平易近人',
       ISTP:'寡言、动手能力强', ISFP:'自然随性、温柔', ESTP:'行动派、自带节奏', ESFP:'华丽、自来熟'
     };
-    if(english==='zh') return zh[code] || code;
-    return (english?en:ja)[code] || code;
+    if(zhMode) return zh[code] || code;
+    return (enMode?en:ja)[code] || code;
   }
 
   function mbtiDisplay(c){
     if(!c?.mbti) return '';
-    return `${c.mbti} / ${mbtiDescription(c.mbti, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en')}`;
+    return `${c.mbti} / ${mbtiDescription(c.mbti, ST.uiLang)}`;
   }
 
   function captionModeDisplay(mode){
@@ -159,10 +168,11 @@ import {
     return map[mode] || 'No text overlay';
   }
 
-  function getCaptionFieldLabelsArray(c, english=false){
+  function getCaptionFieldLabelsArray(c, lang='ja'){
+    const zhMode = lang === 'zh', enMode = lang === 'en';
     const labels = [];
     const fields = c?.captionFields || {name:true,era:true,height:true,weight:true,footSize:true,mbti:true};
-    Object.entries(captionFieldLabelMap).forEach(([k,map])=>{ if(fields[k]) labels.push(english==='zh' ? (map.zh ?? map.ja) : english?map.en:map.ja); });
+    Object.entries(captionFieldLabelMap).forEach(([k,map])=>{ if(fields[k]) labels.push(zhMode ? (map.zh ?? map.ja) : enMode?map.en:map.ja); });
     return labels;
   }
 
@@ -175,7 +185,7 @@ import {
     if(fields.height) parts.push(english ? `Height: ${c.height}` : `身長：${c.height}`);
     if(fields.weight) parts.push(english ? `Weight: ${c.weight}` : `体重：${c.weight}`);
     if(fields.footSize) parts.push(english ? `Foot Size: ${c.footSize}` : `足のサイズ：${c.footSize}`);
-    if(fields.mbti) parts.push(english ? `MBTI: ${c.mbti} (${mbtiDescription(c.mbti, true)})` : `MBTI：${c.mbti}（${mbtiDescription(c.mbti, false)}）`);
+    if(fields.mbti) parts.push(english ? `MBTI: ${c.mbti} (${mbtiDescription(c.mbti, 'en')})` : `MBTI：${c.mbti}（${mbtiDescription(c.mbti, 'ja')}）`);
     if(fields.nationality) parts.push(english ? `Nationality: ${displayValue('nationality',c.nationality)}` : `国籍：${c.nationality}`);
     if(fields.role) parts.push(english ? `Occupation: ${displayValue('role',c.role)}` : `職業：${c.role}`);
     return parts.join(english ? ' / ' : '｜');
@@ -185,7 +195,7 @@ import {
     if(!c || c.captionMode==='表記しない'){
       return english ? 'Do not add any extra text inside the image.' : '画像内に追加の文字情報は入れない。';
     }
-    const labelsArr = getCaptionFieldLabelsArray(c, english);
+    const labelsArr = getCaptionFieldLabelsArray(c, langOf(english));
     if(!labelsArr.length) return english ? 'Do not add any extra text inside the image.' : '画像内に追加の文字情報は入れない。';
     const labels = labelsArr.join(', ');
     const sample = buildCaptionLine(c, english);
@@ -311,8 +321,8 @@ import {
       if(english) return `Use his casual outfit: ${hb} ${ht}. Outerwear: ${hj}. Top: ${htp}. Bottom: ${hbm}. Shoes: ${hsh}. Socks: ${c.holidaySockBrand || c.sockBrand} ${c.holidaySockType || c.sockType}.`;
       return `カード内の服装は私服にする。${hb}の${ht}を基調に、上着は${hj}、トップスは${htp}、ボトムスは${hbm}、靴は${hsh}、靴下は${c.holidaySockBrand || c.sockBrand}の${c.holidaySockType || c.sockType}。`;
     }
-    if(english) return `Use only ${underwearDesc(c, true)} as the card outfit. ${underwearShapeGuide(c, true)} Keep the depiction non-sexual and neutral, like a body-reference character card.`;
-    return `カード内の服装は${underwearDesc(c, false)}のみ。${underwearShapeGuide(c, false)}非性的で、体型確認用のキャラクターカードとして自然に見せる。`;
+    if(english) return `Use only ${underwearDesc(c, 'en')} as the card outfit. ${underwearShapeGuide(c, true)} Keep the depiction non-sexual and neutral, like a body-reference character card.`;
+    return `カード内の服装は${underwearDesc(c, 'ja')}のみ。${underwearShapeGuide(c, false)}非性的で、体型確認用のキャラクターカードとして自然に見せる。`;
   }
 
   function buildCardInstruction(c, english=false){
@@ -330,21 +340,22 @@ import {
     return `人気トレーディングカードのようにデザイン性を高めた、オリジナルのトレーディングカード風キャラクターデザインとして構成する。ただし実在カードや公式カードの模倣ではなく、独自の架空キャラクターカードとして仕上げる。カード内に「GuzenIkemenMakerCARD」のロゴ文字を、オリジナルブランドロゴとしてはっきり入れる。カードスタイルは${c.cardStyle}、レアリティ表示は${rarityText}、配色テーマは${c.cardTheme}、レイアウトは${c.cardLayout}、装飾効果は${effect}。${rarityReasonJa}カード枠、情報パネル、ステータス欄、タグ欄を自然に配置し、表示項目は${labels || '氏名、プロフィール、MBTI、役割'}。人物を主役にしつつ、設定資料としての読みやすさとカードとしての見栄えを両立する。${rareExtra}`;
   }
 
-  function buildBodyHairSummary(c, english=false){
+  function buildBodyHairSummary(c, lang='ja'){
+    const zhMode = lang === 'zh', enMode = lang === 'en';
     if(c && c.bodyHairMode === '自然な表現（簡潔）'){
-      if(english==='zh') return '体毛按年龄・体质相应的自然范围整体低调描绘（既不过度无毛化，也不过度刻画）。';
-      return english
+      if(zhMode) return '体毛按年龄・体质相应的自然范围整体低调描绘（既不过度无毛化，也不过度刻画）。';
+      return enMode
         ? 'Body hair: a natural, age-appropriate amount overall, kept subtle — neither artificially hairless nor excessive.'
         : '体毛は年齢・体質相応の自然な範囲で、全体に控えめに描く（過度な無毛化も過剰な描写もしない）。';
     }
     if(!c) return '';
     const partsJa = [`体毛は全体として${c.bodyHairOverall}`];
     const areasJa = [['胸毛',c.chestHair],['腹毛',c.abdominalHair],['へそ下',c.lowerAbdomenHair],['腕毛',c.armHair],['すね毛',c.shinHair],['もも毛',c.thighHair],['脇毛',c.armpitHair],['手の甲・指毛',c.handFingerHair],['足の甲・指毛',c.footToeHair],['背中',c.backHair]];
-    if(english==='zh'){
+    if(zhMode){
       const partZh = {'胸毛':'胸毛','腹毛':'腹毛','へそ下':'脐下','腕毛':'手臂毛','すね毛':'小腿毛','もも毛':'大腿毛','脇毛':'腋毛','手の甲・指毛':'手背・手指毛','足の甲・指毛':'脚背・脚趾毛','背中':'背部'};
       return `体毛整体${displayValue('bodyHairOverall',c.bodyHairOverall)}。${areasJa.map(([k,v])=>`${partZh[k]||k}为${displayValue('bodyHairLevel',v)}`).join('、')}。体毛表现为非性向，作为成年男性的自然身体特征来描绘。`;
     }
-    if(!english) return `${partsJa[0]}。${areasJa.map(([k,v])=>`${k}は${v}`).join('、')}。体毛表現は非性的で、成人男性の自然な身体特徴として描写する。`;
+    if(!enMode) return `${partsJa[0]}。${areasJa.map(([k,v])=>`${k}は${v}`).join('、')}。体毛表現は非性的で、成人男性の自然な身体特徴として描写する。`;
     const areasEn = [['chest hair',c.chestHair],['abdominal hair',c.abdominalHair],['lower abdomen hair',c.lowerAbdomenHair],['arm hair',c.armHair],['shin hair',c.shinHair],['thigh hair',c.thighHair],['armpit hair',c.armpitHair],['hand and finger hair',c.handFingerHair],['foot and toe hair',c.footToeHair],['back hair',c.backHair]];
     return `Body hair overall is ${displayValue('bodyHairOverall',c.bodyHairOverall)}. ${areasEn.map(([k,v])=>`${k}: ${displayValue('bodyHairLevel',v)}`).join('; ')}. Depict body hair non-sexually as a natural adult male body feature.`;
   }
@@ -474,6 +485,7 @@ import {
 export {
   T,
   LT,
+  langOf,
   slotLabel,
   fixedLabel,
   displayValue,
