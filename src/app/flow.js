@@ -42,6 +42,23 @@ import {
   loadHistory, renderAll, switchTab,
 } from './ui.js';
 
+  // Lifted out of generateCharacter: the slot editor needs the same map so it can
+  // offer the occupation's own hairstyles (e.g. 坊主 for 自衛官), which the generic
+  // pools.hairStyles list does not contain. Pure literals, so hoisting is inert.
+  const OCC_HAIRSTYLE = (()=>{
+    const M = {};
+    const set = (list, boost, damp) => list.forEach(o=>{ M[o] = {boost, damp}; });
+    set(['美容師','アパレル店員','古着屋店主','モデル'], [['スキンフェード',4],['フェード×ツイストスパイラル',4],['センターパート',3],['韓国風センターパート',3],['マッシュウルフ',2]], null);
+    set(['銀行員','公務員','営業職','商社勤務','ホテルスタッフ','経理・事務職','コンサルタント','不動産営業'], [['ビジネス短髪',6],['ソフトツーブロック',4],['ローフェード',3],['短髪',3],['サイドパート',2]], ['波巻きパーマ','スパイラルパーマ','ツイストパーマ','マンバン','フェード×ツイストスパイラル','マッシュウルフ']);
+    set(['自衛官','防衛大学校学生'], [['坊主',5],['短髪',5]], null);
+    M['自衛官'].only = M['防衛大学校学生'].only = ['坊主','短髪','ビジネス短髪','ソフトツーブロック','アップバング'];
+    set(['消防士','警察官','救急隊員'], [['短髪',4],['ソフトモヒカン',2],['アップバング',1]], ['波巻きパーマ','スパイラルパーマ','マンバン','ロング寄りミディアム','マッシュウルフ','フェード×ツイストスパイラル']);
+    set(['大工','自動車整備士','電気工事士','工場勤務','漁師','農家','配送ドライバー'], [['ソフトモヒカン',2],['短髪',3],['アップバング',1]], null);
+    set(['ITエンジニア','Webデザイナー','ゲーム開発者','アプリ開発者','イラストレーター','編集者'], [['マッシュ',3],['センターパート',2]], null);
+    set(['バーテンダー','喫茶店マスター'], [['バーバースタイル（七三フェード）',2],['七三分け',2],['サイドパート',2]], null);
+    return M;
+  })();
+
   function generateCharacter(partialMode='full', groupCtx=null){
     const fixed = groupCtx ? {} : getFixed();
     if(ST.FRIEND_CTX){ if(ST.FRIEND_CTX.age) fixed.age = ST.FRIEND_CTX.age; if(ST.FRIEND_CTX.nationality) fixed.nationality = ST.FRIEND_CTX.nationality; if(ST.FRIEND_CTX.season) fixed.season = ST.FRIEND_CTX.season; }
@@ -172,19 +189,6 @@ import {
       }
     }
     const STYLE_SINCE = {'スキンフェード':2016,'ローフェード':2016,'フェード×ツイストスパイラル':2019,'バーバースタイル（七三フェード）':2015,'クロップスタイル':2018,'マッシュウルフ':2020,'ソフトモヒカン':2003,'アシメショート':2008};
-    const OCC_HAIRSTYLE = (()=>{
-      const M = {};
-      const set = (list, boost, damp) => list.forEach(o=>{ M[o] = {boost, damp}; });
-      set(['美容師','アパレル店員','古着屋店主','モデル'], [['スキンフェード',4],['フェード×ツイストスパイラル',4],['センターパート',3],['韓国風センターパート',3],['マッシュウルフ',2]], null);
-      set(['銀行員','公務員','営業職','商社勤務','ホテルスタッフ','経理・事務職','コンサルタント','不動産営業'], [['ビジネス短髪',6],['ソフトツーブロック',4],['ローフェード',3],['短髪',3],['サイドパート',2]], ['波巻きパーマ','スパイラルパーマ','ツイストパーマ','マンバン','フェード×ツイストスパイラル','マッシュウルフ']);
-      set(['自衛官','防衛大学校学生'], [['坊主',5],['短髪',5]], null);
-      M['自衛官'].only = M['防衛大学校学生'].only = ['坊主','短髪','ビジネス短髪','ソフトツーブロック','アップバング'];
-      set(['消防士','警察官','救急隊員'], [['短髪',4],['ソフトモヒカン',2],['アップバング',1]], ['波巻きパーマ','スパイラルパーマ','マンバン','ロング寄りミディアム','マッシュウルフ','フェード×ツイストスパイラル']);
-      set(['大工','自動車整備士','電気工事士','工場勤務','漁師','農家','配送ドライバー'], [['ソフトモヒカン',2],['短髪',3],['アップバング',1]], null);
-      set(['ITエンジニア','Webデザイナー','ゲーム開発者','アプリ開発者','イラストレーター','編集者'], [['マッシュ',3],['センターパート',2]], null);
-      set(['バーテンダー','喫茶店マスター'], [['バーバースタイル（七三フェード）',2],['七三分け',2],['サイドパート',2]], null);
-      return M;
-    })();
     const pickHair = () => {
       let entries = eraAdjustEntries(profile ? profile.hairStyles.map(([v,w])=>[v,w]) : pools.hairStyles.map(v=>[v,1]), era, 'hairStyles', 'excludeHair');
       const y = Number(eraYear) || 2026;
@@ -645,6 +649,15 @@ ${promptTargetGuide(c, false)}`;
   function slotEditPool(key){
     if(key==='name') return nameCandidates();
     if(ST.current){
+      if(key === 'hairStyle') {
+        // pools.hairStyles is occupation-agnostic, so a style only the occupation
+        // grants (坊主 for 自衛官) became unreachable once you switched away from it.
+        // Offer the occupation's own styles first, then the generic pool.
+        const oh = ST.current.role ? OCC_HAIRSTYLE[ST.current.role] : null;
+        if (!oh) return pools.hairStyles;
+        const own = oh.only || (oh.boost || []).map(([v]) => v);
+        return [...new Set([...own, ...pools.hairStyles])];
+      }
       if(key==='jacket') return eraOptionsFor('jacket', ST.current, false);
       if(key==='top') return eraOptionsFor('top', ST.current, false);
       if(key==='bottom') return eraOptionsFor('bottom', ST.current, false);
