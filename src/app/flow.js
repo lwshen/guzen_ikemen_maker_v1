@@ -313,19 +313,19 @@ import {
       occupationMode, occInfluence, holidayPersona, sportName, sportsHistory: sportsHistoryArr, trainingLevel, season, avgHeightBase: heightAvgBase, workUniform: (uniform && !fixed.outfitType && !base.outfitType) ? uniform[0] : '', workUniformEn: (uniform && !fixed.outfitType && !base.outfitType) ? uniform[1] : '', headwear: (uniform && !fixed.outfitType && !base.outfitType) ? (uniform[7] || '') : '', headwearOn: base.headwearOn !== undefined ? base.headwearOn : true, derivedMode: initial.derivedMode || '参照画像前提（簡潔版）', ikemenIndexMode: initial.ikemenIndexMode || '表示しない', bodyHairMode: initial.bodyHairMode || '詳細指定', catchphraseMode: initial.catchphraseMode || '結果画面のみ表示',
       mainWearMode: initial.mainWearMode || 'ボクサーパンツのみ', underwearType: base.underwearType || (eraUw ? eraUw.type : ''), underwearColor: base.underwearColor || (eraUw ? eraUw.color : ''),
       shoes: base.shoes || coord.shoes, sockBrand: base.sockBrand || coord.sockBrand, sockType: base.sockType || coord.sockType, sockShape: base.sockShape || coord.sockShape, sockMaterial: base.sockMaterial || coord.sockMaterial, sockColor: base.sockColor || coord.sockColor, sockUse: base.sockUse || coord.sockUse,
-      personality: mbtiDescription(mbti, false),
+      personality: mbtiDescription(mbti, 'ja'),
       background: initial.background, lighting: initial.lighting, quality: initial.quality, outputType: initial.outputType, count: initial.count,
       promptLanguage: initial.promptLanguage || '日本語', promptTarget: initial.promptTarget || 'ChatGPT', captionMode: initial.captionMode || '表記する', bioCaptionMode: base.bioCaptionMode || initial.bioCaptionMode || '入れない', promptDetail: initial.promptDetail || '自動（生成先に合わせる）', captionFields: initial.captionFields || {name:true,era:true,height:true,weight:true,footSize:true,mbti:true},
       cardStyle: initial.cardStyle || 'スタンダード', cardRarity: initial.cardRarity || 'おすすめ自動', cardTheme: initial.cardTheme || 'ネイビー', cardLayout: initial.cardLayout || '縦長カード', cardWearMode: initial.cardWearMode || 'ボクサーパンツのみ', cardEffect: initial.cardEffect || 'なし', cardFields: initial.cardFields || {name:true,age:true,era:true,height:true,weight:true,footSize:true,role:true,mbti:true,rarity:true},
       sceneIdea: buildEncounterScene({role, outfitType, vibe, nationality, ethnicity, mbti, eraYear, season, occInfluence, occupationMode}),
       createdAt: new Date().toISOString()
     };
-    if(partialMode==='face' && ST.current){ Object.assign(c, ST.current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,false), facePreset:c.facePreset, ageAppearance:c.ageAppearance, faceLine:c.faceLine, eyes:c.eyes, tearBags:c.tearBags, nose:c.nose, mouth:c.mouth, lips:c.lips, mouthPos:c.mouthPos, faceSpacing:c.faceSpacing, faceRatio:c.faceRatio, faceAsym:c.faceAsym, skin:c.skin, facialHair:c.facialHair, hairStyle:c.hairStyle, hairColor:c.hairColor, sceneIdea:buildEncounterScene({role:c.role, outfitType:ST.current.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
+    if(partialMode==='face' && ST.current){ Object.assign(c, ST.current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,'ja'), facePreset:c.facePreset, ageAppearance:c.ageAppearance, faceLine:c.faceLine, eyes:c.eyes, tearBags:c.tearBags, nose:c.nose, mouth:c.mouth, lips:c.lips, mouthPos:c.mouthPos, faceSpacing:c.faceSpacing, faceRatio:c.faceRatio, faceAsym:c.faceAsym, skin:c.skin, facialHair:c.facialHair, hairStyle:c.hairStyle, hairColor:c.hairColor, sceneIdea:buildEncounterScene({role:c.role, outfitType:ST.current.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
     applyMuscleFashion(c);
     if(!c.smileEyes) Object.assign(c, chooseSmileTraits(c));
-    if(partialMode==='outfit' && ST.current){ Object.assign(c, ST.current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,false), outfitType:c.outfitType,outfitBrand:c.outfitBrand,jacket:c.jacket,top:c.top,bottom:c.bottom,holidayOutfitType:c.holidayOutfitType,holidayOutfitBrand:c.holidayOutfitBrand,holidayJacket:c.holidayJacket,holidayTop:c.holidayTop,holidayBottom:c.holidayBottom,holidayShoes:c.holidayShoes,holidaySockBrand:c.holidaySockBrand,holidaySockType:c.holidaySockType,holidaySockColor:c.holidaySockColor,holidaySockUse:c.holidaySockUse,boxerBrand:c.boxerBrand,boxerColor:c.boxerColor,mainWearMode:c.mainWearMode,underwearType:c.underwearType,underwearColor:c.underwearColor,shoes:c.shoes,sockBrand:c.sockBrand,sockType:c.sockType,sockShape:c.sockShape,sockMaterial:c.sockMaterial,sockColor:c.sockColor,sockUse:c.sockUse,sceneIdea:buildEncounterScene({role:c.role, outfitType:c.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
+    if(partialMode==='outfit' && ST.current){ Object.assign(c, ST.current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,'ja'), outfitType:c.outfitType,outfitBrand:c.outfitBrand,jacket:c.jacket,top:c.top,bottom:c.bottom,holidayOutfitType:c.holidayOutfitType,holidayOutfitBrand:c.holidayOutfitBrand,holidayJacket:c.holidayJacket,holidayTop:c.holidayTop,holidayBottom:c.holidayBottom,holidayShoes:c.holidayShoes,holidaySockBrand:c.holidaySockBrand,holidaySockType:c.holidaySockType,holidaySockColor:c.holidaySockColor,holidaySockUse:c.holidaySockUse,boxerBrand:c.boxerBrand,boxerColor:c.boxerColor,mainWearMode:c.mainWearMode,underwearType:c.underwearType,underwearColor:c.underwearColor,shoes:c.shoes,sockBrand:c.sockBrand,sockType:c.sockType,sockShape:c.sockShape,sockMaterial:c.sockMaterial,sockColor:c.sockColor,sockUse:c.sockUse,sceneIdea:buildEncounterScene({role:c.role, outfitType:c.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
     if(!groupCtx) Object.keys(ST.locks).forEach(k=>{ if(ST.locks[k] && ST.current && ST.current[k]!==undefined) c[k]=ST.current[k]; });
-    c.personality = mbtiDescription(c.mbti, false);
+    c.personality = mbtiDescription(c.mbti, 'ja');
     c.bioText = base.bioText || buildBioHook(c);
     if(!c.cardRarity || c.cardRarity==='おすすめ自動' || c.cardRarity==='なし') c.cardRarity = suggestCardRarity(c);
     c.cardEffect = cardEffectByRarity(c.cardRarity);
@@ -335,7 +335,7 @@ import {
   function slotValue(c,key){
     if(!c) return '？？？';
     if(key==='mbti') return mbtiDisplay(c);
-    if(key==='sportsHistory') return sportsHistoryText(c, ST.uiLang==='zh' ? 'zh' : ST.uiLang==='en');
+    if(key==='sportsHistory') return sportsHistoryText(c, ST.uiLang);
     return String(displayValue(key, c[key]) ?? '？？？');
   }
 
@@ -494,7 +494,7 @@ ${promptTargetGuide(lead, false)}`;
       return `Generate one image that naturally places the following ${n} adult men standing side by side, with everyone's full body visible. All of them are adults aged 18 or older. Keep the image non-sexual and wholesome, like a neutral body-reference sheet.
 Era setting: ${lead.eraYear || '2026'} CE. ${eraStyleNote(lead, true)}
 
-${ms.map((m,i)=>groupMemberIntro(m,i,true) + ` Main clothing: only ${underwearDesc(m, true)}.`).join('\n')}
+${ms.map((m,i)=>groupMemberIntro(m,i,true) + ` Main clothing: only ${underwearDesc(m, 'en')}.`).join('\n')}
 
 ${buildGroupDistinctionBlock(ms, true)}
 ${refSheetKind(lead.outputType) && !['poster','machiWork','machiOff','feet','magazine'].includes(refSheetKind(lead.outputType)) ? `Output format: ${lead.outputType}. Organize the sheet as a grid with one ROW per member and columns for each state/view, and include the mandatory full-body front view, full-body side view, and foot detail (foot front and sole views) for EVERY member.` : ''}
@@ -506,7 +506,7 @@ ${promptTargetGuide(lead, true)}`;
     return `以下の${n}人の成人男性を、全員の全身が見えるように横並びで自然に配置した1枚の画像として生成してください。全員18歳以上の成人。非性的で、体型確認用の設定資料として健全に描写する。
 時代設定は${eraLabel(lead.eraYear)}頃。${countryLine(lead, false)}${seasonLine(lead, false)}${eraStyleNote(lead, false)}
 
-${ms.map((m,i)=>groupMemberIntro(m,i,false) + `基準服装は${underwearDesc(m, false)}のみ。`).join('\n')}
+${ms.map((m,i)=>groupMemberIntro(m,i,false) + `基準服装は${underwearDesc(m, 'ja')}のみ。`).join('\n')}
 
 ${buildGroupDistinctionBlock(ms, false)}
 ${refSheetKind(lead.outputType) && !['poster','machiWork','machiOff','feet','magazine'].includes(refSheetKind(lead.outputType)) ? `出力形式：${lead.outputType}。行をメンバー、列を各状態・ビューとしたグリッドで整理し、必須項目として全身の正面・全身の側面・足元詳細（足の正面と足裏）を全メンバー分含める。` : ''}
@@ -596,7 +596,7 @@ ${promptTargetGuide(lead, false)}`;
 [PERSON] Photo year: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} ${c.age} years old, ${c.nationality}, ${c.ethnicity}. ${facePresetPhrase(c, true)} ${eyeAreaLine(c, true)} Nose: ${c.nose}. Base expression: ${c.mouth}.${smileLine(c,true)}${faceExtraLine(c, true)} Facial symmetry: ${displayValue('faceAsym', c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)} Hair: ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}.
 [PHYSIQUE] ${physiqueSpec(c, true, true)} Hip shape: ${displayValue('hipShape', c.hipShape || '標準的な丸みの臀部')} (a neutral body-reference note; never emphasized or staged).${muscleLine(c, true)}${trainingLine(c, true)}${bodyRealismLine(c, true)}
 [FEET] Foot shape: ${c.footShape}; ${footWidthDesc(c, true)}.${footFeatureLine(c, true, true)} In the barefoot panels, render toes with correct counts and joints; show exactly one pair of soles belonging to him only.
-[OUTFIT IN SHEET] Underwear (${underwearDesc(c, true)}) only, as a neutral body-reference presentation in the flat, matter-of-fact tone of clothing-catalog product photos — no sexual staging, emphasis, or posing. No outerwear, tops, bottoms, shoes, or socks.
+[OUTFIT IN SHEET] Underwear (${underwearDesc(c, 'en')}) only, as a neutral body-reference presentation in the flat, matter-of-fact tone of clothing-catalog product photos — no sexual staging, emphasis, or posing. No outerwear, tops, bottoms, shoes, or socks.
 [PURPOSE] This sheet is used to hand the character over to another chat or session as a reference image.
 [PROHIBITED] Making him look underage, sexual poses, excessive body emphasis, emphasis on genitals or the hips, excessive sole/toe close-ups outside the dedicated enlargement panel, unnatural AI-looking skin, changing him into a different person, broken text, extra feet or duplicated soles.
 ${promptTargetGuide(c, true)}`;
@@ -606,7 +606,7 @@ ${promptTargetGuide(c, true)}`;
 【人物】撮影年代：${eraLabel(c.eraYear)}。${countryLine(c, false)}${eraStyleNote(c, false)}${c.age}歳、${c.nationality}、${c.ethnicity}。${sportsHistoryLine(c, false)}${facePresetPhrase(c)}${eyeAreaLine(c, false)}鼻は${c.nose}、基本表情は${c.mouth}。${smileLine(c,false)}${faceExtraLine(c, false)}左右差は${c.faceAsym || 'ほぼ対称（ごく自然な左右差）'}。${realismSpec(c, false)}${teethLine(c, false)}髪は${c.hairColor}の${c.hairStyle}。ひげは${c.facialHair}。
 【体格】${physiqueSpec(c, false, true)}臀部は${c.hipShape || '標準的な丸みの臀部'}（体型確認のための中立的な記載であり、強調や演出はしない）。${muscleLine(c, false)}${trainingLine(c, false)}${bodyRealismLine(c, false)}
 【足】足の形は${c.footShape}。${footWidthDesc(c, false)}。${footFeatureLine(c, false, true)}裸足パネルでは指の本数・関節を正確に描き、足裏は本人の1人分のみとする。
-【服装】基準服装は${underwearDesc(c, false)}のみ。体型確認のための中立的な資料表現であり、衣料品カタログの商品写真と同じ即物的なトーンで描く。性的な演出・強調・ポーズは一切しない。上着・トップス・ボトムス・靴・靴下は描写しない。
+【服装】基準服装は${underwearDesc(c, 'ja')}のみ。体型確認のための中立的な資料表現であり、衣料品カタログの商品写真と同じ即物的なトーンで描く。性的な演出・強調・ポーズは一切しない。上着・トップス・ボトムス・靴・靴下は描写しない。
 【用途】このシートは、別チャット・別セッションへ人物を引き継ぐための参照画像として使う。
 【禁止事項】未成年に見える表現、性的なポーズ、過度な身体強調、局部や臀部の強調、資料用拡大パネル以外での足裏・足指の過度な接写、AIっぽい肌、別人化、文字崩れ、本人以外の足や足裏の重複。
 ${promptTargetGuide(c, false)}`;
@@ -730,7 +730,7 @@ ${promptTargetGuide(c, false)}`;
     }
     if(['jacket','top','bottom','shoes'].includes(key)) partBrandRedraw(ST.current, key, false);
     if(['holidayJacket','holidayTop','holidayBottom','holidayShoes'].includes(key)) partBrandRedraw(ST.current, key.replace('holiday','').toLowerCase(), true);
-    if(key==='mbti') ST.current.personality = mbtiDescription(value, ST.uiLang==='en');
+    if(key==='mbti') ST.current.personality = mbtiDescription(value, ST.uiLang);
     if(key==='footSize') ST.current.footSizeManual = true;
     if(key==='height'){
       ST.current.heightRaw = parseInt(value, 10) || ST.current.heightRaw;
@@ -867,7 +867,7 @@ ${promptTargetGuide(c, false)}`;
     const fresh = generateCharacter('full');
     const keys = DICE_GROUPS[key] || [key];
     keys.forEach(k=>{ if(fresh[k]!==undefined) ST.current[k]=fresh[k]; });
-    if(keys.includes('mbti')) ST.current.personality = mbtiDescription(ST.current.mbti, false);
+    if(keys.includes('mbti')) ST.current.personality = mbtiDescription(ST.current.mbti, 'ja');
     renderAll();
   }
 

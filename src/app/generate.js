@@ -22,7 +22,7 @@ import {
 import {
   LT,
   T, cardEffectByRarity, displayOptionLabel, displayValue, fixedLabel, mbtiDescription, mbtiDisplay, readCaptionFields,
-  readCardFields, renderSelectOptions, slotLabel, suggestCardRarity, syncCardSettingsVisibility, writeCaptionFields, writeCardFields,
+  readCardFields, renderSelectOptions, slotLabel, suggestCardRarity, syncCardSettingsVisibility, writeCaptionFields, writeCardFields, langOf,
 } from './i18n.js';
 import {
   applyFashionSenseFx, applyMuscleFashion, generateInnerProfile, innerDialectOf, innerMagazineBlock,
@@ -1375,11 +1375,12 @@ import {
     return hist;
   }
 
-  function sportsHistoryText(c, english=false){
+  function sportsHistoryText(c, lang='ja'){
+    const zhMode = lang === 'zh', enMode = lang === 'en';
     const h = (c && c.sportsHistory) || [];
-    if(!h.length) return english==='zh' ? '无（文化系・不参加社团）' : english ? 'None (non-athletic)' : 'なし（文化系・帰宅部）';
-    if(english==='zh') return h.map(x=>`${displayValue('sportName',x.name)}（${SPORT_STAGES_ZH[SPORT_STAGES[x.from]]||SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+(SPORT_STAGES_ZH[SPORT_STAGES[x.to]]||SPORT_STAGES[x.to])}）`).join('／');
-    if(english) return h.map(x=>{ const f=displayValue('sportStage',SPORT_STAGES[x.from]), t=displayValue('sportStage',SPORT_STAGES[x.to]);
+    if(!h.length) return zhMode ? '无（文化系・不参加社团）' : enMode ? 'None (non-athletic)' : 'なし（文化系・帰宅部）';
+    if(zhMode) return h.map(x=>`${displayValue('sportName',x.name)}（${SPORT_STAGES_ZH[SPORT_STAGES[x.from]]||SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+(SPORT_STAGES_ZH[SPORT_STAGES[x.to]]||SPORT_STAGES[x.to])}）`).join('／');
+    if(enMode) return h.map(x=>{ const f=displayValue('sportStage',SPORT_STAGES[x.from]), t=displayValue('sportStage',SPORT_STAGES[x.to]);
       return `${displayValue('sportName',x.name)} (${f}${x.from===x.to?'':'–'+t})`; }).join(', ');
     return h.map(x=>`${x.name}（${SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+SPORT_STAGES[x.to]}）`).join('／');
   }
@@ -1591,16 +1592,17 @@ import {
     return weighted(cands.map(([t,sc])=>[t, Math.pow(sc, 1.5)]));
   }
 
-  function muscleSummary(c, english=false){
+  function muscleSummary(c, lang='ja'){
+    const zhMode = lang === 'zh', enMode = lang === 'en';
     const hist = ((c && c.sportsHistory) || []).filter(x=>x.strength > 0 && SPORT_MUSCLE[x.name]);
-    if(!hist.length) return english==='zh' ? '无' : english ? 'None' : 'なし';
+    if(!hist.length) return zhMode ? '无' : enMode ? 'None' : 'なし';
     const m = hist[0];
-    if(english==='zh'){
+    if(zhMode){
       const tierZh = ((c.role === 'プロスポーツ選手' && m.name === c.sportName) || m.strength >= 2) ? '发达' : m.strength >= 0.8 ? '适度' : '留有痕迹';
       const zh = SPORT_MUSCLE_ZH[m.name];
       return `${displayValue('sportName',m.name)}：${zh?zh[1]:SPORT_MUSCLE[m.name][2]}（${tierZh}）${hist[1] && hist[1].strength > 0 ? `／${displayValue('sportName',hist[1].name)}` : ''}`;
     }
-    const tierTxt = ((c.role === 'プロスポーツ選手' && m.name === c.sportName) || m.strength >= 2) ? (english ? 'well developed' : 'しっかり') : m.strength >= 0.8 ? (english ? 'moderate' : 'ほどよく') : (english ? 'faint traces' : '名残程度');
+    const tierTxt = ((c.role === 'プロスポーツ選手' && m.name === c.sportName) || m.strength >= 2) ? (enMode ? 'well developed' : 'しっかり') : m.strength >= 0.8 ? (enMode ? 'moderate' : 'ほどよく') : (enMode ? 'faint traces' : '名残程度');
     return `${m.name}：${SPORT_MUSCLE[m.name][2]}（${tierTxt}）${hist[1] && hist[1].strength > 0 ? `／${hist[1].name}` : ''}`;
   }
 
@@ -1964,17 +1966,18 @@ import {
     return {type, color};
   }
 
-  function underwearDesc(c, english=false){
+  function underwearDesc(c, lang='ja'){
+    const zhMode = lang === 'zh', enMode = lang === 'en';
     const mode = c?.mainWearMode || 'ボクサーパンツのみ';
     const brandJa = c?.boxerBrand && c.boxerBrand !== '指定しない' ? `${c.boxerBrand}の` : '';
     const brandEn = c?.boxerBrand && c.boxerBrand !== '指定しない' ? `${c.boxerBrand} ` : '';
     if(mode === '時代に合った下着の種類' && c?.underwearType){
       const t = c.underwearType, col = c.underwearColor || '';
-      if(english==='zh'){
+      if(zhMode){
         const brandZh = c?.boxerBrand && c.boxerBrand !== '指定しない' ? `${displayValue('outfitBrand',c.boxerBrand)}的` : '';
         return `${brandZh}${col?`${displayValue('underwearColor',col)}的`:''}${displayValue('underwearType',t)}`;
       }
-      if(english){
+      if(enMode){
         const colEn = UNDERWEAR_COLOR_EN[col] || col;
         const tEn = {'白ブリーフ':'classic white briefs','カラーブリーフ':`${colEn} classic briefs`,'トランクス':`${colEn} loose trunks-style boxer shorts`,'ボクサーパンツ':`${colEn} boxer briefs`}[t] || `${colEn} ${t}`;
         return `${brandEn}${tEn}`;
@@ -1983,12 +1986,12 @@ import {
       return `${brandJa}${tJa}`;
     }
     const bwt = c?.baseWearType || 'ボクサーパンツ';
-    if(english==='zh'){
+    if(zhMode){
       const brandZh = c?.boxerBrand && c.boxerBrand !== '指定しない' ? `${displayValue('outfitBrand',c.boxerBrand)}的` : '';
       return `${brandZh}${displayValue('boxerColor',c?.boxerColor)}的${displayValue('baseWearType',bwt)}`;
     }
     const bwtEn = {'ボクサーパンツ':'boxer briefs','ショートショーツ':'athletic short shorts','スポーツスパッツ':'sports compression spats'}[bwt] || 'boxer briefs';
-    if(english) return `${brandEn}${UNDERWEAR_COLOR_EN[c?.boxerColor] || c?.boxerColor} ${bwtEn}`;
+    if(enMode) return `${brandEn}${UNDERWEAR_COLOR_EN[c?.boxerColor] || c?.boxerColor} ${bwtEn}`;
     return `${brandJa}${c?.boxerColor}の${bwt}`;
   }
 
@@ -2492,12 +2495,12 @@ import {
     const hobbyMap = {'スポーツ系':['ジム通いやフットサル','the gym and futsal'],'古着系':['古着屋巡り','vintage shopping'],'オタク系':['アニメやゲーム','anime and games'],'アウトドア系':['キャンプや登山','camping and hiking'],'バンドマン系':['バンド活動や機材集め','band practice and gear'],'レトロ系':['純喫茶巡り','retro coffee shops'],'メガネ知的系':['読書や美術館','reading and museums'],'おじさん系':['銭湯や晩酌','public baths and evening drinks'],'ギャル男系':['サウナや流行の遊び','saunas and trendy hangouts'],'ホスト系':['筋トレや美容','working out and skincare'],'サブカル系':['ミニシアターやレコード','indie cinemas and records'],'清楚系':['カフェでの読書','reading at cafes'],'ヤンキー系':['バイクいじり','tinkering with motorbikes'],'普通系':['散歩や動画鑑賞','walks and watching videos']};
     const hobbyDef = {guardian:['料理や散歩','cooking and walks'], analyst:['読書や考え事','reading and thinking'], social:['友人との食事','eating out with friends'], creative:['音楽や写真','music and photography']};
     const hobby = hobbyMap[c.vibe] || hobbyDef[grp];
-    if(english) return `Pick 2-3 questions such as "How do you spend your days off?", "What are you into lately?", and "What's your type?". Do NOT use pre-written answers — write the answers on the spot, in his own natural voice, based on this persona: personality ${mbtiDescription(c.mbti, true)}, vibe ${displayValue('vibe', c.vibe) || c.vibe}, hobby tendencies around ${hobby[1]}${c.sportName && c.sportName !== 'なし' ? `, and his sport is ${(typeof valueTranslations!=='undefined' && valueTranslations[c.sportName]) || c.sportName}` : ''}. Match the wording to his age (${c.age}) and to how people spoke around ${c.eraYear || '2026'}.`;
-    return `質問は「休日の過ごし方」「最近のマイブーム」「好きなタイプ」などから2〜3問選ぶ。回答の例文はここには書かないので、生成時に本人の人物像に沿った自然な口調でその場で書き起こすこと。人物像ヒント：性格は${mbtiDescription(c.mbti, false)}、雰囲気は${c.vibe}、趣味の傾向は${hobby[0]}あたり${c.sportName && c.sportName !== 'なし' ? `、競技は${c.sportName}` : ''}。言葉選びは${c.age}歳という年齢と、${eraLabel(c.eraYear)}頃の話し言葉に合わせる`;
+    if(english) return `Pick 2-3 questions such as "How do you spend your days off?", "What are you into lately?", and "What's your type?". Do NOT use pre-written answers — write the answers on the spot, in his own natural voice, based on this persona: personality ${mbtiDescription(c.mbti, 'en')}, vibe ${displayValue('vibe', c.vibe) || c.vibe}, hobby tendencies around ${hobby[1]}${c.sportName && c.sportName !== 'なし' ? `, and his sport is ${(typeof valueTranslations!=='undefined' && valueTranslations[c.sportName]) || c.sportName}` : ''}. Match the wording to his age (${c.age}) and to how people spoke around ${c.eraYear || '2026'}.`;
+    return `質問は「休日の過ごし方」「最近のマイブーム」「好きなタイプ」などから2〜3問選ぶ。回答の例文はここには書かないので、生成時に本人の人物像に沿った自然な口調でその場で書き起こすこと。人物像ヒント：性格は${mbtiDescription(c.mbti, 'ja')}、雰囲気は${c.vibe}、趣味の傾向は${hobby[0]}あたり${c.sportName && c.sportName !== 'なし' ? `、競技は${c.sportName}` : ''}。言葉選びは${c.age}歳という年齢と、${eraLabel(c.eraYear)}頃の話し言葉に合わせる`;
   }
 
   function profileShortText(c, english=false){
-    const per = mbtiDescription(c.mbti, english);
+    const per = mbtiDescription(c.mbti, langOf(english));
     const hol = c.holidayOutfitType || '';
     if(english) return `A ${c.age}-year-old ${displayValue('role', c.role) || 'man'} with a ${String(per).toLowerCase()} air; on days off he goes for a ${displayValue('outfitType', hol) || 'relaxed'} style.`;
     return `${per}雰囲気の${c.age}歳・${c.role}。休日は${hol ? hol + 'の装い' : '気楽な私服'}で過ごす。`;

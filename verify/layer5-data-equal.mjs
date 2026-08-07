@@ -78,7 +78,6 @@ const POST_FREEZE_EXPORTS = new Set([
   "ERA_LABEL_ZH",
   "SCENE_MOD_ZH",
   "FOOT_AXIS_LABEL_ZH",
-  "INNER_LABEL_ZH",
 ]);
 
 // every baseline entry must exist unchanged in `cur`; additions are allowed;
