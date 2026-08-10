@@ -501,6 +501,41 @@ sportsHistoryText(ST.current, ST.uiLang === "zh" ? "zh" : ST.uiLang === "en");
 
 **527 条组合句**：生成器直接吐出拼好的日文散文，拼装发生在约 30 个函数内部，查表层怎么重构都碰不到。架构解法是让生成器返回**结构化片段**（`{key, parts:[...]}`），把拼装推迟到渲染期按语言进行。这才是值得命名的那个重构（见 9.5）。
 
+## 11. P0/P1 修复：英文提示词轴护栏、snapMode 值污染、UI 语言跨轴泄漏（2026-08-10，分支 `p0-p1-i18n-fixes`）
+
+§10 之后的第二轮审计（多 agent 独立复查 + 词表机械核查）维持"架构不用重构"的判断，但抓出两个 P0 和三组 P1。按"先护栏、后修复"顺序落地，每步独立 commit、全程六层验证。
+
+### 11.1 P0 护栏（先行）：英文提示词轴此前零行为覆盖
+
+第 2 层所有场景只切**界面**语言，捕获的提示词全是日文——约 69 个 `english` 分支构建器无任何回归保护；更糟的是 `layer2-options-sweep.mjs` 的跳过注释声称"EN 回归保护在 golden 场景"，**不实**。新增 `plang=English` golden 矩阵 18 场景（uiLang ja/en/zh × full、3 个派生 sheet、friend/group），场景系统支持 `promptLang`/`dtype`。现有 golden 逐字节不变（纯追加）。
+
+### 11.2 P0 修复：`initialSnapMode` 的值被翻译函数改写
+
+它是 `translateStaticSelectOptions` 九个静态下拉中唯一**无 `value` 属性**的；HTML 规范下无 value 的 option 其值＝文本，EN/ZH 重标签后 `sel.value` 变成英/中文标签，而消费端（`snapLine`）比较日文字面量永不命中——EN/ZH 模式下派生提示词的拍摄演出块**静默丢失**，且污染值写进预设与历史。修复：首次捕获 `data-ja` 时先把日文文本固定进 `value` 属性（对整族下拉加固）。新增 ja snapMode 基线场景（与冻结上游逐字节一致，证明日文无恙）+ en/zh golden；唯一的旧 golden 变化恰是被修复的污染本身（历史里 `snapMode:"Standard (studio direction)"` → `通常（スタジオ演出）`）。
+
+### 11.3 P1 修复：提示词内容不再依赖 UI 语言
+
+**原则：提示词内容只许依赖提示词语言，绝不读 `ST.uiLang`。**三类泄漏：① english 分支约 45 处 `displayValue`（它读 `ST.uiLang`）——中文界面把中文片段漏进英文提示词、日文界面留下日文原文；② `accWorkNote` 返回 `LT()` 串被日文服装句原样拼接（冻结后引入的回归，上游是纯日文）；③ 档案页 refSheet 的两行 MBTI 经 `mbtiDisplay()` 走 UI 语言。修法：新增 `promptValue()`（uiLang 无关的 `valueTranslations` 查表，即 generate.js 既有惯用法的正名），english 分支全部换用；`accWorkNote` 回退上游日文常量、翻译移到 ui.js 资料行；MBTI 行钉死 `mbtiDescription(c.mbti,'en'/'ja')`；`bioLine` 的 role 改按请求语言取值（它经 `buildBioHook` 在**生成期**就把 uiLang 依赖写进 `c.bioText`）。
+
+**验收**：专项对拍（6 种子 × 2 提示词语言 × 6 派生类型）显示 7 个提示词框在三种 UI 语言下**逐字节相同**（修复前 88 处泄漏捕获）。106 个日文基线场景逐字节不变；恰好 8 个跨轴 golden（ja×English、zh×English）重录，逐条核对全部是值片段换语言，en×en 与全部显示 golden 未动。
+
+**注**：uiLang=ja × English 提示词此前留日文片段是上游冻结行为，本轮按上述原则一并修正——属有意分歧，由 11.1 的 golden 矩阵钉住新行为。
+
+同批修掉三处困住 zh 的二元 `uiLang==='en'` 判断（§8 同类问题第三次复发）：卡片/图内标注字段组标签 ×4、内在资料分类标题（改走 `LT(ja, en, INNER_CATS_ZH[k])`）、statusPill 空闲守卫——守卫改为由 `uiText` 各语言的 `waiting` 值派生，此前硬编码 `['待機中','Waiting']` 导致 zh→en 切换后英文界面残留「待机中」，新语言今后自动生效。
+
+### 11.4 P1 修复：第 6 层扫描器盲区与藏匿其中的残留
+
+§8/§9 之后的第三轮盲区教训：选择器清单落后于 markup。本轮加 `.field > span`、`.inner-cat`、`.pill`（`#promptAreaTarget` 设计上以原文显示提示词语言名，予以排除），新增 **placeholder/title 属性扫描**（此前从不扫属性），主扫描现在会展开内在资料分类（`.inner-cat` 此前从不进 DOM，等于没扫）。由此修复的残留：`#restoreCodeInput` 的日文 placeholder（新键 `restorePlaceholder`，三语）、收藏按钮 tooltip（`favTitle`）、JSON 导入失败 alert（`jsonParseError`）。
+
+### 11.5 验证结果（六层全绿）
+
+| 层 | 结果 |
+| --- | --- |
+| L2 行为 | **144 场景（106 基线 + 38 golden）0 差异、0 JS 错误**；日文侧字节不变 |
+| L1/L5 | ALL PASS（uiText 三语各 +3 键，subset 模式允许追加） |
+| L3/L4 | ALL PASS |
+| L6 | en 零日文、zh 零假名（扩宽后的选择器 + 属性扫描下）；6b 棘轮 527 无新增 |
+
 ## 附录 A — 146 个数据常量基线表（V3.0.0 首次盘点）
 
 | 行号 | 常量                     | 类型    | 条目数 | 内容                                                                                                                                                                 |

@@ -222,7 +222,7 @@ import {
   function renderHistory(){
     const h = loadHistory();
     const order = h.map((c,i)=>i).sort((a,b)=>((h[b].fav?1:0)-(h[a].fav?1:0)) || a-b);
-    els.historyList.innerHTML = h.length ? order.map(i=>{ const c=h[i]; return `<div class="history-item${c.fav?' faved':''}"><b>${c.fav?'★ ':''}${c.name} / ${LT(c.age+'歳', displayValue('age',c.age), c.age+'岁')} / ${c.height} / ${displayValue('bodyType',c.bodyType)}</b><p class="notice">${displayValue('facePreset',c.facePreset)}・${displayValue('outfitType',c.outfitType)}・${displayValue('sockType',c.sockType)}・${scoreRarity(c)[1]}${c.appVersion?` <span class="mini-badge" style="font-size:10px;padding:2px 6px">${c.appVersion}</span>`:''}</p><button class="fav-btn" data-fav="${i}" title="favorite">${c.fav?T('favOn'):T('favOff')}</button><button class="btn dark" data-load="${i}">${T('loadBtn')}</button></div>`; }).join('') : `<p class="notice">${T('noHistory')}</p>`;
+    els.historyList.innerHTML = h.length ? order.map(i=>{ const c=h[i]; return `<div class="history-item${c.fav?' faved':''}"><b>${c.fav?'★ ':''}${c.name} / ${LT(c.age+'歳', displayValue('age',c.age), c.age+'岁')} / ${c.height} / ${displayValue('bodyType',c.bodyType)}</b><p class="notice">${displayValue('facePreset',c.facePreset)}・${displayValue('outfitType',c.outfitType)}・${displayValue('sockType',c.sockType)}・${scoreRarity(c)[1]}${c.appVersion?` <span class="mini-badge" style="font-size:10px;padding:2px 6px">${c.appVersion}</span>`:''}</p><button class="fav-btn" data-fav="${i}" title="${T('favTitle')}">${c.fav?T('favOn'):T('favOff')}</button><button class="btn dark" data-load="${i}">${T('loadBtn')}</button></div>`; }).join('') : `<p class="notice">${T('noHistory')}</p>`;
     document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{ST.current=h[Number(b.dataset.load)]; ST.currentGroup=null; ST.activeMember=0; renderAll(); switchTab('result');});
     document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{ const i=Number(b.dataset.fav); h[i].fav=!h[i].fav; localStorage.setItem(STORAGE_KEY, JSON.stringify(h)); renderHistory(); });
   }
@@ -421,7 +421,7 @@ import {
           ST.current = data; renderAll(); switchTab('result');
         }
         alert(T('importedMsg'));
-      }catch(e){ alert('JSON parse error'); }
+      }catch(e){ alert(T('jsonParseError')); }
     };
     reader.readAsText(file);
   }

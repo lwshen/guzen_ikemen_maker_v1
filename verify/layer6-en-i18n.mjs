@@ -105,6 +105,14 @@ for (const { lang, pattern, what } of CHECKS) {
   // the foot-focus config panel hid an untranslated axis/option family for
   // several rounds because nothing ever rendered it during the scan
   const openConditionalPanels = async () => {
+    // inner-profile category headings render only once the categories are
+    // shown ([data-icat-all]="1" means "show all"; guard keeps it idempotent)
+    await page.evaluate(() => {
+      const b = document.querySelector("[data-icat-all]");
+      if (b && b.dataset.icatAll === "1") b.click();
+    });
+    await page.waitForTimeout(60);
+    await scan();
     for (const dtype of [
       "偶然足元強調場面シート",
       "キャラクタープロフィールシート",
@@ -143,14 +151,26 @@ for (const { lang, pattern, what } of CHECKS) {
         // 2. field labels, buttons, headings, pane descriptions, chips, and
         //    profile ROW LABELS (.kv b — values are character data, labels are chrome)
         for (const el of document.querySelectorAll(
-          "label > span, button, h2, h3, .pane-desc, .chip, .flow-step, .dtype-btn, #profileView .kv b",
+          "label > span, button, h2, h3, .pane-desc, .chip, .flow-step, .dtype-btn, #profileView .kv b, .field > span, .inner-cat, .pill",
         )) {
           if (el.id === "makerLanguageLabel") continue; // bilingual by design
+          if (el.id === "promptAreaTarget") continue; // shows the prompt-language name (日本語/English) natively by design
           const t = el.textContent.trim();
           if (t && PAT.test(t))
             out.push(
               `${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}: ${t.slice(0, 40)}`,
             );
+        }
+        // 3. placeholder/title attributes — chrome the textContent scans miss
+        //    (the restore-box placeholder hid here for several rounds)
+        for (const el of document.querySelectorAll("[placeholder], [title]")) {
+          for (const attr of ["placeholder", "title"]) {
+            const v = el.getAttribute(attr);
+            if (v && PAT.test(v))
+              out.push(
+                `${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}[${attr}]: ${v.slice(0, 40)}`,
+              );
+          }
         }
         return [...new Set(out)];
       }, pattern.source)

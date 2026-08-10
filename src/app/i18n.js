@@ -459,6 +459,7 @@ import {
     const rst=document.getElementById('restoreTitle'); if(rst) rst.textContent=T('restoreTitle');
     const rsb=document.getElementById('restoreCodeBtn'); if(rsb) rsb.textContent=T('restoreCodeBtn');
     const rsn=document.getElementById('restoreNote'); if(rsn) rsn.textContent=T('restoreNote');
+    const rci=document.getElementById('restoreCodeInput'); if(rci) rci.placeholder=T('restorePlaceholder');
     const frT=document.getElementById('friendPanelTitle'); if(frT) frT.textContent=T('friendPanelTitle');
     const frR=document.getElementById('friendRelationLabel'); if(frR) frR.textContent=T('friendRelationLabel');
     const frH=document.getElementById('friendHierLabel'); if(frH) frH.textContent=T('friendHierLabel');
