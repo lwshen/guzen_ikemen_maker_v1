@@ -103,7 +103,7 @@ import {
     return vt[String(value)] || value;
   }
 
-  // post-freeze fix: eight selects ship hardcoded static <option> labels that
+  // post-freeze fix: nine selects ship hardcoded static <option> labels that
   // never pass through displayOptionLabel. Original Japanese labels are kept in
   // data-ja on first run, then rendered per current language via the table.
   function translateStaticSelectOptions(){
@@ -114,6 +114,10 @@ import {
       if(!sel) continue;
       for(const o of sel.options){
         if(!o.dataset.ja) o.dataset.ja = o.textContent;
+        // a value-less <option>'s effective value IS its text (HTML spec), so
+        // relabeling would rewrite the value consumers compare against
+        // Japanese literals (snapMode broke this way in EN/ZH) — pin it first
+        if(!o.hasAttribute('value')) o.setAttribute('value', o.dataset.ja);
         const vt = VALUE_I18N[ST.uiLang];
         o.textContent = vt ? (vt[o.dataset.ja] || vt[o.value] || o.dataset.ja) : o.dataset.ja;
       }

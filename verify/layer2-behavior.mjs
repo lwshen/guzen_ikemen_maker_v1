@@ -242,10 +242,17 @@ for (let s = 1; s <= Math.min(5, SEEDS); s++) {
   scenarios.push({ seed: 831 + di, lang: 'en', modes: ['full'], promptLang: 'English', dtype }));
 scenarios.push({ seed: 834, lang: 'en', modes: ['full'], promptLang: 'English', friend: true });
 scenarios.push({ seed: 835, lang: 'en', modes: ['full'], promptLang: 'English', group: true });
+// snapMode regression guard: #initialSnapMode ships value-less options, whose
+// effective VALUE used to be rewritten when translateStaticSelectOptions
+// relabeled them in EN/ZH — silently dropping the photo-style block from
+// derived prompts. ja runs against the baseline; en/zh are golden-anchored.
+scenarios.push({ seed: 836, lang: 'ja', modes: ['full'], snapMode: '他撮りスナップ風' });
+scenarios.push({ seed: 837, lang: 'en', modes: ['full'], snapMode: '他撮りスナップ風' });
+scenarios.push({ seed: 838, lang: 'zh', modes: ['full'], snapMode: '自撮り風' });
 
 const UPDATE_GOLDEN = process.argv.includes('--update-golden');
 const GOLDEN_PATH = path.join(ROOT, 'verify', 'golden', 'en-scenarios.json');
-const isGolden = sc => sc.lang !== 'ja' || sc.flow === 'langswitch' || !!sc.promptLang || !!sc.snapMode;
+const isGolden = sc => sc.lang !== 'ja' || sc.flow === 'langswitch' || !!sc.promptLang;
 const golden = fs.existsSync(GOLDEN_PATH) ? JSON.parse(fs.readFileSync(GOLDEN_PATH, 'utf-8')) : {};
 const goldenOut = {};
 
