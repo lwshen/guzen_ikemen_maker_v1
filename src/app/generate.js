@@ -21,7 +21,7 @@ import {
 } from './flow.js';
 import {
   LT,
-  T, cardEffectByRarity, displayOptionLabel, displayValue, fixedLabel, mbtiDescription, mbtiDisplay, readCaptionFields,
+  T, cardEffectByRarity, displayOptionLabel, displayValue, fixedLabel, mbtiDescription, mbtiDisplay, promptValue, readCaptionFields,
   readCardFields, renderSelectOptions, slotLabel, suggestCardRarity, syncCardSettingsVisibility, writeCaptionFields, writeCardFields, langOf,
 } from './i18n.js';
 import {
@@ -793,7 +793,7 @@ import {
     return zh ? zh[0] : SPORT_MUSCLE[hist[0].name][0];
   }
 
-  function accWorkNote(c){ return ACC_WORK_OFF.some(r=>String(c.role||'').includes(r)) ? LT('（勤務中は外す）','(removed while on duty)','（工作时摘下）') : ''; }
+  function accWorkNote(c){ return ACC_WORK_OFF.some(r=>String(c.role||'').includes(r)) ? '（勤務中は外す）' : ''; }
 
   function syncMarriageRing(c){
     if(!c) return;
@@ -1380,8 +1380,8 @@ import {
     const h = (c && c.sportsHistory) || [];
     if(!h.length) return zhMode ? '无（文化系・不参加社团）' : enMode ? 'None (non-athletic)' : 'なし（文化系・帰宅部）';
     if(zhMode) return h.map(x=>`${displayValue('sportName',x.name)}（${SPORT_STAGES_ZH[SPORT_STAGES[x.from]]||SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+(SPORT_STAGES_ZH[SPORT_STAGES[x.to]]||SPORT_STAGES[x.to])}）`).join('／');
-    if(enMode) return h.map(x=>{ const f=displayValue('sportStage',SPORT_STAGES[x.from]), t=displayValue('sportStage',SPORT_STAGES[x.to]);
-      return `${displayValue('sportName',x.name)} (${f}${x.from===x.to?'':'–'+t})`; }).join(', ');
+    if(enMode) return h.map(x=>{ const f=promptValue(SPORT_STAGES[x.from]), t=promptValue(SPORT_STAGES[x.to]);
+      return `${promptValue(x.name)} (${f}${x.from===x.to?'':'–'+t})`; }).join(', ');
     return h.map(x=>`${x.name}（${SPORT_STAGES[x.from]}${x.from===x.to?'':'〜'+SPORT_STAGES[x.to]}）`).join('／');
   }
 
@@ -1504,7 +1504,7 @@ import {
 
   function bioLine(c, english=false){
     const age = c.age;
-    const role = displayValue('role', c.role) || c.role;
+    const role = english ? (promptValue(c.role) || c.role) : (c.role || '');
     const hist = ((c && c.sportsHistory) || []);
     const active = hist.filter(x=>x.strength > 0);
     if(c.role === 'プロスポーツ選手' && c.sportName && c.sportName !== 'なし'){
@@ -2142,7 +2142,7 @@ import {
   function teethLine(c, english=false){
     const al = c.teethAlign || 'ほぼ整った歯列';
     const co = c.teethColor || '自然な白さの歯';
-    if(english) return `Teeth: ${displayValue('teethAlign', al)}, ${displayValue('teethColor', co)}${teethColorNote(co, true)}. Show the teeth only as far as naturally visible when he smiles — do NOT keep his teeth constantly bared.`;
+    if(english) return `Teeth: ${promptValue(al)}, ${promptValue(co)}${teethColorNote(co, true)}. Show the teeth only as far as naturally visible when he smiles — do NOT keep his teeth constantly bared.`;
     return `歯並びは${al}、色は${co}${teethColorNote(co, false)}。歯は笑ったときに自然に見える範囲でのみ描写し、常に歯を見せた表情にはしない。`;
   }
 
@@ -2349,7 +2349,7 @@ import {
   function eyeAreaLine(c, english=false){
     const eb = c.eyebrow || '標準的なゆるいアーチ眉', ed = c.eyebrowDensity || '標準的な濃さの眉';
     const el = c.eyelid || '末広二重', esh = c.eyeShape || '標準的な目の形', ei = c.eyes || '親しみやすい目元', ela = c.eyelash || '標準的な長さのまつ毛';
-    if(english) return `Eyebrows: ${displayValue('eyebrow', eb)} (${displayValue('eyebrowDensity', ed)}). Eyelid: ${displayValue('eyelid', el)}. Eye shape: ${displayValue('eyeShape', esh)}. Eye impression: ${displayValue('eyes', ei)}. Eyelashes: ${displayValue('eyelash', ela)} — never make him look like he is wearing makeup or mascara.`;
+    if(english) return `Eyebrows: ${promptValue(eb)} (${promptValue(ed)}). Eyelid: ${promptValue(el)}. Eye shape: ${promptValue(esh)}. Eye impression: ${promptValue(ei)}. Eyelashes: ${promptValue(ela)} — never make him look like he is wearing makeup or mascara.`;
     return `眉は${eb}で、${ed}。まぶたは${el}、目の形は${esh}、目の印象は${ei}。まつ毛は${ela}（化粧をしているようには見せない）。`;
   }
 
@@ -2359,7 +2359,7 @@ import {
     const add = (key, jaFmt, enFmt)=>{
       const v = c[key];
       if(!v || v === FACE_EXTRA_DEFAULTS[key]) return;
-      parts.push(english ? enFmt(displayValue(key, v)) : jaFmt(v));
+      parts.push(english ? enFmt(promptValue(v)) : jaFmt(v));
     };
     add('jawChin', v=>`顎先は${v}`, v=>`Chin: ${v}`);
     add('jawAngle', v=>`${v}`, v=>`Jaw: ${v}`);
@@ -2495,29 +2495,29 @@ import {
     const hobbyMap = {'スポーツ系':['ジム通いやフットサル','the gym and futsal'],'古着系':['古着屋巡り','vintage shopping'],'オタク系':['アニメやゲーム','anime and games'],'アウトドア系':['キャンプや登山','camping and hiking'],'バンドマン系':['バンド活動や機材集め','band practice and gear'],'レトロ系':['純喫茶巡り','retro coffee shops'],'メガネ知的系':['読書や美術館','reading and museums'],'おじさん系':['銭湯や晩酌','public baths and evening drinks'],'ギャル男系':['サウナや流行の遊び','saunas and trendy hangouts'],'ホスト系':['筋トレや美容','working out and skincare'],'サブカル系':['ミニシアターやレコード','indie cinemas and records'],'清楚系':['カフェでの読書','reading at cafes'],'ヤンキー系':['バイクいじり','tinkering with motorbikes'],'普通系':['散歩や動画鑑賞','walks and watching videos']};
     const hobbyDef = {guardian:['料理や散歩','cooking and walks'], analyst:['読書や考え事','reading and thinking'], social:['友人との食事','eating out with friends'], creative:['音楽や写真','music and photography']};
     const hobby = hobbyMap[c.vibe] || hobbyDef[grp];
-    if(english) return `Pick 2-3 questions such as "How do you spend your days off?", "What are you into lately?", and "What's your type?". Do NOT use pre-written answers — write the answers on the spot, in his own natural voice, based on this persona: personality ${mbtiDescription(c.mbti, 'en')}, vibe ${displayValue('vibe', c.vibe) || c.vibe}, hobby tendencies around ${hobby[1]}${c.sportName && c.sportName !== 'なし' ? `, and his sport is ${(typeof valueTranslations!=='undefined' && valueTranslations[c.sportName]) || c.sportName}` : ''}. Match the wording to his age (${c.age}) and to how people spoke around ${c.eraYear || '2026'}.`;
+    if(english) return `Pick 2-3 questions such as "How do you spend your days off?", "What are you into lately?", and "What's your type?". Do NOT use pre-written answers — write the answers on the spot, in his own natural voice, based on this persona: personality ${mbtiDescription(c.mbti, 'en')}, vibe ${promptValue(c.vibe) || c.vibe}, hobby tendencies around ${hobby[1]}${c.sportName && c.sportName !== 'なし' ? `, and his sport is ${promptValue(c.sportName)}` : ''}. Match the wording to his age (${c.age}) and to how people spoke around ${c.eraYear || '2026'}.`;
     return `質問は「休日の過ごし方」「最近のマイブーム」「好きなタイプ」などから2〜3問選ぶ。回答の例文はここには書かないので、生成時に本人の人物像に沿った自然な口調でその場で書き起こすこと。人物像ヒント：性格は${mbtiDescription(c.mbti, 'ja')}、雰囲気は${c.vibe}、趣味の傾向は${hobby[0]}あたり${c.sportName && c.sportName !== 'なし' ? `、競技は${c.sportName}` : ''}。言葉選びは${c.age}歳という年齢と、${eraLabel(c.eraYear)}頃の話し言葉に合わせる`;
   }
 
   function profileShortText(c, english=false){
     const per = mbtiDescription(c.mbti, langOf(english));
     const hol = c.holidayOutfitType || '';
-    if(english) return `A ${c.age}-year-old ${displayValue('role', c.role) || 'man'} with a ${String(per).toLowerCase()} air; on days off he goes for a ${displayValue('outfitType', hol) || 'relaxed'} style.`;
+    if(english) return `A ${c.age}-year-old ${promptValue(c.role) || 'man'} with a ${String(per).toLowerCase()} air; on days off he goes for a ${promptValue(hol) || 'relaxed'} style.`;
     return `${per}雰囲気の${c.age}歳・${c.role}。休日は${hol ? hol + 'の装い' : '気楽な私服'}で過ごす。`;
   }
 
   function catchphrase(c, english=false){
     const occ = (c.role==='プロスポーツ選手' && c.sportName && c.sportName!=='なし') ? `${c.sportName}選手` : (c.role || '');
     const occEn = (c.role==='プロスポーツ選手' && c.sportName && c.sportName!=='なし')
-      ? `${(typeof valueTranslations!=='undefined' && valueTranslations[c.sportName]) || c.sportName} player`
-      : (displayValue('role', c.role) || c.role);
+      ? `${promptValue(c.sportName)} player`
+      : (promptValue(c.role) || c.role);
     const enJoin = (adjRaw) => { const adj = String(adjRaw||'').toLowerCase().trim(); const noun = String(occEn).toLowerCase(); const p = adj ? `${adj} ${noun}` : noun; return `${/^[aeiou]/.test(p) ? 'An' : 'A'} ${p}`; };
     const bright = ['金髪（ブリーチ）','ブリーチベージュ','ミルクティーベージュ','ハイトーンアッシュ','明るめブラウン','オレンジブラウン','シルバーアッシュ'].includes(c.hairColor);
     const blackish = ['黒','ブルーブラック','ネイビーブラック','黒に近いダークブラウン'].includes(c.hairColor);
     const gray = ['白髪まじり','ロマンスグレー','ごま塩頭','ほぼ白髪'].includes(c.hairColor);
     const strict = STRICT_HAIR_OCC.includes(c.role), free = FREE_HAIR_OCC.includes(c.role);
-    if(c.holidayPersona) return english ? `${enJoin('')} on weekdays, ${String(displayValue('vibe', c.vibe) || c.vibe).toLowerCase()} on days off` : `平日は${occ}、休日は${c.vibe}`;
-    if(c.age >= 60 && ['ギャル男系','やりらふぃー系','ヤンキー系','ストリート系','バンドマン系','韓国風','ホスト系'].includes(c.vibe)) return english ? `Forever ${String(displayValue('vibe', c.vibe) || c.vibe).toLowerCase()} — ${String(occEn).toLowerCase()}` : `いくつになっても${c.vibe}の${occ}`;
+    if(c.holidayPersona) return english ? `${enJoin('')} on weekdays, ${String(promptValue(c.vibe) || c.vibe).toLowerCase()} on days off` : `平日は${occ}、休日は${c.vibe}`;
+    if(c.age >= 60 && ['ギャル男系','やりらふぃー系','ヤンキー系','ストリート系','バンドマン系','韓国風','ホスト系'].includes(c.vibe)) return english ? `Forever ${String(promptValue(c.vibe) || c.vibe).toLowerCase()} — ${String(occEn).toLowerCase()}` : `いくつになっても${c.vibe}の${occ}`;
     if(c.age <= 30 && ['飲食店店長','ラーメン店店主','コンビニ店長','寿司職人','喫茶店マスター'].includes(c.role)) return english ? enJoin('young') : `若き${occ}`;
     if(strict && bright) return english ? `${enJoin('')} with unexpectedly bright hair` : `明るい髪の${occ}`;
     if(free && blackish) return english ? `${enJoin('')} who keeps his hair black` : `黒髪のままの${occ}`;
@@ -2546,7 +2546,7 @@ import {
       return english ? enJoin(f[1]) : `${f[0]}${occ}`;
     }
     if(c.age >= 60) return english ? `${enJoin('seasoned')}, still going strong` : `まだまだ現役の${occ}`;
-    return english ? enJoin(displayValue('vibe', c.vibe) || c.vibe) : `${c.vibe}の${occ}`;
+    return english ? enJoin(promptValue(c.vibe) || c.vibe) : `${c.vibe}の${occ}`;
   }
 
   function refSheetInstruction(c, english=false){
@@ -2642,7 +2642,7 @@ import {
       if(english){
         const blocks = [
           `(1) his one-line bio "${bioLine(c, true)}" under a small headline`,
-          `(2) a basic profile block (name ${nameKana(c)}, age ${c.age}, occupation ${displayValue('role', c.role)}, height ${c.height}, weight ${c.weight}, foot ${c.footSize}, MBTI ${mbtiDisplay(c)})`
+          `(2) a basic profile block (name ${nameKana(c)}, age ${c.age}, occupation ${promptValue(c.role)}, height ${c.height}, weight ${c.weight}, foot ${c.footSize}, MBTI ${c.mbti} / ${mbtiDescription(c.mbti, 'en')})`
         ];
         if(catLines.length) blocks.push(`(3) an "Inner / Background" block in smaller type listing (values are Japanese, keep them verbatim and readable): ${linesJa}`);
         blocks.push(`(${catLines.length?4:3}) a "PROFILE ONLY A / B / C" box: A ${A}cm / B ${B}cm / C ${CL} — print the values only, never explain their meaning`);
@@ -2650,14 +2650,14 @@ import {
       }
       const blocks = [
         `①小見出しの下にひとこと背景「${c.bioText || bioLine(c, false)}」`,
-        `②基本プロフィール欄（名前：${nameKana(c)}／${c.age}歳／${c.role}／身長${c.height}・体重${c.weight}・足${c.footSize}／MBTI：${mbtiDisplay(c)}）`
+        `②基本プロフィール欄（名前：${nameKana(c)}／${c.age}歳／${c.role}／身長${c.height}・体重${c.weight}・足${c.footSize}／MBTI：${c.mbti} / ${mbtiDescription(c.mbti, 'ja')}）`
       ];
       if(catLines.length) blocks.push(`③「内面・背景」欄を小さめの文字で整理して記載する：${linesJa}`);
       blocks.push(`${catLines.length?'④':'③'}「PROFILE ONLY A / B / C」欄（A：${A}cm／B：${B}cm／C：${CL}。数値・表記のみ記載し、意味の説明は一切書かない）`);
       return `「キャラクタープロフィールシート」として16:9の1枚に構成する。左側：${wear==='私服'?'私服':'職業服装'}のフルコーデでの全身立ち姿を1枚（靴あり。${wearSpecJa}）。右側：情報エリアを整然と組む。${blocks.join('。')}。誌面の日本語はすべて文字化けさせず読みやすく。${catLines.length&&S.adult?'「オトナの事情」の行は伏せ字や婉曲で品よく小さく。':''}全体は健全で非性的な人物設定資料として、画風・質感「${c.quality}」で描く。`;
     }
     if(kind==='magazine'){
-      if(english) return `Create a "character feature magazine page" — a fictional magazine spread featuring ${nameKana(c)} (${c.age}, ${displayValue('role', c.role)}), designed in ${magazineStyleByEra(c.eraYear, true)}. Layout: one main photo (casual outfit — ${casualOutfitSpec(c, true).replace('Casual outfit contents: ','')}), a smaller sub-cut (work outfit — ${workOutfitSpec(c, true).replace('Work outfit contents: ','')}), a big headline using the catchphrase "${catchphrase(c, true)}", a profile box (name, age, occupation, height ${c.height}), and a mini interview section: ${magazineQA(c, true)} ${c.season ? `Give the page a seasonal ${String(displayValue('season', c.season) || c.season).toLowerCase()} -issue feel. ` : ''}${innerMagazineBlock(c, true)}All page text must be clean and readable. Use a FICTIONAL magazine identity${c.nationality && c.nationality !== '日本' ? ` published in ${(typeof valueTranslations!=='undefined' && valueTranslations[c.nationality]) || c.nationality}` : ''} — no real magazine names or logos.`;
+      if(english) return `Create a "character feature magazine page" — a fictional magazine spread featuring ${nameKana(c)} (${c.age}, ${promptValue(c.role)}), designed in ${magazineStyleByEra(c.eraYear, true)}. Layout: one main photo (casual outfit — ${casualOutfitSpec(c, true).replace('Casual outfit contents: ','')}), a smaller sub-cut (work outfit — ${workOutfitSpec(c, true).replace('Work outfit contents: ','')}), a big headline using the catchphrase "${catchphrase(c, true)}", a profile box (name, age, occupation, height ${c.height}), and a mini interview section: ${magazineQA(c, true)} ${c.season ? `Give the page a seasonal ${String(promptValue(c.season) || c.season).toLowerCase()} -issue feel. ` : ''}${innerMagazineBlock(c, true)}All page text must be clean and readable. Use a FICTIONAL magazine identity${c.nationality && c.nationality !== '日本' ? ` published in ${promptValue(c.nationality)}` : ''} — no real magazine names or logos.`;
       return `「人物特集雑誌ページ」として構成する。${nameKana(c)}（${c.age}歳・${c.role}）を特集する${c.nationality && c.nationality !== '日本' ? `${c.nationality}で発行されている` : ''}架空の雑誌の誌面で、レイアウトは${eraLabel(c.eraYear)}頃の${magazineStyleByEra(c.eraYear, false)}にする。構成：メイン写真（私服コーデ。${casualOutfitSpec(c, false)}）、小さめのサブカット（職業服装。${workOutfitSpec(c, false)}）、キャッチフレーズ「${catchphrase(c, false)}」を使った大見出し、プロフィール欄（名前・年齢・職業・身長${c.height}）、ミニインタビュー欄：${magazineQA(c, false)}。${c.season ? `${c.season}の特集号として、誌面全体に季節感も添える。` : ''}${innerMagazineBlock(c, false)}誌面の日本語はすべて読みやすく、文字化けさせない。実在の雑誌名・ロゴは使わず、架空の雑誌としてデザインする。`;
     }
     if(kind==='outfitref'){
@@ -2670,7 +2670,7 @@ import {
     }
     if(kind==='blueprint'){
       const info = english
-        ? `Info panel fields (clean blueprint typography): Name "${c.name}", Height ${c.height}, Weight ${c.weight}, Foot size ${c.footSize}, Occupation ${displayValue('role', c.role)}, MBTI ${c.mbti}, and a one-line profile: "${profileShortText(c, true)}".`
+        ? `Info panel fields (clean blueprint typography): Name "${c.name}", Height ${c.height}, Weight ${c.weight}, Foot size ${c.footSize}, Occupation ${promptValue(c.role)}, MBTI ${c.mbti}, and a one-line profile: "${profileShortText(c, true)}".`
         : `情報欄（設計図らしい読みやすい文字組で記載）：氏名「${nameKana(c)}」、身長${c.height}、体重${c.weight}、足のサイズ${c.footSize}、職業「${c.role}」、MBTI「${c.mbti}」、プロフィール短文「${profileShortText(c, false)}」。`;
       if(english) return `Create a "chance-encounter character blueprint sheet" in a technical-drawing style: blueprint-blue background with a subtle grid, thin white frame lines, dimension-line accents, and clear panel labels. Required panels: (1) full-body FRONT view and (2) full-body SIDE view wearing only his underwear; (3) full-body front view wearing his work outfit WITHOUT shoes (suggested socks visible); (4) face FRONT view and (5) face SIDE view; (6) foot detail with the foot front view and sole view. ${info} ${outfitSummaryLine(c, true)} Label every panel, keep every panel clearly the same person, and keep the sheet non-sexual as a neutral character reference document.`;
       return `「偶然人物ブループリントシート」として、設計図（青図）風に構成する。ブループリントブルーの背景にうっすらとした方眼、細い白のフレーム線、寸法線風の飾り、明確なパネルラベルを付ける。必須パネル：①下着のみの全身の正面、②下着のみの全身の側面、③職業服装を着た全身の正面（靴は履かず、提案靴下が見える状態）、④顔の正面、⑤顔の側面、⑥足元詳細（足の正面と足裏）。${info}${outfitSummaryLine(c, false)}各パネルにラベルを付け、全パネル同一人物として顔立ち・体型・身長感を完全に一致させ、非性的なキャラクター設定資料として健全に描く。`;

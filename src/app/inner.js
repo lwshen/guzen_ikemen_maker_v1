@@ -546,7 +546,6 @@ import {
 
   // --- 表示セクション（カテゴリ選択式・32項目） ---
   function buildInnerSection(c, L){
-    const en = ST.uiLang==='en';
     // values are free-form Japanese phrases; run them through the value table
     // so en/zh entries take effect (missing entries fall back to Japanese)
     const V = (val, key)=>`${(val ? displayValue('innerText', val) : '') || '—'}${innerBadgeHtml(c, key)}`;
@@ -616,7 +615,7 @@ import {
     for(const [k,ja,enT,cls] of INNER_CATS){
       if(!ST.innerCatShow[k]) continue;
       shown++;
-      rows.push(['__HEAD__', `<div class="inner-cat ${cls}">${en?enT:ja}</div>`]);
+      rows.push(['__HEAD__', `<div class="inner-cat ${cls}">${LT(ja, enT, INNER_CATS_ZH[k])}</div>`]);
       rows.push(...CAT_ROWS[k]);
     }
     if(!shown) rows.push(['__HEAD__', `<p class="notice" style="margin:8px 0 2px">${LT('まだ何も表示されていません。上のカテゴリボタンを押すと項目が表示されます。表示したカテゴリだけが雑誌ページ／プロフィールシートの指示文に反映されます。', 'Nothing is shown yet. Tap the category chips above to reveal items — only the shown categories are reflected in the magazine-page / profile-sheet prompts.', '目前尚未显示任何内容。点击上方的分类按钮即可展开项目。只有已显示的分类会写入杂志页／档案页的提示词。')}</p>`]);
