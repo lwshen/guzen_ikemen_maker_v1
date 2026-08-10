@@ -19,7 +19,7 @@ import {
   ST,
 } from './state.js';
 import {
-  renderAll, updateCharCounts,
+  renderAll, updateCharCounts, initVideoControls, IDB, renderHistory, refreshThumbs,
 } from './ui.js';
 
   function T(key){
@@ -109,12 +109,15 @@ import {
     return vt[String(value)] || value;
   }
 
-  // post-freeze fix: nine selects ship hardcoded static <option> labels that
+  // post-freeze fix: these static selects ship hardcoded <option> labels that
   // never pass through displayOptionLabel. Original Japanese labels are kept in
   // data-ja on first run, then rendered per current language via the table.
+  // (V3.9.6 added initialMjMode / manualFacePresetOut / manualSnapMode /
+  // manualMjMode — value-less options, so the value-pinning below matters.)
   function translateStaticSelectOptions(){
     const ids = ['initialSnapMode','initialFacePresetOut','initialIkemenIndex','initialBodyHairMode','initialSportsInfluence',
-      'initialHeightBase','initialPromptDetail','initialBioCaption','profileSheetWearSel'];
+      'initialHeightBase','initialPromptDetail','initialBioCaption','profileSheetWearSel',
+      'initialMjMode','manualFacePresetOut','manualSnapMode','manualMjMode','videoDur'];
     for(const id of ids){
       const sel = document.getElementById(id);
       if(!sel) continue;
@@ -322,8 +325,8 @@ import {
   function cardWearDescription(c, english=false){
     const mode = c?.cardWearMode || 'ボクサーパンツのみ';
     if(mode==='職業服装'){
-      if(english) return `Use his work outfit: ${c.workUniform ? c.workUniformEn : `${c.outfitBrand} ${c.outfitType}`}. Outerwear: ${c.jacket}. Top: ${c.top}. Bottom: ${c.bottom}. Shoes: ${c.shoes}${uniformHatPhrase(c, true)}. Socks: ${c.sockBrand} ${c.sockType}.${c.workUniform ? ` Do not reproduce real organizations' insignia or logos.` : ''}`;
-      return `カード内の服装は職業服装にする。${c.workUniform ? `${c.workUniform}を着用し、` : `${c.outfitBrand}の${c.outfitType}を基調に、`}上着は${c.jacket}、トップスは${c.top}、ボトムスは${c.bottom}、靴は${c.shoes}${uniformHatPhrase(c, false)}、靴下は${c.sockBrand}の${c.sockType}。${c.workUniform ? '実在組織の記章・ロゴは正確に再現しない。' : ''}`;
+      if(english) return `Use his work outfit: ${c.workUniform ? c.workUniformEn : `${c.outfitBrand?`${c.outfitBrand} `:''}${c.outfitType}`}. Outerwear: ${c.jacket}. Top: ${c.top}. Bottom: ${c.bottom}. Shoes: ${c.shoes}${uniformHatPhrase(c, true)}. Socks: ${c.sockBrand} ${c.sockType}.${c.workUniform ? ` Do not reproduce real organizations' insignia or logos.` : ''}`;
+      return `カード内の服装は職業服装にする。${c.workUniform ? `${c.workUniform}を着用し、` : `${c.outfitBrand?`${c.outfitBrand}の`:''}${c.outfitType}を基調に、`}上着は${c.jacket}、トップスは${c.top}、ボトムスは${c.bottom}、靴は${c.shoes}${uniformHatPhrase(c, false)}、靴下は${c.sockBrand}の${c.sockType}。${c.workUniform ? '実在組織の記章・ロゴは正確に再現しない。' : ''}`;
     }
     if(mode==='私服'){
       const hb = c.holidayOutfitBrand || c.outfitBrand, ht = c.holidayOutfitType || c.outfitType;
@@ -406,8 +409,8 @@ import {
 
   function applyUiLanguage(){
     document.documentElement.lang = ST.uiLang==='ja' ? 'ja' : ST.uiLang==='zh' ? 'zh' : 'en';
-    document.querySelector('.badge').textContent = 'GUZEN SLOT SYSTEM / V3.2.2';
-    document.querySelector('.title').textContent = 'Guzen Ikemen Maker V3.2.2';
+    document.querySelector('.badge').textContent = 'GUZEN SLOT SYSTEM / V3.9.6';
+    document.querySelector('.title').textContent = 'Guzen Ikemen Maker V3.9.6';
     document.querySelector('.subtitle').textContent = T('subtitle');
     const heroNotice = document.getElementById('heroNotice'); if(heroNotice) heroNotice.textContent = T('heroNotice');
     const tabMap = {slot:'tab_slot', result:'tab_result', history:'tab_history', settings:'tab_settings'};
@@ -477,6 +480,14 @@ import {
     const cp7=document.getElementById('copyGroupBtn'); if(cp7) cp7.textContent=T('copyLabel');
     const gpt=document.getElementById('groupPromptTitle'); if(gpt) gpt.textContent=T('groupPromptTitle');
     const fs1=document.getElementById('flowStep1'); if(fs1) fs1.textContent=T('flowStep1');
+    // V3.9.6 sections: the new h2s ship without ids, so anchor on the adjacent
+    // copy-button ids (stable) instead of adding ids to the body-verbatim markup
+    const fpb=document.getElementById('fullProfBox'); if(fpb){ fpb.placeholder=T('fullProfPlaceholder'); const n=fpb.previousElementSibling; if(n) n.textContent=T('fullProfNotice'); }
+    for(const [btnId, key] of [['copyFullProfBtn','fullProfTitle'],['copyVrefBtn','vrefTitle'],['copyVideoBtn','videoTitle'],['copyTelopBtn','telopTitle']]){
+      const b=document.getElementById(btnId); if(!b) continue;
+      b.textContent=T('copyLabel');
+      const h=b.closest('.section-title')?.querySelector('h2'); if(h) h.textContent=T(key);
+    }
     const fs2=document.getElementById('flowStep2'); if(fs2) fs2.textContent=T('flowStep2');
     translateStaticSelectOptions();
     const histTitle=document.querySelector('#tab-history .section-title h2'); if(histTitle) histTitle.textContent=T('historyTitle');
@@ -491,7 +502,7 @@ import {
     setUiCardTitles();
     initSlots();
     initFixedForm();
-    initManualControls();
+    initManualControls(); initVideoControls(); IDB.open().then(()=>refreshThumbs().then(()=>renderHistory()));
     initInitialSettings();
     renderAll();
   }

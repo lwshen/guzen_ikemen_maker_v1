@@ -21,6 +21,9 @@
             <label class="field"><span>光</span><select id="manualLighting"></select></label>
             <label class="field"><span>指示文言語</span><select id="manualPromptLanguage"></select></label>
             <label class="field"><span>生成先</span><select id="manualPromptTarget"></select></label>
+            <label class="field"><span>顔立ちプリセット出力</span><select id="manualFacePresetOut"><option>含める</option><option>含めない</option></select></label>
+            <label class="field"><span>撮影演出（派生）</span><select id="manualSnapMode"><option>通常（スタジオ演出）</option><option>他撮りスナップ風</option><option>自撮り風</option></select></label>
+            <label class="field"><span>Midjourneyモード</span><select id="manualMjMode"><option>OFF</option><option>ON</option></select></label>
           </div></div>
           <div class="subcard" data-ui-card="manualProfileText"><h3>画像内プロフィール表記</h3><div class="form">
             <label class="field"><span>画像内スペック表示</span><select id="manualCaptionMode"></select></label>
@@ -67,10 +70,14 @@
         </div>
         <div id="flowGuide"><span class="flow-step" data-flow="1">STEP1&nbsp;🪪&nbsp;<b id="flowStep1">基準カードで画像を生成</b></span><span class="flow-arrow">→</span><span class="flow-step" data-flow="2">STEP2&nbsp;🎨&nbsp;<b id="flowStep2">その画像を添付して派生出力</b></span></div>
         <div id="promptTabs"></div>
+        <div class="section-title" style="margin-top:14px"><h2 style="font-size:15px">詳細プロフまとめ（閲覧・転記用）</h2><span><button class="btn primary" id="copyFullProfBtn">📋 コピー</button></span></div>
+        <p class="notice">人物の全設定を読みやすくまとめたテキストです。画像生成用プロンプトではありません。</p>
+        <textarea class="textarea" id="fullProfBox" readonly style="min-height:220px" placeholder="キャラクターを生成するとここに表示されます"></textarea>
         <div class="prompt-pane" id="pane-main">
-        <div class="section-title"><h2 id="paneTitle-main" style="font-size:15px">メイン画像用 指示文</h2><button class="btn primary" id="copyPromptBtn">📋 コピー</button></div>
+        <div class="section-title" style="margin-top:14px"><h2 id="paneTitle-main" style="font-size:15px">メイン画像用 指示文</h2><button class="btn primary" id="copyPromptBtn">📋 コピー</button></div>
         <p class="notice pane-desc" id="desc-main"></p>
         <textarea class="textarea" id="promptBox" readonly></textarea>
+        <div id="mjJaView" style="display:none; margin-top:8px; padding:10px 12px; background:rgba(120,140,255,.07); border:1px solid rgba(120,140,255,.25); border-radius:10px; font-size:12px; line-height:1.7; white-space:pre-wrap; color:var(--ink, #ccd);"></div>
         <p class="notice charcount" id="cc-promptBox"></p>
         </div>
         <div class="prompt-pane hidden" id="pane-outfit">
@@ -90,6 +97,12 @@
         <p class="notice pane-desc" id="desc-scene"></p>
         <textarea class="textarea" id="scenePromptBox" readonly style="min-height:190px"></textarea>
         <p class="notice charcount" id="cc-scenePromptBox"></p>
+        <div class="section-title" style="margin-top:14px"><h2 style="font-size:15px">動画用参照画像 指示文（基準カードから作成）</h2><span><button class="btn primary" id="copyVrefBtn">📋 コピー</button></span></div>
+        <textarea class="textarea" id="vrefPromptBox" readonly style="min-height:150px"></textarea>
+        <div class="section-title" style="margin-top:14px"><h2 style="font-size:15px">動画プロンプト（SeeDance・日本語／動画差分）</h2><span><select id="videoDur" style="margin-right:6px"><option value="15">15秒（2.0）</option><option value="30">30秒（2.5）</option></select><button class="pf-btn" id="videoDice">🎲</button><button class="btn primary" id="copyVideoBtn">📋 コピー</button></span></div>
+        <textarea class="textarea" id="videoPromptBox" readonly style="min-height:210px"></textarea>
+        <div class="section-title" style="margin-top:10px"><h2 style="font-size:15px">テロップ提案（後付け編集用）</h2><span><button class="pf-btn" id="telopDice">🎲</button><button class="btn primary" id="copyTelopBtn">📋 コピー</button></span></div>
+        <textarea class="textarea" id="telopBox" readonly style="min-height:170px"></textarea>
         </div>
         <div class="prompt-pane hidden" id="pane-friendPair">
         <div class="section-title"><h2 id="paneTitle-friendPair" style="font-size:15px">友人ツーショット 指示文</h2><button class="btn primary" id="copyFriendPairBtn">📋 コピー</button></div>

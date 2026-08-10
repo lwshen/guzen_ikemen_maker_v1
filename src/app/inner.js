@@ -20,7 +20,7 @@ import {
   createFriend, renderFriendPanel,
 } from './flow.js';
 import {
-  buildBioHook, eraBrandList, nameByNationality, nameKana, syncMarriageRing,
+  buildBioHook, eraBrandList, nameByNationality, nameKana, syncMarriageRing, buildBioHook2, buildBioLine2, buildPersonSummary, typeInEra,
 } from './generate.js';
 import {
   ST,
@@ -122,6 +122,7 @@ import {
   }
 
   function chooseInnerIncome(c){
+    if(/人力車の車夫/.test(String(c.role||''))){ const v=rnd(280,450,10); return [`年収は約${v}万円（歩合中心・観光シーズンで変動）`, null]; }
     const role = String(c.role||''), age = Number(c.age)||25, cat = innerRoleCat(role);
     if(cat==='student'){
       const it = innerWeighted([['収入なし（仕送り＋バイト月3万円）',5],['バイト代 月5万円',5],['バイト代 月8万円（掛け持ち）',3],['収入なし（勉強に専念）',3],['配信の投げ銭 月1万円',0.7,'r'],['treasureNFT…ではなく堅実に月4万円',0.1,'r']]);
@@ -451,6 +452,17 @@ import {
     if(/長男|長女|次男|次女|三男|三女/.test(String(c.familyText||''))) l.push(['子どもが初めて歩いた日',5]);
     if(/死別/.test(String(c.maritalText||''))) l.push(['妻と最後に行った旅行',5,'r']);
     if(/いじめられた|不登校/.test(String(c.pastUpbringing||''))) l.push(['はじめて味方になってくれた友人の一言',4,'r']);
+    // ④ 人物像・背景・時代からの合成思い出
+    const yM = Number(c.eraYear)||2026, ageM = Number(c.age)||25;
+    if(!/東京/.test(String(c.birthplaceText||'')) && /東京|首都圏/.test(String(c.residenceText||'')) && ageM>=20) l.push(['上京の日、駅の人の多さに立ち尽くしたこと',4]);
+    if(ageM>=23 && innerRoleCat(c.role)!=='student'){
+      l.push([yM<1995?'初任給で親にウイスキーを買って渡した日':'初任給で親を食事に連れて行った日',3.5]);
+      l.push(['新人時代、初めて一人で任された仕事で盛大に失敗した日',3]);
+    }
+    if(/車夫/.test(String(c.role||''))) l.push(['初めてお客を乗せて走り切った日の足の震え',4]);
+    if(yM-ageM+17>=1978 && yM-ageM+17<=1999) l.push(['夜通し並んで買ったCDを擦り切れるほど聴いた冬',2.5]);
+    if(yM-ageM+15>=2000 && yM-ageM+15<=2012) l.push(['ガラケーの充電が切れるまでメールし続けた夜',2.5]);
+    if(yM-ageM+15>=2013) l.push(['放課後にみんなで撮った動画が今も残っていること',2.5]);
     if(/荒れていた/.test(String(c.pastUpbringing||''))) l.push(['恩師に胸ぐらを掴まれて泣いた日',3,'r']);
     if(age<24) l = l.filter(x=>!/初任給|売上目標/.test(x[0]));
     if(age>=60) l.push(['初めて自分の給料で買ったテレビ',4],['万博に連れて行ってもらった日',3]);
@@ -509,7 +521,6 @@ import {
     if(has('birthdate')){ const r = chooseInnerBirthdate(c); c.birthdateText = r[0]; M.birthdate = r[1]; }
     if(has('pronoun')){ const r = chooseInnerPronoun(c); c.pronoun = r[0]; M.pronoun = r[1]; }
     if(has('principle')){ const r = chooseInnerPrinciple(c); c.principleText = r[0]; M.principle = r[1]; }
-    if(has('fashionsense')){ const r = chooseInnerFashionSense(c); c.fashionSenseText = r[0]; M.fashionsense = r[1]; applyFashionSenseFx(c); }
     if(has('dream')){ const r = chooseInnerDream(c); c.innerDream = r[0]; M.dream = r[1]; }
     if(has('desire')){ const r = chooseInnerDesire(c, c.innerDream); c.innerDesire = r[0]; M.desire = r[1]; }
     if(has('weakness')){ const r = chooseInnerWeakness(c); c.weaknessMind = r[0]; c.weaknessBody = r[1]; M.weakness = r[2]; }
@@ -535,10 +546,14 @@ import {
     if(has('weekfreq')){ const r = chooseInnerWeekFreq(c); c.weekFreqText = r[0]; M.weekfreq = r[1]; }
     if(has('selffreq')){ const r = chooseInnerSelfFreq(c); c.selfFreqText = r[0]; M.selffreq = r[1]; }
     if(has('expcount')){ const r = chooseInnerExpCount(c); c.expCountText = r[0]; M.expcount = r[1]; }
+    if(has('lovetype')){ const r = chooseInnerLoveType(c); c.loveTypeText = r[0]; M.lovetype = r[1]; }
+    if(has('fashionsense')){ const r = chooseInnerFashionSense(c); c.fashionSenseText = r[0]; M.fashionsense = r[1]; applyFashionSenseFx(c); }
+
     if(has('drink')){ const r = chooseInnerDrink(c); c.drinkText = r[0]; M.drink = r[1]; }
     if(has('smoke')){ const r = chooseInnerSmoke(c); c.smokeText = r[0]; M.smoke = r[1]; }
     if(has('friend')){ const r = chooseInnerFriend(c); c.friendText = r[0]; M.friend = r[1]; }
-    if(all && typeof buildBioHook === 'function'){ c.bioText = buildBioHook(c); }
+    if(all && typeof buildBioHook2 === 'function'){ c.catchText = buildBioHook2(c); c.bioText = buildBioLine2(c) || null; }
+    if(all && typeof buildPersonSummary === 'function'){ c.summaryText = buildPersonSummary(c); }
     return c;
   }
 
@@ -562,7 +577,7 @@ import {
       life: [
         [LT('結婚', 'Marital Status', '婚姻'), V(c.maritalText,'marital'), 'maritalText','icv-life'],
         [LT('恋人の有無', 'Partner', '恋人'), V(c.loverText,'lover'), 'loverText','icv-life'],
-        [LT('家族構成', 'Family', '家庭构成'), V(c.familyText,'family'), 'familyText','icv-life'],
+        [LT('家族構成', 'Family', '家庭构成'), V(c.familyText,'family') + (c.siblingOf?'':` <button class="pf-btn" data-make-sibling="兄" title="${LT('この人物の兄を作成（顔立てを引き継ぐ）', "Create this person's older brother (inherits facial features)", '创建此人的哥哥（继承长相）')}">👨‍👦 ${LT('兄を作成', 'Create older brother', '创建哥哥')}</button> <button class="pf-btn" data-make-sibling="弟" title="${LT('この人物の弟を作成（顔立てを引き継ぐ）', "Create this person's younger brother (inherits facial features)", '创建此人的弟弟（继承长相）')}">👦 ${LT('弟を作成', 'Create younger brother', '创建弟弟')}</button>`), 'familyText','icv-life'],
         [LT('生活状況', 'Living Situation', '生活状况'), V(c.livingText,'living'), 'livingText','icv-life'],
         [LT('住居', 'Residence', '居所'), V(c.residenceText,'residence'), 'residenceText','icv-life'],
         [LT('出自', 'Family Roots', '出身背景'), V(c.originText,'origin'), 'originText','icv-life'],
@@ -592,6 +607,7 @@ import {
         [LT('思い出の出来事', 'Treasured Memory', '难忘的往事'), V(c.memoryText,'memory'), 'memoryText','icv-past'],
         [LT('仲の良い友人', 'Close Friend', '要好的朋友'), friendVal, 'friendText','icv-past'],
         [LT('恋愛対象', 'Romantic Interest', '恋爱对象'), V(c.loveTarget,'love'), 'loveTarget','icv-past'],
+        [LT('好きなタイプ', 'Type Preference', '喜欢的类型'), V(c.loveTypeText,'lovetype'), 'loveTypeText','icv-past'],
         [LT('恋愛経験人数', 'Past Relationships', '恋爱经历人数'), V(c.loveCountText,'lovecount'), 'loveCountText','icv-past']
       ],
       adult: [
@@ -653,6 +669,7 @@ import {
       gambleText: ['なし（興味なし）','宝くじを年末だけ','競馬をレジャー程度','パチンコ経験あり（今はしない）','学生時代に雀荘へ通った','パチスロに熱かった時期がある','現役でパチンコ通い','競艇・競輪もたしなむ','株・FXで手痛い授業料を払った','借金を作って足を洗った','麻雀は打てるが賭けない主義','ソシャゲのガチャが実質ギャンブルだと気づいている'],
       firstExpText: ['二十歳前後','大学時代','社会人1年目','20代半ば','20代後半','成人してすぐ','30代（遅咲き）','まだない','まだない（興味もない）','ノーコメント（言わぬが花）','忘れたことにしている','秘密（大人になってから話すやつ）'],
       weekFreqText: ['夫婦円満ペース（月数回）','週1をキープ','最近はご無沙汰気味','レス気味だが仲は良い','記念日限定','聞くな（察してほしい）','週1〜2（会える日次第）','週末集中型','遠距離につき月イチ','まだそういう関係ではない','なし（相手がいない）','ゼロ更新中（記録継続）','たまに（アプリで会う人と）','気の置けない友人がいる（察してほしい）','ご縁があれば（現在は素振りのみ）','なし（そもそも求めていない）','もう数えていない（安らか）','ノーコメント'],
+      loveTypeText: ['年上のお姉さん系。聞き上手で居心地がいいタイプに弱い','黒髪の清楚系。しっかり者で頼れるタイプに弱い','笑顔がかわいい人。よく笑ってくれるタイプに弱い','年上の頼れる兄貴肌。筋の通った職人気質の人','性別より雰囲気で好きになる。柔らかい話し方の人','タイプという概念が薄い（強いて言えば、静かに隣にいられる人）','結局、推しに似た雰囲気の人ばかり目で追ってしまう'],
       expCountText: ['0人（まだ経験がない）','1人（妻だけ）','1人（最初で最後になるかもしれない一人）','2人（手堅い人数）','3人（全員ちゃんと交際した相手）','5人（片手では収まらなくなった）','8人（ワンナイト含む・本人調べ）','12人（途中から数え方が雑）','25人（もう思い出せない顔もある）','60人（プロ含む。もはや概算）','150人（三桁。本人は真顔）'],
       selfFreqText: ['週2〜3（本人談）','週1','ほぼ毎日（若さ）','月数回（省エネ）','賢者モード長期継続中','ノーカウント主義','週1（内緒）','月数回（こっそり）','ほぼ卒業した','会えない週の補完程度','恋人に誓って控えめ','ほぼなし（性欲も控えめ）','月数回（健康維持）','もう数えていない（安らか）'],
       drinkText: ['飲まない（下戸）','飲まない（あえて）','付き合い程度','週末だけ','晩酌が日課（ビール1本）','晩酌が日課（ハイボール派）','ザル（記憶は残るタイプ）','ザル（記憶が飛ぶタイプ）','休肝日を週2で死守','禁酒中（今週から）','家では飲まない主義','クラフトビール沼','日本酒をゆっくり派','ノンアル愛好家'],
@@ -698,6 +715,7 @@ import {
         if(S.mind){ col.push(`guiding principle (${c.principleText||''})`, `pet peeve (${c.unforgivableText||''})`, `weakness (${c.weaknessMind||''} / ${c.weaknessBody||''})`, `complex (${c.complexText||''})`); }
         if(S.past){ col.push(`upbringing (${c.pastUpbringing||''})`); }
         const sub = [];
+        if(c.summaryText) sub.unshift(`[Profile] ${c.summaryText}`);
         if(S.mind) sub.push(`his hidden desire (${c.innerDesire||''})`);
         if(S.adult) sub.push(`adult-venue history (${c.fuzokuText||'none'}), first experience (${c.firstExpText||''}), weekly pace with partner (${c.weekFreqText||''}), solo pace (${c.selfFreqText||''}), drinking (${c.drinkText||''}), smoking (${c.smokeText||''}) and gambling history (${c.gambleText||'none'})`);
         if(S.past && c.pastTrauma && c.pastTrauma!=='トラウマ：なし') sub.push(`past (${c.pastTrauma})`);
@@ -733,6 +751,7 @@ import {
       if(S.past){ col.push(`生い立ち（${c.pastUpbringing||''}）`); }
       const sub = [];
       if(S.mind) sub.push(`本音の欲望（${c.innerDesire||''}）`);
+      if(c.summaryText) sub.unshift(`【人物】${c.summaryText}`);
       if(S.adult) sub.push(`夜の顔（飲酒：${c.drinkText||''}／喫煙：${c.smokeText||''}／ギャンブル歴：${c.gambleText||'なし'}／風俗経験：${c.fuzokuText||'なし'}／初めての体験：${c.firstExpText||''}／経験人数：${c.expCountText||''}／週頻度：相手あり ${c.weekFreqText||''}・セルフ ${c.selfFreqText||''}）`);
       if(S.past && c.pastTrauma && c.pastTrauma!=='トラウマ：なし') sub.push(`過去（${c.pastTrauma}）`);
       parts.push(`自虐まじりの小コラムでは${col.join('、')}に軽く触れ${sub.length ? `、${sub.join('や')}は誌面に直接書かず行間の匂わせ程度にとどめる` : 'る'}。`);
@@ -965,37 +984,70 @@ import {
   function chooseInnerAsset(c){
     const age = Number(c.age)||25, y = Number(c.eraYear)||2026;
     const cat = innerRoleCat(c.role);
-    const gam = String(c.gambleText||''), ds = String(c.innerDesire||''), liv = String(c.livingText||'');
+    const gam = String(c.gambleText||''), ds = String(c.innerDesire||'');
     if(cat==='student' || age<=21){
       if(/借金を作って/.test(gam)) return ['バイト代が返済にほぼ消えている', 'rare'];
+      if(y>=2017 && Math.random()<0.06) return [`バイト貯金${rnd(5,30,1)}万円＋暗号資産に少額（値動きで一喜一憂）`, null];
       return [`バイト貯金${rnd(3,45,1)}万円`, null];
     }
     if(/借金を作って/.test(gam)) return [pick(['借金を完済したばかり（貯金はこれから）','返済がもう少しだけ残っている']), 'rare'];
     const inc = Number((String(c.incomeText||'').match(/約(\d+)万円/)||[])[1]) || 350;
     const years = Math.max(1, age-22);
     const spender = /分不相応な買い物|ギャンブルで一発|散財/.test(ds) || /現役でパチンコ|パチスロに熱かった/.test(gam);
-    let k = 0.04 + Math.random()*0.28;
-    if(spender) k *= 0.25;
-    if(/^I..J/.test(String(c.mbti||''))) k *= 1.3;
-    let amt = Math.round(inc * years * k / 10) * 10;
-    let v, badge = null;
-    if(amt < 30){ v = pick(['貯金ほぼゼロ（宵越しの銭は持たない）','貯金は常に一桁万円']); badge = inc>=700 ? 'gap' : (spender?'rare':null); }
-    else if(amt < 100) v = `貯金${Math.max(30,amt)}万円前後`;
-    else if(amt < 300) v = `貯金${Math.round(amt/50)*50}万円ほど`;
-    else if(amt < 700) v = `貯金${Math.round(amt/100)*100}万円台`;
-    else if(amt < 1500){ v = '貯金1000万円が見えてきた'; if(age<35) badge='rare'; }
-    else { v = '貯金1500万円超（堅実の鬼）'; badge='rare'; }
-    const extras = [];
-    if(/持ち家|ローン/.test(liv)) extras.push('持ち家（ローン残あり）');
-    if(Math.random()<.22){
-      if(y>=2018) extras.push('積立NISAをコツコツ');
-      else if(y>=2001) extras.push('投信をこっそり積立');
-      else extras.push(y>=1985&&y<1996 ? '定期預金（金利のいい時代）' : '財形貯蓄');
-    }
-    if(/大卒|大学院/.test(String(c.educationText||'')) && age<=32 && Math.random()<.2) extras.push('奨学金返済中');
-    if(Math.random()<.02 && !badge){ v = '実家が太い（本人は普通のつもり）'; badge='gap'; }
-    return [v + (extras.length? '・'+extras.join('・') : ''), badge];
+    const saver = /コツコツ|堅実|石橋/.test(String(c.principleText||'')) || /J$/.test(String(c.mbti||'')) && Math.random()<0.5;
+    // 統計準拠の中央値近似：年間貯蓄率×勤続年数（右に長い裾）
+    let rate = spender ? 0.02+Math.random()*0.05 : saver ? 0.10+Math.random()*0.14 : 0.04+Math.random()*0.10;
+    let total = Math.round(inc * rate * years * (0.6+Math.random()*0.9));
+    if(Math.random()<0.03 && age<=29){ total += rnd(500,1500,50); }
+    if(spender && Math.random()<0.5) return [pick(['貯金はほぼゼロ（今が楽しければいい）','口座残高は常に一桁万円']), 'rare'];
+    total = Math.max(1, Math.min(total, inc*years));
+    // 資産クラス構成（時代ゲート）
+    const parts = [];
+    let rest = total;
+    const use = (name, ratio) => { const v = Math.max(1, Math.round(total*ratio)); if(v>rest) return; parts.push(`${name}${v}万円`); rest -= v; };
+    const wantsInvest = !spender && (saver || inc>=500 || Math.random()<0.35);
+    if(y>=2014 && wantsInvest && age>=23 && Math.random()<0.55) use('NISA投信', 0.2+Math.random()*0.25);
+    if(y>=1998 && wantsInvest && inc>=450 && Math.random()<0.3) use('個別株', 0.15+Math.random()*0.2);
+    if(y>=2017 && age<=38 && Math.random()<(spender?0.25:0.12)) use('暗号資産', 0.05+Math.random()*0.15);
+    if(y<2000 && saver && cat!=='student' && Math.random()<0.4) use('財形貯蓄', 0.3+Math.random()*0.2);
+    let text;
+    if(parts.length){ parts.unshift(`預金${rest}万円`); text = `約${total}万円（${parts.join('＋')}）`; }
+    else text = `約${total}万円（ほぼ預金）`;
+    // 投資マンション（高収入×30歳以上）
+    if(inc>=700 && age>=30 && y>=1988 && Math.random()<0.12) return [`約${total}万円＋投資用ワンルーム1戸（ローン返済中）`, 'rare'];
+    let badge = null;
+    if(total >= 1000 && age<=32) badge = 'rare';
+    if(saver) text += pick(['・コツコツ積立派','・先取り貯金派','']);
+    if(spender) text += '・あればあるだけ使う';
+    return [text, badge];
   }
+
+  const LOVETYPE_F = ['年上のお姉さん系','黒髪の清楚系','笑顔がかわいい人','よく食べる元気な人','小柄で守りたくなる人','背が高くてかっこいい系の女性','ショートカットの似合う人','おっとりした癒し系','仕事のできるキャリア系','同い年の友達感覚でいられる人','聞き上手で落ち着く人','ふとした瞬間に色っぽい人'];
+
+  const LOVETYPE_M = ['年上の頼れる兄貴肌','物静かな知的系','よく笑う年下','がっしりした体格の人','手のきれいな人','声の低い落ち着いた人','一緒にいて楽な同年代','面倒見のいい先輩タイプ','無邪気に甘えてくる人','筋の通った職人気質の人'];
+
+  const LOVETYPE_B = ['性別より雰囲気で好きになる。柔らかい話し方の人','一緒に黙っていられる人','笑いのツボが同じ人','食の好みが合う人','距離感を大事にしてくれる人','背中を預けられる人'];
+
+  const LOVETYPE_TRAIT = ['しっかり者で頼れる','ちょっと天然で放っておけない','聞き上手で居心地がいい','自分を叱ってくれる','努力家で刺激をくれる','マイペースで穏やか','よく笑ってくれる','食べ方がきれい','時間にルーズじゃない','自分の趣味を面白がってくれる'];
+
+  function chooseInnerLoveType(c){
+    const lt = String(c.loveTarget||'');
+    const married = /既婚|再婚/.test(String(c.maritalText||''));
+    const vibe = String(c.vibe||'');
+    if(/興味がない/.test(lt)) return [pick(['タイプという概念が薄い（強いて言えば、静かに隣にいられる人）','特にない。恋愛の優先度が低い','考えたことがない、と本人は言う']), null];
+    if(/推し|二次元/.test(lt)) return [pick(['結局、推しに似た雰囲気の人ばかり目で追ってしまう','三次元に興味が向かない（推しが最強）','推しの声に似た声の人に弱い']), null];
+    let look;
+    if(/男性/.test(lt) && !/女性/.test(lt)) look = pick(LOVETYPE_M);
+    else if(/どちら/.test(lt)) look = pick(LOVETYPE_B);
+    else look = pick(LOVETYPE_F);
+    const trait = pick(LOVETYPE_TRAIT);
+    let badge = null;
+    let text = `${look}。${trait}タイプに弱い`;
+    if(['ホスト系','ギャル男系','やりらふぃー系'].includes(vibe) && /清楚|地味|物静か|おっとり/.test(look)) badge='gap';
+    if(married && Math.random()<0.4) text += '（妻がまさにこのタイプ）';
+    return [text, badge];
+  }
+
 
   // --- 飲酒 ---
   function chooseInnerDrink(c){
@@ -1037,13 +1089,38 @@ import {
     if(String(c.vibe||'')==='古着系' || String(c.holidayOutfitType||'')==='古着系') l = l.map(x=>x[2]==='furugi'?[x[0],x[1]*6,x[2]]:x);
     if(/石橋を叩いて/.test(String(c.principleText||''))) l = l.map(x=>x[2]==='ten'?[x[0],x[1]*4,x[2]]:x);
     if(/分不相応な買い物/.test(String(c.innerDesire||''))) l = l.map(x=>x[2]==='stretch'?[x[0],x[1]*5,x[2]]:x);
+    const highTr = (typeof HIGH_TRAIN!=='undefined') && HIGH_TRAIN.includes(c.trainingLevel);
+    const genba = /現場|職人|整備|工場|大工|鳶|建設|農|漁/.test(String(c.role||''));
+    const suitJob = /営業|銀行|商社|コンサル|公務員|会社員/.test(String(c.role||''));
+    const poorish = /ほぼゼロ|一桁万円|返済/.test(String(c.assetText||''));
+    const age2 = Number(c.age)||25;
+    l = l.filter(x=>!(x[2]==='gym' && !highTr)).filter(x=>!(x[2]==='workman' && !genba))
+         .filter(x=>!(x[2]==='suitonly' && !(suitJob && /J$/.test(String(c.mbti||''))))).filter(x=>!(x[2]==='senpai' && !(age2<=24 && /^E/.test(String(c.mbti||'')))))
+         .filter(x=>!(x[2]==='oshi' && !/推し|二次元/.test(String(c.loveTarget||'')))).filter(x=>!(x[2]==='gf2' && !hasLover))
+         .filter(x=>!(x[2]==='furima' && Number(c.eraYear||2026)<2015)).filter(x=>!(x[2]==='fitchange' && !(age2>=30 && /ぽっちゃり|腹/.test(String(c.bodyType||'')))))
+         .filter(x=>!(x[2]==='black' && !['クール系','ミステリアス系','モード系'].includes(String(c.vibe||''))))
+         .filter(x=>!(x[2]==='forward' && !(age2<=27 && ['韓国風','ストリート系','サブカル系'].includes(String(c.vibe||'')))));
+    if(poorish) l = l.map(x=>x[2]==='sale'?[x[0],x[1]*4,x[2]]:x);
+    if(/几帳面|完璧/.test(String(c.principleText||'')) || /J$/.test(String(c.mbti||''))) l = l.map(x=>x[2]==='iron'?[x[0],x[1]*2.5,x[2]]:x);
     const it = innerWeighted(l);
     let badge = null;
     if(it[2]==='mute') badge = Math.random()<.4 ? 'rare' : null;
     if(it[2]==='stretch') badge = 'gap';
+    if(it[2]==='suitonly') badge = 'gap';
     if(it[2]==='d') badge = 'rare';
     return [it[0], badge];
   }
+
+  function applySenseTypeFx(c){
+    if(!c) return;
+    const s = String(c.fashionSenseText||'');
+    if(/ジム服がそのまま私服化/.test(s)) c.holidayOutfitType = 'スポーツ練習着';
+    else if(/黒しか着ない/.test(s) && Math.random()<0.6) c.holidayOutfitType = 'オールブラック・ミニマル';
+    else if(/流行は先取り/.test(s) && Number(c.eraYear||2026)>=2016 && Math.random()<0.5) c.holidayOutfitType = pick(['テックウェア','きれいめストリート','Y2K'].filter(t=>typeInEra(t,Number(c.eraYear)||2026)));
+    else if(/ワークマンで全部済む/.test(s)) c.holidayOutfitType = 'ワークマン系機能カジュアル';
+    else if(/スーツ以外の服をほぼ持っていない/.test(s)){ c.holidayGapSuit = true; c.holidayOutfitType = c.outfitType && /スーツ/.test(c.outfitType) ? c.outfitType : '紺スーツ'; }
+  }
+
 
   function applyFashionSenseFx(c){
     if(!c) return;
@@ -1291,6 +1368,7 @@ import {
   }
 
 export {
+  applySenseTypeFx,
   innerRoleCat,
   innerAgeBand,
   INNER_RHNEG,

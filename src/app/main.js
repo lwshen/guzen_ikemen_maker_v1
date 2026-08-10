@@ -180,6 +180,10 @@ import {
 
   INNER_DEPS.lover = ['weekfreq','selffreq','fashionsense','expcount'];
 
+  INNER_DEPS.love = (INNER_DEPS.love||[]).concat(['lovetype']);
+
+  INNER_DEPS.marital.push('lovetype');
+
   INNER_DEPS.marital.push('fashionsense','expcount');
 
   INNER_DEPS.health = ['smoke','drink'];

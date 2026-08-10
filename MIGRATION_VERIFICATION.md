@@ -536,6 +536,39 @@ sportsHistoryText(ST.current, ST.uiLang === "zh" ? "zh" : ST.uiLang === "en");
 | L3/L4 | ALL PASS |
 | L6 | en 零日文、zh 零假名（扩宽后的选择器 + 属性扫描下）；6b 棘轮 527 无新增 |
 
+## 12. 上游 V3.2.2 → V3.9.6 移植（2026-08-10，分支 `upstream-v396`）
+
+**规模**：上游 9 个提交、7 个版本（V3.3〜V3.9.6），+1066/−125 行——约为 §7 那次移植（±180 行）的 6 倍。CSS 零改动；body +2.4KB；JS +94KB。新功能：品牌数据库与穿搭一致性引擎（BRAND_DB/resolvePartBrand/enforceOutfitCoherence/部位配色）、Midjourney 双联模式（自带 MJ_EN 英文表）、视频提示词三件套（参照图/SeeDance/テロップ）、詳細プロフまとめ、稀有度音效、历史缩略图（IndexedDB + 裁剪弹窗）、兄弟生成、内在新项（好きなタイプ）、眉手入れ/眉間、职业穿搭风格池扩充等。
+
+### 12.1 方法：声明级三方合并（§7 方法的规模化）
+
+diff 以**顶层声明**为粒度自动分类：71 新增 / 49 修改 / 0 删除 / 2 条新裸语句。每个修改声明跑 `git merge-file`（base=冻结 V3.2.2、theirs=V3.9.6、ours=模块化版）：**33 个干净合并**由脚本直接落位（含作用域感知的 ST. 前缀重写，声明内有同名局部变量时跳过该名并人工复核）；**16 个冲突**（正是与 §5–§11 的 i18n 修改相交的函数：renderProfile、generateCharacter、buildPrompt 族、applyUiLanguage 等）逐个三方解决，守则为「上游改动全收 + 我们的 delta 严格限于 ST./i18n 包装/promptValue 纯度/已提交修复」。71 个新增声明按上游中的邻接锚点插入对应模块（函数一律进 app 模块，锚点落在 data 文件的重定向）。
+
+**自由变量分析器**兜底模块化断层：移植后全模块扫描「引用了但未导入」的标识符（含 §7.3 的 `typeof` 静默失效陷阱专项标记），补齐 21 处跨模块导入/导出。唯一例外 `faceFeatOf`：上游本身就只有一处死引用（两分支同值），照原样保留。
+
+### 12.2 判定器结果
+
+**106 个日文基线场景对 V3.9.6 新基线逐字节一致、0 JS 错误——首次全量运行即通过。**38 个 en/zh/plang golden 按流程重录。
+
+### 12.3 新增 i18n 债务处理（上游照旧只写日文）
+
+- **词汇类全部补齐**：en +79 / zh +77 词条（职业穿搭风格 23、部位配色 15、眉手入れ/眉間 7、穿搭准则 16、车夫/救援制服件、新袜类、品牌、videoDur 档位等）。
+- **新界面文案**：uiText 三语各 +6 键（詳細プロフまとめ标题/说明/占位、動画参照图/視頻/テロップ标题），fieldLabels 三语各 +4（initialMjMode/manualFacePresetOut/manualSnapMode/manualMjMode）；新 h2 无 id，applyUiLanguage 以相邻复制按钮 id 锚定（不动 body-verbatim markup）。兄弟按钮、好きなタイプ行标签、眉行标签、Sibling created 状态语接 LT 三语。
+- **P0/P1 约定沿用**：新静态下拉（initialMjMode 等 4 个 + videoDur）进 translateStaticSelectOptions（无 value 选项自动被 §11.2 的 value 固定加固）；冲突解决时上游英文分支里的 displayValue 一律改写为 promptValue（§11.3 纯度原则）。
+- **组合句棘轮重冻结**：527 → **581**（净 +54：好きなタイプ为 LOVETYPE×TRAIT 模板组合、natInnerFix 的外国人语气/出身改写、资产池扩充等，属 §9.5/§10.6 记账的生成器架构类债务；词汇类不入棘轮）。
+
+### 12.4 验证结果（六层全绿）
+
+| 层 | 结果 |
+| --- | --- |
+| L2 行为（移植判定器） | **144 场景（106 基线 + 38 golden）0 差异、0 JS 错误**；ja 106 对新基线逐字节 |
+| L1 结构 | ALL PASS（新 id/data-\* 集合、body verbatim + 既有 shim） |
+| L5 数据 | ALL PASS（pools/OCCUPATIONS/UNIFORM_VARIANTS/BRAND_SINCE 等对新基线深比；新常量随逻辑住 app 模块，由 L2 钉住） |
+| L3/L4 | ALL PASS |
+| L6 | en 零日文、zh 零假名；6b 棘轮重冻结 581 |
+
+**注**：`index.html` 基线自此重锚为 upstream `ab4c058`（V3.9.6）。IndexedDB（缩略图）是新增的本地存储面——两个 localStorage key 字节不变，L4 不受影响；缩略图库仅存用户手动登记的图片，不参与行为对拍。
+
 ## 附录 A — 146 个数据常量基线表（V3.0.0 首次盘点）
 
 | 行号 | 常量                     | 类型    | 条目数 | 内容                                                                                                                                                                 |

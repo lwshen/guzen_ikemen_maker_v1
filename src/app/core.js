@@ -105,14 +105,17 @@ const STORAGE_KEY = 'guzen-ikemen-maker-v1.results';
     return value;
   };
 
-  const deriveMeasurementB = a => { const A=Number(a)||7; return Math.round((A*1.57 + Math.random()*1)*10)/10; };
+  const gaussRand = (m,s) => { let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return m + s*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); };
+
+
+  const deriveMeasurementB = a => { const A=Number(a)||7; let B=gaussRand(13.3,1.9); B=Math.max(9.0, Math.min(18.0, B)); B=Math.max(B, A*1.05); return Math.round(B*10)/10; };
 
  // B = A×1.57＋0〜1の誤差
   const ensureProfileMeasurements = c => {
     if(!c) return;
     const invalidA=!Number.isFinite(Number(c.measurementA)) || Number(c.measurementA)<5 || Number(c.measurementA)>10.5;
     const A0 = Number(c.measurementA);
-    const invalidB=!Number.isFinite(Number(c.measurementB)) || Number(c.measurementB) < A0*1.57 - 0.05 || Number(c.measurementB) > A0*1.57 + 1.05;
+    const invalidB=!Number.isFinite(Number(c.measurementB)) || Number(c.measurementB) < Math.max(9.0, A0*1.05) - 0.05 || Number(c.measurementB) > 18.0;
     const invalidC=!C_MEASUREMENT_VALUES.includes(c.measurementC);
     if(invalidA) c.measurementA=drawProfileMeasurement('A');
     if(invalidB) c.measurementB=deriveMeasurementB(c.measurementA);

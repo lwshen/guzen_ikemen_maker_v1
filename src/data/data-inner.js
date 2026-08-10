@@ -236,7 +236,12 @@ export const INNER_FASHION_SENSE = [
     ['清潔感がすべて（色は3色まで）',5],['無難第一（紺・白・グレーしか買わない）',4],['靴から決める派',3],['サイズ感命（試着は必ずする）',3],['全身同じ店で済ませる（効率）',3,'same'],['季節の初めにまとめ買い',3],['機能性最優先（ポケット数で選ぶ）',3],['迷ったら定番を10年着る',3,'ten'],['古着一筋（新品はほぼ買わない）',2,'furugi'],['雑誌やSNSの着こなしを研究',2.5],['店員に全身見立ててもらう',2],['色はモノトーン縛り',2.5],['柄物は靴下だけで遊ぶ',2],['アイロンがけが趣味の延長',1.5],['細身シルエット以外は着ない',2],['ゆるシルエット以外は着ない',2],
     ['妻が選んでいる（本人はノータッチ）',2.2,'wife'],['彼女が選んでいる（言いなり）',1.8,'gf'],['母親が買ってくる服をそのまま着る',1,'mom'],
     ['服に興味なし（量販店で3着まとめ買い）',2.2,'mute'],['同じ服の色違いを5枚持っている',1.8,'mute'],['サイズ表記だけ見て試着せず買う',1.5,'mute'],['穴が開くまで買い替えない',1.3,'mute'],
-    ['1点だけ明らかに背伸びしたブランド物を持つ',1,'stretch'],['実は服にだけ金をかける（食費を削って）',0.8,'d']
+    ['1点だけ明らかに背伸びしたブランド物を持つ',1,'stretch'],['実は服にだけ金をかける（食費を削って）',0.8,'d'],
+    ['ジム服がそのまま私服化している',1.2,'gym'],['ワークマンで全部済むと気づいてしまった',1.2,'workman'],['スーツ以外の服をほぼ持っていない',0.6,'suitonly'],
+    ['セール品しか買わない主義',1.5,'sale'],['ハイブランド1点主義（あとは無難）',0.8,'stretch'],['アイロンと毛玉取りが習慣',1.2,'iron'],
+    ['憧れの先輩の着こなしを丸ごと真似ている',1,'senpai'],['推しと同じ服を探して買う',0.8,'oshi'],['彼女に選んでもらうのが毎回楽しみ',1,'gf2'],
+    ['フリマアプリで売る前提で買う',1,'furima'],['体型が変わって服が合わない（買い替えは渋る）',0.8,'fitchange'],['黒しか着ない',1.2,'black'],
+    ['流行は先取りしないと気が済まない',1,'forward'],['靴だけは絶対に妥協しない',1.2],['試着室のカーテンを開けるのが苦手（通販派）',1],['サイズ違いで2枚買う慎重派',0.8]
   ];
 
 // index.html:5736
@@ -255,4 +260,4 @@ export const INNER_LOVE_NOTE_BI = [['性別より人柄',5],['どちらかとい
 export const INNER_KANA2KANJI = {ユウタ:['悠太','ユウタ'],ケンジ:['健二','ケンジ'],ダイキ:['大輝','ダイキ'],ショウ:['翔','ショウ'],タクミ:['拓海','タクミ'],ヒロ:['宏樹','ヒロキ'],カズ:['和真','カズマ'],リョウ:['涼','リョウ'],シンジ:['慎二','シンジ'],マサ:['雅之','マサユキ'],コウジ:['浩二','コウジ'],テツ:['哲平','テッペイ'],ナオ:['直樹','ナオキ'],ジュン:['潤','ジュン'],ゴロー:['吾郎','ゴロー'],ハヤト:['隼人','ハヤト'],ワタル:['航','ワタル'],アキラ:['彰','アキラ']};
 
 // index.html:5955
-export const INNER_FIELD_GEN = {innerDream:'dream', innerDesire:'desire', weaknessMind:'weakness', weaknessBody:'weakness', innerTalent:'talent', pastUpbringing:'past', pastTrauma:'past', pronoun:'pronoun', incomeText:'income', originText:'origin', educationText:'education', complexText:'complex', bloodType:'blood', loveTarget:'love', maritalText:'marital', livingText:'living', familyText:'family', birthplaceText:'birthplace', birthdateText:'birthdate', nicknameText:'nickname', speechText:'speech', memoryText:'memory', friendText:'friend', loverText:'lover', residenceText:'residence', healthText:'health', hobbyText:'hobby', myBoomText:'myboom', foodLikeText:'foods', foodHateText:'foods', principleText:'principle', unforgivableText:'unforgivable', fuzokuText:'fuzoku', gambleText:'gamble', firstExpText:'firstexp', weekFreqText:'weekfreq', drinkText:'drink', smokeText:'smoke', loveCountText:'lovecount', assetText:'asset', selfFreqText:'selffreq', fashionSenseText:'fashionsense', expCountText:'expcount'};
+export const INNER_FIELD_GEN = {innerDream:'dream', innerDesire:'desire', weaknessMind:'weakness', weaknessBody:'weakness', innerTalent:'talent', pastUpbringing:'past', pastTrauma:'past', pronoun:'pronoun', incomeText:'income', originText:'origin', educationText:'education', complexText:'complex', bloodType:'blood', loveTarget:'love', maritalText:'marital', livingText:'living', familyText:'family', birthplaceText:'birthplace', birthdateText:'birthdate', nicknameText:'nickname', speechText:'speech', memoryText:'memory', friendText:'friend', loverText:'lover', residenceText:'residence', healthText:'health', hobbyText:'hobby', myBoomText:'myboom', foodLikeText:'foods', foodHateText:'foods', principleText:'principle', unforgivableText:'unforgivable', fuzokuText:'fuzoku', gambleText:'gamble', firstExpText:'firstexp', weekFreqText:'weekfreq', drinkText:'drink', smokeText:'smoke', loveCountText:'lovecount', assetText:'asset', selfFreqText:'selffreq', fashionSenseText:'fashionsense', expCountText:'expcount', loveTypeText:'lovetype'};

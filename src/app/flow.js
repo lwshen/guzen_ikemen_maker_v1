@@ -22,7 +22,7 @@ import {
   generateSportsHistory, getFixed, getInitial, headCount, maxStageForAge, mbtiProfile, muscleLine, nameByNationality,
   nameKana, occOutfitBlocklist, occupationBodyWeights, occupationFaceWeights, occupationHairWeights, occupationOptionsHTML, occupationOutfitWeights, partBrandRedraw,
   physiqueSpec, pickHeightAround, realismSpec, refSheetInstruction, refSheetKind, roleWithSport, seasonLine, soleDetailLine,
-  sportsHistoryLine, sportsHistoryText, syncMarriageRing, teethLine, trainingLine, trainingWeightAdj, underwearDesc, vibeProfile,
+  sportsHistoryLine, sportsHistoryText, syncMarriageRing, teethLine, trainingLine, trainingWeightAdj, underwearDesc, vibeProfile, roleWorkType, CASUAL_NEW, typeInEra, natInnerFix, applyCoordToCharacter, resolvePartBrand, personaPool, FV_COLORS, FV_COLORS_ERA, buildBioHook2, buildBioLine2, WORK_STYLES,
 } from './generate.js';
 import {
   LT,
@@ -30,7 +30,7 @@ import {
   suggestCardRarity,
 } from './i18n.js';
 import {
-  INNER_EDIT_POOLS, INNER_EDIT_POOLS2, applyFashionSenseFx, applyMuscleFashion, generateInnerProfile,
+  INNER_EDIT_POOLS, INNER_EDIT_POOLS2, applyFashionSenseFx, applyMuscleFashion, generateInnerProfile, applySenseTypeFx,
 } from './inner.js';
 import {
   buildPrompt, buildTradingCardPrompt,
@@ -88,7 +88,8 @@ import {
     const season = fixed.season || base.season || ((initial.season && initial.season !== 'ランダム') ? initial.season : pick(['春','夏','秋','冬']));
     const profile = vibeProfile(vibe, age);
     const gapMode = Math.random() < 0.15;
-    const role = ST.FRIEND_CTX ? (ST.FRIEND_CTX.role || chooseRoleByMbti(age, vibe, mbti, eraYear, gapMode)) : (base.role || (initial.occupation && initial.occupation !== 'ランダム' ? initial.occupation : chooseRoleByMbti(age, vibe, mbti, eraYear, gapMode)));
+    let role = ST.FRIEND_CTX ? (ST.FRIEND_CTX.role || chooseRoleByMbti(age, vibe, mbti, eraYear, gapMode)) : (base.role || (initial.occupation && initial.occupation !== 'ランダム' ? initial.occupation : chooseRoleByMbti(age, vibe, mbti, eraYear, gapMode)));
+    if(nationality && nationality!=='日本' && /国鉄職員|自衛官|人力車の車夫|僧侶|寿司職人/.test(role)) role = pick(['営業職','ITエンジニア','カフェ店員','工場勤務','大学生']);
     const holidayPersona = !!(VIBE_OCC[vibe] && VIBE_OCC[vibe].bad.includes(role));
     const occRowForAge = OCCUPATIONS.find(o=>o[0]===role);
     if(occRowForAge && !base.age){
@@ -189,10 +190,28 @@ import {
       if(!entries.length) return chooseOutfitByMbti(age, rareMode, vibe, mbti);
       return weighted(entries);
     };
-    let outfitType = fixed.outfitType || base.outfitType || pickOutfitType(true);
+    let outfitType = fixed.outfitType || base.outfitType || (Math.random()<0.75 && roleWorkType(role, Number(eraYear)||2026, mbti)) || pickOutfitType(true);
     if(occFull && (UNIFORM_WORKWEAR[role] || UNIFORM_VARIANTS[role]) && !fixed.outfitType && !base.outfitType) outfitType = '職業制服';
     let holidayOutfitType = base.holidayOutfitType || pickOutfitType(false);
     if(holidayOutfitType === outfitType){ const retry = pickOutfitType(false); if(retry !== outfitType) holidayOutfitType = retry; }
+    if(!base.holidayOutfitType && Math.random()<0.35){
+      const y2=Number(eraYear)||2026;
+      const cand = CASUAL_NEW.filter(t=>typeInEra(t,y2));
+      const wts = cand.map(t=>{
+        let w=1;
+        if(t==='Y2K'||t==='裏原系'||t==='きれいめストリート') w=['ストリート系','韓国風','やりらふぃー系','ギャル男系'].includes(vibe)?3:0.5;
+        if(t==='お兄系') w=['ホスト系','ギャル男系','お兄系'].includes(vibe)?3:0.3;
+        if(t==='オールブラック・ミニマル') w=['クール系','ミステリアス系','モード系'].includes(vibe)?3:0.5;
+        if(t==='シティボーイ'||t==='フレンチカジュアル'||t==='ノームコア') w=['塩顔系','清楚系','きれいめ系','サブカル系'].includes(vibe)?2.5:1;
+        if(t==='ブリティッシュトラッド') w=['紳士系','メガネ知的系'].includes(vibe)?3:0.4;
+        if(t==='サーフ系') w=['アウトドア系','ワイルド系','スポーツ系'].includes(vibe)?2.5:0.6;
+        if(t==='和カジュアル') w=0.35;
+        if(t==='テックウェア') w=['ストリート系','オタク系','サブカル系'].includes(vibe)?2:0.6;
+        if(age>=38 && /Y2K|裏原|お兄|渋谷/.test(t)) w*=0.15;
+        return [t,w];
+      });
+      if(wts.length) holidayOutfitType = weighted(wts);
+    }
     let holidayGapSuit = base.holidayGapSuit || false;
     if(!base.holidayOutfitType){
       const HOLIDAY_BAN = ['紺スーツ','黒スーツ','グレースーツ','三つ揃いスーツ','学生服（学ラン）','学生服（ブレザー）'];
@@ -286,7 +305,7 @@ import {
       facePreset,
       ageAppearance,
       faceLine: base.faceLine || (()=>{ let v = pick(pools.faceLines); if(groupCtx?.avoidFaceLines?.length){ for(let i=0;i<3 && groupCtx.avoidFaceLines.includes(v);i++) v = pick(pools.faceLines); } return v; })(),
-      eyes: base.eyes || (()=>{ let v = ethnicFace.eyes || pick(pools.eyes); if(groupCtx?.avoidEyes?.length){ for(let i=0;i<3 && groupCtx.avoidEyes.includes(v);i++) v = pick(pools.eyes); } return v; })(), tearBags: base.tearBags || fixed.tearBags || pick(pools.tearBags), eyebrow: base.eyebrow || fixed.eyebrow || chooseEyebrow(vibe), eyelid: base.eyelid || fixed.eyelid || chooseEyelid(nationality, ethnicity), eyeShape: base.eyeShape || fixed.eyeShape || chooseEyeShape(), eyelash: base.eyelash || fixed.eyelash || chooseEyelash(), nose: base.nose || (()=>{ const v = pick(pools.nose); const pref = {'白人系':'高い鼻筋の通った鼻','北欧系':'高い鼻筋の通った鼻','スラブ系':'高い鼻筋の通った鼻','黒人系':'小鼻のしっかりした存在感のある鼻','中東系':'高い鼻筋の通った鼻'}[ethnicity]; return (pref && pools.nose.includes(pref) && Math.random()<0.4) ? pref : v; })(), mouth: base.mouth || pick(pools.mouth), lips: base.lips || fixed.lips || weighted([[pools.lips[0],2],[pools.lips[1],3],[pools.lips[2],6],[pools.lips[3],3],[pools.lips[4],2],[pools.lips[5],2.5],[pools.lips[6],2],[pools.lips[7],2]]), mouthPos: base.mouthPos || fixed.mouthPos || weighted([[pools.mouthPos[0],6],[pools.mouthPos[1],2.5],[pools.mouthPos[2],2.5],[pools.mouthPos[3],2],[pools.mouthPos[4],2],[pools.mouthPos[5],1.5]]), faceSpacing: base.faceSpacing || fixed.faceSpacing || chooseFaceSpacing(vibe), faceRatio: base.faceRatio || fixed.faceRatio || weighted([[pools.faceRatios[0],6],[pools.faceRatios[1],3],[pools.faceRatios[2],2.5],[pools.faceRatios[3],2],[pools.faceRatios[4],2],[pools.faceRatios[5],2],[pools.faceRatios[6],1.5],[pools.faceRatios[7],1.5]]), faceAsym: base.faceAsym || fixed.faceAsym || weighted([[pools.faceAsyms[0],3],[pools.faceAsyms[1],6],[pools.faceAsyms[2],5],[pools.faceAsyms[3],2],[pools.faceAsyms[4],2],[pools.faceAsyms[5],2],[pools.faceAsyms[6],1],[pools.faceAsyms[7],1],[pools.faceAsyms[8],1]]), skin: base.skin || chooseSkin(role, season, sportName, sportsHistoryArr, ethnicFace.skin), skinDetail: sd1, skinDetail2: sd2, facialHair: base.facialHair || chooseFacialHair(age, vibe),
+      eyes: base.eyes || (()=>{ let v = ethnicFace.eyes || pick(pools.eyes); if(groupCtx?.avoidEyes?.length){ for(let i=0;i<3 && groupCtx.avoidEyes.includes(v);i++) v = pick(pools.eyes); } return v; })(), tearBags: base.tearBags || fixed.tearBags || pick(pools.tearBags), eyebrow: base.eyebrow || fixed.eyebrow || chooseEyebrow(vibe), eyebrowGroom: base.eyebrowGroom || weighted([['自然なまま',5],['整えた形',3],['きっちりライン取り',1],['剃り込み跡あり',0.5]]), eyebrowGap: base.eyebrowGap || weighted([['眉間は近め',1.5],['標準的な眉間',5],['眉間は離れ気味',1.5]]), eyelid: base.eyelid || fixed.eyelid || chooseEyelid(nationality, ethnicity), eyeShape: base.eyeShape || fixed.eyeShape || chooseEyeShape(), eyelash: base.eyelash || fixed.eyelash || chooseEyelash(), nose: base.nose || (()=>{ const v = pick(pools.nose); const pref = {'白人系':'高い鼻筋の通った鼻','北欧系':'高い鼻筋の通った鼻','スラブ系':'高い鼻筋の通った鼻','黒人系':'小鼻のしっかりした存在感のある鼻','中東系':'高い鼻筋の通った鼻'}[ethnicity]; return (pref && pools.nose.includes(pref) && Math.random()<0.4) ? pref : v; })(), mouth: base.mouth || (()=>{ const cheer=['やりらふぃー系','元気系','ギャル男系','陽キャ大学生系','スポーツ系','爽やか系'].includes(vibe); const cool=['クール系','ミステリアス系','紳士系'].includes(vibe); return weighted(pools.mouth.map(m=>[m, /笑顔|笑い/.test(m)?(cheer?8:cool?0.8:3):/真顔|無表情/.test(m)?(cheer?0.3:cool?5:2):2])); })(), lips: base.lips || fixed.lips || weighted([[pools.lips[0],2],[pools.lips[1],3],[pools.lips[2],6],[pools.lips[3],3],[pools.lips[4],2],[pools.lips[5],2.5],[pools.lips[6],2],[pools.lips[7],2]]), mouthPos: base.mouthPos || fixed.mouthPos || weighted([[pools.mouthPos[0],6],[pools.mouthPos[1],2.5],[pools.mouthPos[2],2.5],[pools.mouthPos[3],2],[pools.mouthPos[4],2],[pools.mouthPos[5],1.5]]), faceSpacing: base.faceSpacing || fixed.faceSpacing || chooseFaceSpacing(vibe), faceRatio: base.faceRatio || fixed.faceRatio || weighted([[pools.faceRatios[0],6],[pools.faceRatios[1],3],[pools.faceRatios[2],2.5],[pools.faceRatios[3],2],[pools.faceRatios[4],2],[pools.faceRatios[5],2],[pools.faceRatios[6],1.5],[pools.faceRatios[7],1.5]]), faceAsym: base.faceAsym || fixed.faceAsym || weighted([[pools.faceAsyms[0],3],[pools.faceAsyms[1],6],[pools.faceAsyms[2],5],[pools.faceAsyms[3],2],[pools.faceAsyms[4],2],[pools.faceAsyms[5],2],[pools.faceAsyms[6],1],[pools.faceAsyms[7],1],[pools.faceAsyms[8],1]]), skin: base.skin || chooseSkin(role, season, sportName, sportsHistoryArr, ethnicFace.skin), skinDetail: sd1, skinDetail2: sd2, facialHair: base.facialHair || chooseFacialHair(age, vibe),
       hairStyle, hairColor,
       bodyHairOverall: base.bodyHairOverall || bodyHair.bodyHairOverall,
       chestHair: base.chestHair || bodyHair.chestHair,
@@ -307,6 +326,7 @@ import {
       holidayAccessories: base.holidayAccessories || generateAccessories({eraYear, age, role, vibe, incomeText: base.incomeText, season, holidayOutfitType, sportsHistory: sportsHistoryArr, holidayShoes: hCoord.shoes, holidayBottom: hCoord.bottom}, true),
       facePresetOut: base.facePresetOut || (initial.facePresetOut || '含める'),
       snapMode: base.snapMode || (initial.snapMode || '通常（スタジオ演出）'),
+      mjMode: base.mjMode || (initial.mjMode || 'OFF'),
       smileEyes: base.smileEyes || null, smileStyle: base.smileStyle || null, cheekSmile: base.cheekSmile || null, mouthCorner: base.mouthCorner || null,
       topBrand: coord.topBrand||'', bottomBrand: coord.bottomBrand||'', shoesBrand: coord.shoesBrand||'', outerBrand: coord.outerBrand||'', tie: coord.tie||'', coat: coord.coat||'', suitSilhouette: coord.silhouette||'', eraFashionNote: coord.eraNote||'', styleNote: coord.styleNote||'',
       holidayTopBrand: hCoord.topBrand||'', holidayBottomBrand: hCoord.bottomBrand||'', holidayShoesBrand: hCoord.shoesBrand||'', holidayOuterBrand: hCoord.outerBrand||'', holidayEraFashionNote: hCoord.eraNote||'', holidayStyleNote: hCoord.styleNote||'',
@@ -321,12 +341,25 @@ import {
       createdAt: new Date().toISOString()
     };
     if(partialMode==='face' && ST.current){ Object.assign(c, ST.current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,'ja'), facePreset:c.facePreset, ageAppearance:c.ageAppearance, faceLine:c.faceLine, eyes:c.eyes, tearBags:c.tearBags, nose:c.nose, mouth:c.mouth, lips:c.lips, mouthPos:c.mouthPos, faceSpacing:c.faceSpacing, faceRatio:c.faceRatio, faceAsym:c.faceAsym, skin:c.skin, facialHair:c.facialHair, hairStyle:c.hairStyle, hairColor:c.hairColor, sceneIdea:buildEncounterScene({role:c.role, outfitType:ST.current.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
-    applyMuscleFashion(c);
     if(!c.smileEyes) Object.assign(c, chooseSmileTraits(c));
+    { const hN=parseInt(c.height)||170, wN=parseInt(c.weight)||62;
+      const band = /ぽっちゃり|ビール腹|恰幅/.test(String(c.bodyType||''))?[26,31]:/がっしり|骨太|ラグビー|柔道/.test(String(c.bodyType||''))?[24,28]:/細身|やせ|華奢|長距離/.test(String(c.bodyType||''))?[18,21]:[20,24.5];
+      const bmi=wN/Math.pow(hN/100,2);
+      if(bmi<band[0]||bmi>band[1]){ const nb=band[0]+Math.random()*(band[1]-band[0]); c.weight=Math.round(nb*Math.pow(hN/100,2))+'kg'; }
+    }
+    if(partialMode==='full' && !base.bloodType){
+      generateInnerProfile(c);
+      natInnerFix(c);
+      applySenseTypeFx(c);
+      if(!c.workUniform) applyCoordToCharacter(c, false);
+      applyCoordToCharacter(c, true);
+      if(typeof applyFashionSenseFx==='function') applyFashionSenseFx(c);
+    }
+    applyMuscleFashion(c);
     if(partialMode==='outfit' && ST.current){ Object.assign(c, ST.current, {id:uniqId(), nationality:c.nationality, ethnicity:c.ethnicity, vibe:c.vibe, name:nameByNationality(c.nationality, c.eraYear, c.age), role:c.role, mbti:c.mbti, personality:mbtiDescription(c.mbti,'ja'), outfitType:c.outfitType,outfitBrand:c.outfitBrand,jacket:c.jacket,top:c.top,bottom:c.bottom,holidayOutfitType:c.holidayOutfitType,holidayOutfitBrand:c.holidayOutfitBrand,holidayJacket:c.holidayJacket,holidayTop:c.holidayTop,holidayBottom:c.holidayBottom,holidayShoes:c.holidayShoes,holidaySockBrand:c.holidaySockBrand,holidaySockType:c.holidaySockType,holidaySockColor:c.holidaySockColor,holidaySockUse:c.holidaySockUse,boxerBrand:c.boxerBrand,boxerColor:c.boxerColor,mainWearMode:c.mainWearMode,underwearType:c.underwearType,underwearColor:c.underwearColor,shoes:c.shoes,sockBrand:c.sockBrand,sockType:c.sockType,sockShape:c.sockShape,sockMaterial:c.sockMaterial,sockColor:c.sockColor,sockUse:c.sockUse,sceneIdea:buildEncounterScene({role:c.role, outfitType:c.outfitType, vibe:c.vibe, nationality:c.nationality, ethnicity:c.ethnicity, mbti:c.mbti, eraYear:c.eraYear, season:c.season, occInfluence:c.occInfluence, occupationMode:c.occupationMode}), createdAt:new Date().toISOString()}); }
     if(!groupCtx) Object.keys(ST.locks).forEach(k=>{ if(ST.locks[k] && ST.current && ST.current[k]!==undefined) c[k]=ST.current[k]; });
     c.personality = mbtiDescription(c.mbti, 'ja');
-    c.bioText = base.bioText || buildBioHook(c);
+    c.bioText = base.bioText || null;
     if(!c.cardRarity || c.cardRarity==='おすすめ自動' || c.cardRarity==='なし') c.cardRarity = suggestCardRarity(c);
     c.cardEffect = cardEffectByRarity(c.cardRarity);
     return c;
@@ -679,9 +712,30 @@ ${promptTargetGuide(c, false)}`;
       if(key==='tie') return eraOptionsFor('tie', ST.current, false);
       if(key==='suitSilhouette') return eraOptionsFor('sil', ST.current, false);
       if(key==='accessoriesEdit' || key==='holidayAccessoriesEdit') return ['なし','ビジネス腕時計','タフネス系デジタル腕時計','スマートウォッチ','機械式の高級腕時計','シンプルな腕時計','革ベルトの腕時計','シルバーチェーンネックレス','華奢なシルバーネックレス','喜平ネックレス','片耳のシルバーピアス','両耳の小ぶりなピアス','左薬指に結婚指輪','ミサンガ','アンクレット'];
+      if(['shoesBrand','holidayShoesBrand'].includes(key)){ const hol=key.startsWith('holiday'); const item=hol?ST.current.holidayShoes:ST.current.shoes; const type=hol?(ST.current.holidayOutfitType||ST.current.outfitType):ST.current.outfitType; const pool=[]; for(let i2=0;i2<40;i2++){ const b=resolvePartBrand('shoes', item, type, {senseText:ST.current.fashionSenseText, incomeText:ST.current.incomeText}, ST.current.vibe, ST.current.eraYear, 'normal'); if(!pool.includes(b)) pool.push(b); } return ['（指定なし）'].concat(pool.sort()); }
+      if(['shoesColor','holidayShoesColor'].includes(key)) return ['（指定なし）','白','黒','グレー','ネイビー','ダークブラウン','赤茶','バーガンディ','ベージュ','赤の差し色','白の厚底ダッド系','黒鼻緒','紺鼻緒'];
+      const HB_KEYS=['holidayOuterBrand','holidayTopBrand','holidayBottomBrand'];
+      if(HB_KEYS.includes(key)){
+        const base = eraBrandList(['UNIQLO','GU','無印良品','BEAMS','UNITED ARROWS','SHIPS','GLOBAL WORK','URBAN RESEARCH','JOURNAL STANDARD','WEGO','coen',"Levi's",'EDWIN','NIKE','adidas','Champion','無地ノーブランド'], ST.current.eraYear);
+        const pool = personaPool(base, {senseText:ST.current.fashionSenseText, incomeText:ST.current.incomeText, assetText:ST.current.assetText, gambleText:ST.current.gambleText, role:ST.current.role}, ST.current.holidayOutfitType, ST.current.eraYear);
+        return ['（指定なし）'].concat(pool.filter((v,i2,a)=>a.indexOf(v)===i2));
+      }
+      if(['holidayOuterColor','holidayTopColor','holidayBottomColor'].includes(key)){
+        const y=Number(ST.current.eraYear)||2026; const l=FV_COLORS.map(x=>x[0]);
+        for(const [c0,f,t] of FV_COLORS_ERA) if(y>=f&&y<=t) l.push(c0);
+        return ['（指定なし）'].concat(l);
+      }
+      if(key==='holidaySockBrand') return eraBrandList(['UNIQLO','Tabio','靴下屋','NIKE','adidas','Champion','Fukuske','無地ノーブランド'], ST.current.eraYear);
+      if(key==='holidaySockColor') return ['白','黒','グレー','ネイビー','生成り','ライン入り白','ワンポイント白'];
+      if(key==='holidaySockType') return ['クルー丈ソックス','ライン入りソックス','ワンポイントソックス','インビジブルソックス','ビジネスソックス','厚手のパイルソックス','リブソックス'];
       if(key==='holidayStyleNote') return ['—','清潔感重視のベーシックな着こなし','柄物や差し色をその日の気分で','モノトーン中心・機能優先','柔らかい色味と肌ざわり重視','サイズ感が微妙に合っていない','古着ミックスの味のある風合い'];
       if(key==='facePresetOut') return ['含める','含めない'];
       if(key==='snapMode') return pools.snapModes;
+      if(key==='mjMode') return ['OFF','ON'];
+      if(key==='catchText'){ const s=new Set(); for(let i2=0;i2<14 && s.size<8;i2++) s.add(buildBioHook2(ST.current)); s.add(buildBioHook(ST.current)); return [...s]; }
+      if(key==='bioText'){ const s=new Set(); for(let i2=0;i2<10 && s.size<6;i2++){ const v=buildBioLine2(ST.current); if(v) s.add(v); } s.add(bioLine(ST.current,false)); return [...s]; }
+      if(key==='outfitType') return WORK_STYLES.slice();
+      if(key==='holidayOutfitType'){ const y3=Number(ST.current.eraYear)||2026; return pools.outfitTypes.filter(t=>!WORK_STYLES.includes(t)||t==='社会人カジュアル').concat(CASUAL_NEW.filter(t=>typeInEra(t,y3))).filter((v,i2,a)=>a.indexOf(v)===i2); }
       if(key==='smileEyes') return SMILE_EYES;
       if(key==='smileStyle') return SMILE_STYLES;
       if(key==='cheekSmile') return CHEEK_SMILES;
@@ -700,7 +754,7 @@ ${promptTargetGuide(c, false)}`;
       vibe: pools.vibes.filter(v=>v!=='ランダム'), bodyType: pools.bodyTypes, footShape: pools.footShapes,
       sportName: ['なし'].concat(SPORTS),
       facePreset: pools.facePresets, ageAppearance: pools.ageLooks, faceLine: pools.faceLines,
-      eyes: pools.eyes, tearBags: pools.tearBags, nose: pools.nose, mouth: pools.mouth, lips: pools.lips, mouthPos: pools.mouthPos, faceSpacing: pools.faceSpacings, faceRatio: pools.faceRatios, faceAsym: pools.faceAsyms, footWidth: FOOT_WIDTHS.map(x=>x[0]), footFeature: FOOT_FEATURES.map(x=>x[0]), eyebrow: pools.eyebrows, eyebrowDensity: pools.eyebrowDensities, eyelid: pools.eyelids, eyeShape: pools.eyeShapes, eyelash: pools.eyelashes, jawChin: pools.jawChins, jawAngle: pools.jawAngles, ear: pools.ears, forehead: pools.foreheads, hairline: pools.hairlines, cheek: pools.cheeks, dimple: pools.dimples, mole: pools.moles, hairTexture: pools.hairTextures, eyeBags: pools.eyeBagsPool, adamsApple: pools.adamsApples, lipTone: pools.lipTones, browRidge: pools.browRidges, facialHairGroom: pools.facialHairGrooms, soleType: SOLE_TYPES.map(x=>x[0]), toeLine: TOE_LINES.map(x=>x[0]), soleWrinkle: SOLE_WRINKLES.map(x=>x[0]), toeCurl: TOE_CURLS.map(x=>x[0]), shoulderWidth: pools.shoulderWidths, waistPos: pools.waistPositions, legLength: pools.legLengths, armLength: pools.armLengths, frame: pools.frames, neckLength: pools.neckLengths, limbSize: pools.limbSizes, hipShape: pools.hipShapes, teethAlign: pools.teethAligns, teethColor: pools.teethColors, skin: pools.skin, skinDetail: pools.skinDetails, skinDetail2: pools.skinDetails,
+      eyes: pools.eyes, tearBags: pools.tearBags, nose: pools.nose, mouth: pools.mouth, lips: pools.lips, mouthPos: pools.mouthPos, faceSpacing: pools.faceSpacings, faceRatio: pools.faceRatios, faceAsym: pools.faceAsyms, footWidth: FOOT_WIDTHS.map(x=>x[0]), footFeature: FOOT_FEATURES.map(x=>x[0]), eyebrow: pools.eyebrows, eyebrowDensity: pools.eyebrowDensities, eyebrowGroom: pools.eyebrowGrooms, eyebrowGap: pools.eyebrowGaps, eyelid: pools.eyelids, eyeShape: pools.eyeShapes, eyelash: pools.eyelashes, jawChin: pools.jawChins, jawAngle: pools.jawAngles, ear: pools.ears, forehead: pools.foreheads, hairline: pools.hairlines, cheek: pools.cheeks, dimple: pools.dimples, mole: pools.moles, hairTexture: pools.hairTextures, eyeBags: pools.eyeBagsPool, adamsApple: pools.adamsApples, lipTone: pools.lipTones, browRidge: pools.browRidges, facialHairGroom: pools.facialHairGrooms, soleType: SOLE_TYPES.map(x=>x[0]), toeLine: TOE_LINES.map(x=>x[0]), soleWrinkle: SOLE_WRINKLES.map(x=>x[0]), toeCurl: TOE_CURLS.map(x=>x[0]), shoulderWidth: pools.shoulderWidths, waistPos: pools.waistPositions, legLength: pools.legLengths, armLength: pools.armLengths, frame: pools.frames, neckLength: pools.neckLengths, limbSize: pools.limbSizes, hipShape: pools.hipShapes, teethAlign: pools.teethAligns, teethColor: pools.teethColors, skin: pools.skin, skinDetail: pools.skinDetails, skinDetail2: pools.skinDetails,
       facialHair: pools.facialHair, glasses: pools.glasses, hairStyle: pools.hairStyles, hairColor: pools.hairColors,
       outfitType: pools.outfitTypes, holidayOutfitType: pools.outfitTypes, outfitBrand: pools.outfitBrands,
       trainingLevel: TRAINING_LEVELS.map(x=>x[0]), bangs: pools.bangs, hairFinish: pools.hairFinishes, hairVolume: pools.hairVolumes, baseWearType: pools.baseWearTypes, boxerColor: pools.boxerColors, boxerBrand: pools.boxerBrands, sockBrand: pools.sockBrands, sockType: pools.sockTypes,
@@ -716,6 +770,7 @@ ${promptTargetGuide(c, false)}`;
 
   function applySlotEdit(key, value){
     if(!ST.current) return;
+    if(['holidayOuterBrand','holidayTopBrand','holidayBottomBrand','holidayOuterColor','holidayTopColor','holidayBottomColor','shoesBrand','holidayShoesBrand','shoesColor','holidayShoesColor'].includes(key) && value==='（指定なし）') value='';
     if(key==='accessoriesEdit'){ ST.current.accessories = value==='なし' ? [] : [value]; return; }
     if(key==='holidayAccessoriesEdit'){ ST.current.holidayAccessories = value==='なし' ? [] : [value]; return; }
     if(key==='holidayStyleNote'){ ST.current.holidayStyleNote = value==='—' ? '' : value; return; }
@@ -852,7 +907,8 @@ ${promptTargetGuide(c, false)}`;
     if(opts && opts.name) f.name = opts.name;
     f.friendOf = {name: baseC.name, age: baseC.age, role: baseC.role, relation: relName, hierarchy: hierName};
     f.friendBase = baseC;
-    const history = loadHistory(); history.unshift({...baseC, appVersion:'V3.2.2'});
+    generateInnerProfile(f, ['friend']);
+    const history = loadHistory(); history.unshift({...baseC, appVersion:'V3.9.6'});
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0,50)));
     ST.currentGroup = null; ST.activeMember = 0;
     ST.current = f;
@@ -860,6 +916,43 @@ ${promptTargetGuide(c, false)}`;
     renderAll(); switchTab('result');
     els.status.textContent = T('friendDone');
   }
+
+  function makeSibling(kind){
+    if(!ST.current || ST.spinning) return;
+    const baseC = {...ST.current};
+    const delta = rnd(1,6,1) * (kind==='兄' ? 1 : -1);
+    const targetAge = Math.max(18, Math.min(80, Number(baseC.age) + delta));
+    ST.FRIEND_CTX = { age: String(targetAge), eraYear: String(baseC.eraYear||'2026'), season: baseC.season||'', nationality: baseC.nationality||'日本', role: '' };
+    const f = generateCharacter('full');
+    ST.FRIEND_CTX = null;
+    // 苗字・出自の共有
+    const pm = String(baseC.name||'').match(/^(\S+)\s+(\S+)（(\S+)[・\s]+(\S+)）$/);
+    const fm = String(f.name||'').match(/^(\S+)\s+(\S+)（(\S+)[・\s]+(\S+)）$/);
+    if(pm && fm) f.name = `${pm[1]} ${fm[2]}（${pm[3]} ${fm[4]}）`;
+    f.birthplaceText = baseC.birthplaceText || f.birthplaceText;
+    f.originText = baseC.originText || f.originText;
+    // 顔の血縁継承（骨格系80% / 目口系50%）
+    const strong = ['faceLine','nose','eyebrow','eyebrowDensity','skin','hairTexture','jawChin','jawAngle','forehead','hairline','ear'];
+    const half = ['eyelid','eyeShape','lips','mouthPos','tearBags','cheek'];
+    strong.forEach(k=>{ if(baseC[k] && Math.random()<0.8) f[k]=baseC[k]; });
+    half.forEach(k=>{ if(baseC[k] && Math.random()<0.5) f[k]=baseC[k]; });
+    f.siblingOf = {name: baseC.name, kind, age: baseC.age};
+    generateInnerProfile(f, ['family']);
+    const history = loadHistory(); history.unshift({...baseC, appVersion:'V3.9.6'});
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0,50)));
+    ST.currentGroup = null; ST.activeMember = 0;
+    ST.current = f;
+    renderAll(); switchTab('result');
+    els.status.textContent = LT('兄弟を作成しました：', 'Sibling created: ', '已创建兄弟：') + f.name;
+  }
+
+  function siblingRefNote(c, english){
+    if(!c || !c.siblingOf) return '';
+    const rel = c.siblingOf.kind==='兄' ? (english?'older brother':'兄') : (english?'younger brother':'弟');
+    if(english) return `[REFERENCE IMAGE REQUIRED] This character is the ${rel} of "${c.siblingOf.name}". Always attach the sibling's base reference card image. Give them a clear family resemblance — similar bone structure, brows, eye area and skin tone — while drawing a distinctly different person.\n\n`;
+    return `【参照画像前提】この人物は「${c.siblingOf.name}」の${rel}。本人の基準カード画像を必ず添付し、骨格・眉・目元・肌の色味に血縁らしい類似を持たせつつ、明確に別人として描く。\n\n`;
+  }
+
 
   function rerollOne(key){
     if(!ST.current || ST.spinning) return;
@@ -936,6 +1029,8 @@ ${promptTargetGuide(c, false)}`;
   }
 
 export {
+  makeSibling,
+  siblingRefNote,
   generateCharacter,
   slotValue,
   renderSlots,
