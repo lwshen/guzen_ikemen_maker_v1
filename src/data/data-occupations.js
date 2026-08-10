@@ -129,7 +129,7 @@ export const VIBE_AGE_MAX = {'陽キャ大学生系':26,'やりらふぃー系':
 // index.html:2447
 export const OCCUPATIONS = [
     ['大学生','student',0,0,18,24],['大学1年生','student',0,0,18,19],['高校卒業直後（進路準備中）','student',1950,0,18,19],['浪人生（予備校生）','student',1950,0,18,21],['大学院生','student',0,0,22,29],['専門学校生','student',0,0,18,23],['就活中の大学生','student',0,0,20,24],
-    ['営業職','office',0,0,22,65],['経理・事務職','office',0,0,20,65],['企画職','office',0,0,23,65],['公務員','office',0,0,22,64],['銀行員','office',0,0,22,60],['商社勤務','office',0,0,22,65],['コンサルタント','office',1985,0,24,70],['不動産営業','office',0,0,22,70],
+    ['人力車の車夫','service',1992,0,18,45],['営業職','office',0,0,22,65],['経理・事務職','office',0,0,20,65],['企画職','office',0,0,23,65],['公務員','office',0,0,22,64],['銀行員','office',0,0,22,60],['商社勤務','office',0,0,22,65],['コンサルタント','office',1985,0,24,70],['不動産営業','office',0,0,22,70],
     ['ITエンジニア','it',1995,0,20,65],['Webデザイナー','it',2000,0,20,65],['ゲーム開発者','it',1985,0,20,65],['動画クリエイター','it',2012,0,18,70],['アプリ開発者','it',2010,0,20,65],
     ['看護師','medical',0,0,21,68],['理学療法士','medical',1990,0,22,68],['薬剤師','medical',0,0,24,70],['研修医','medical',0,0,24,32],['介護士','medical',1990,0,18,68],
     ['高校教師','edu',0,0,23,65],['塾講師','edu',0,0,20,75],['保育士','edu',0,0,20,65],['大学研究員','edu',0,0,24,75],['体育教師','edu',0,0,23,60],
@@ -220,12 +220,18 @@ export const UNIFORM_WORKWEAR = {
 
 // index.html:2554
 export const UNIFORM_VARIANTS = {
+    '人力車の車夫': [
+      ['観光人力車の車夫装束（法被・股引・地下足袋）','a tourist rickshaw puller outfit (happi coat, momohiki leggings and jika-tabi split-toe shoes)','屋号入りの法被','黒の股引','紺の地下足袋',5,'','ねじり鉢巻きまたは笠'],
+      ['夏の車夫スタイル（半袖法被・脚絆）','a summer rickshaw puller outfit (short-sleeve happi and leg wraps)','半袖の法被','短めの股引','地下足袋',3,'','手ぬぐい鉢巻き']
+    ],
     '消防士': [
-      ['消防署の活動服（紺の作業服スタイル）','a firefighter station duty uniform (navy work-wear style)','紺の活動服上衣','紺の活動服パンツ','編み上げの作業ブーツ',5,'','紺のキャップ型活動帽'],
+      ['オレンジの救助服（レスキュー隊風）','the instantly recognizable orange rescue-squad uniform of a Japanese fire department','オレンジの救助服上衣','オレンジの救助服パンツ','編み上げブーツ',2,'','紺の識別帽'],
+      ['消防署の活動服（紺の作業服スタイル）','the instantly recognizable style of a Japanese firefighter station duty uniform with silver reflective tape','紺の活動服上衣','紺の活動服パンツ','編み上げの作業ブーツ',5,'','紺のキャップ型活動帽'],
       ['救助服（オレンジのレスキュー隊服）','an orange rescue-squad duty uniform','オレンジの救助服上衣','オレンジの救助服パンツ','編み上げの救助ブーツ',2,'','紺のキャップ型活動帽'],
       ['防火衣（訓練場面向けの耐火装備スタイル）','protective fire gear in a training-style setting','防火衣の上衣','防火衣のズボン','防火用ブーツ',1,'','防火用ヘルメット']
     ],
     '警察官': [
+      ['夏制服（水色シャツ×濃紺スラックス・帯革と肩章）','the instantly recognizable style of a Japanese police officer summer uniform: light-blue shirt, dark-navy slacks, duty belt and shoulder boards','制服上衣','制服パンツ','制式の靴',4,'','制帽'],
       ['警察官の冬制服風（濃紺の長袖＋ネクタイ）','a winter police-style uniform (dark navy long sleeves with tie)','濃紺の長袖制服シャツ＋ネクタイ','濃紺の制服スラックス','黒の革靴',4,'winter','濃紺の制帽（黒つば・顎ひも・金色の帽章風エンブレム）'],
       ['警察官の夏制服風（薄青の半袖シャツ）','a summer police-style uniform (light-blue short-sleeve shirt)','薄青の半袖制服シャツ','濃紺の制服スラックス','黒の革靴',3,'summer','濃紺の制帽（黒つば・顎ひも・金色の帽章風エンブレム）'],
       ['警察官の活動服風（出動服スタイル）','a police field-duty uniform style','紺の活動服上衣','紺の活動服パンツ','編み上げブーツ',2,'','紺のキャップ型活動帽'],
@@ -233,6 +239,7 @@ export const UNIFORM_VARIANTS = {
       ['機動隊の出動服風（ヘルメット携行）','a riot-unit duty uniform style (helmet carried)','紺の出動服上衣','紺の出動服パンツ','半長靴',1,'','紺のキャップ型活動帽（出動ヘルメットは携行）']
     ],
     '自衛官': [
+      ['緑系迷彩の作業服＋半長靴＋識別帽','the instantly recognizable green camouflage fatigues of a Japan self-defense force member with half boots and a field cap','制服上衣','制服パンツ','制式の靴',4,'','制帽'],
       ['陸上自衛隊風の迷彩作業服','a JGSDF-style camouflage work uniform','迷彩の作業服上衣','迷彩の作業服パンツ','ミリタリーブーツ',5,'','迷彩柄のキャップ型作業帽'],
       ['陸自の常装制服風（紫紺）','a JGSDF-style dress uniform (dark purplish navy)','常装制服の上衣','常装制服のスラックス','黒の革靴',2,'','紫紺色の制帽（金色の帽章風エンブレム）'],
       ['海自の夏制服風（白）','a JMSDF-style white summer uniform','白の制服上衣','白の制服スラックス','黒の革靴',1,'summer','白の制帽（黒つば・金色の帽章風エンブレム）'],
@@ -313,6 +320,8 @@ export const OCC_CAT_HOOK = {
 
 // index.html:3477
 export const BRAND_SINCE = {
+    'TOMORROWLAND':1978,'EDIFICE':1994,'nano・universe':1999,'AURALEE':2015,'COMOLI':2011,'Paul Smith':1985,'RALPH LAUREN':1978,'LACOSTE':1964,'BROOKS BROTHERS':1979,
+    'ワークマン':2018,'Carhartt':1994,'Dickies':1992,'THE NORTH FACE':1978,'DESCENTE':1961,'STÜSSY':1991,'XLARGE':1992,'Champion':1980,
     'UNIQLO':1984,'GU':2006,'無印良品':1980,'MUJI':1980,'ZARA':1998,'H&M':2008,
     'BEAMS':1976,'UNITED ARROWS':1989,'SHIPS':1977,'GLOBAL WORK':1994,'nano・universe':1999,'URBAN RESEARCH':1989,'JOURNAL STANDARD':1997,
     'Calvin Klein':1980,'POLO RALPH LAUREN':1972,'TOMMY HILFIGER':1985,'AOKI':1958,'ORIHICA':2000,'SUIT SELECT':1999,'THE SUIT COMPANY':2000,'P.S.FA':1994,
