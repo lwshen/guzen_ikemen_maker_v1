@@ -4,11 +4,14 @@
 // rendered profile HTML, and the rarity readout must match byte-for-byte.
 //
 // JA scenarios compare old-vs-new against the frozen index.html baseline.
-// EN-involving scenarios (lang=en, langswitch flow) compare the build against
-// COMMITTED GOLDEN SNAPSHOTS instead: EN display intentionally diverged from
-// the baseline when the missing V3.1-V3.4 translations were fixed post-freeze
-// (see MIGRATION_VERIFICATION.md §4.2). Regenerate with --update-golden after
-// an intentional EN-display change.
+// EN-involving scenarios (lang=en, langswitch flow) and every scenario that
+// switches the PROMPT language to English (plang=English) compare the build
+// against COMMITTED GOLDEN SNAPSHOTS instead: EN display intentionally
+// diverged from the baseline when the missing V3.1-V3.4 translations were
+// fixed post-freeze (see MIGRATION_VERIFICATION.md §4.2), and the English
+// prompt templates are pinned by the plang golden matrix (uiLang ja/en/zh ×
+// promptLanguage=English). Regenerate with --update-golden after an
+// intentional EN-display or EN-prompt change.
 // Usage: node verify/layer2-behavior.mjs [--seeds N] [--update-golden]
 import { chromium } from 'playwright';
 import http from 'node:http';
@@ -142,7 +145,7 @@ const FLOWS = {
   },
 };
 
-async function runScenario(browser, baseURL, { seed, lang, modes, group, friend, flow }) {
+async function runScenario(browser, baseURL, { seed, lang, modes, group, friend, flow, promptLang, dtype, snapMode }) {
   const context = await browser.newContext({ acceptDownloads: true });
   const page = await context.newPage();
   const errors = [];
@@ -154,6 +157,10 @@ async function runScenario(browser, baseURL, { seed, lang, modes, group, friend,
 
   if (lang !== 'ja') await page.selectOption('#makerLanguage', lang);
   if (group) await page.selectOption('#initialGroupSize', '3人グループ');
+  // option VALUES stay Japanese in every UI language (labels are what get
+  // translated), so these selectors work across the whole lang matrix
+  if (promptLang) await page.selectOption('#initialPromptLanguage', promptLang);
+  if (snapMode) await page.selectOption('#initialSnapMode', snapMode);
   await page.check('#instantMode');
 
   const captures = [];
@@ -179,6 +186,13 @@ async function runScenario(browser, baseURL, { seed, lang, modes, group, friend,
     await page.waitForFunction(
       prev => document.getElementById('promptBox').value !== prev && document.getElementById('promptBox').value !== '',
       before, { timeout: 30000 });
+    await snap();
+  }
+  if (dtype) {
+    // derived-type tiles exist only after a spin; clicking re-renders the
+    // derived prompt synchronously (no async work in the app)
+    await page.evaluate(d => document.querySelector(`#derivedTypeGrid [data-dtype="${d}"]`)?.click(), dtype);
+    await page.waitForTimeout(120);
     await snap();
   }
   if (flow) await FLOWS[flow](page, snap);
@@ -216,10 +230,22 @@ Object.keys(FLOWS).forEach((flow, fi) => {
   for (let s = 1; s <= Math.min(3, SEEDS); s++)
     scenarios.push({ seed: 700 + fi * 10 + s, lang: 'ja', modes: ['full'], flow });
 });
+// English PROMPT-language axis (~69 english-branch builders had zero behavior
+// coverage before these). Full uiLang × promptLanguage=English matrix plus the
+// derived-sheet / card / friend / group English builders; all golden-anchored.
+for (let s = 1; s <= Math.min(5, SEEDS); s++) {
+  scenarios.push({ seed: 800 + s, lang: 'ja', modes: ['full'], promptLang: 'English' });
+  scenarios.push({ seed: 810 + s, lang: 'en', modes: ['full'], promptLang: 'English' });
+  if (s <= 3) scenarios.push({ seed: 820 + s, lang: 'zh', modes: ['full'], promptLang: 'English' });
+}
+['キャラクタープロフィールシート', 'トレーディングカード', '偶然足元強調場面シート'].forEach((dtype, di) =>
+  scenarios.push({ seed: 831 + di, lang: 'en', modes: ['full'], promptLang: 'English', dtype }));
+scenarios.push({ seed: 834, lang: 'en', modes: ['full'], promptLang: 'English', friend: true });
+scenarios.push({ seed: 835, lang: 'en', modes: ['full'], promptLang: 'English', group: true });
 
 const UPDATE_GOLDEN = process.argv.includes('--update-golden');
 const GOLDEN_PATH = path.join(ROOT, 'verify', 'golden', 'en-scenarios.json');
-const isGolden = sc => sc.lang !== 'ja' || sc.flow === 'langswitch';
+const isGolden = sc => sc.lang !== 'ja' || sc.flow === 'langswitch' || !!sc.promptLang || !!sc.snapMode;
 const golden = fs.existsSync(GOLDEN_PATH) ? JSON.parse(fs.readFileSync(GOLDEN_PATH, 'utf-8')) : {};
 const goldenOut = {};
 
@@ -241,6 +267,8 @@ for (let i = 0; i < scenarios.length; i += CONCURRENCY) {
   }));
   for (const { sc, a, b } of results) {
     const label = `seed=${sc.seed} lang=${sc.lang} modes=${sc.modes.join('+')}`
+      + (sc.promptLang ? ` plang=${sc.promptLang}` : '') + (sc.dtype ? ` dtype=${sc.dtype}` : '')
+      + (sc.snapMode ? ` snap=${sc.snapMode}` : '')
       + (sc.group ? ' group' : '') + (sc.friend ? ' friend' : '') + (sc.flow ? ` flow=${sc.flow}` : '');
     if ((a?.errors.length || 0) + b.errors.length > 0) {
       jsErrors++;

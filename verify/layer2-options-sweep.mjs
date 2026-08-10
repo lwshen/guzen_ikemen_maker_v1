@@ -89,8 +89,9 @@ function buildUnits(inv) {
   const SKIP = new Set(['presetSelect', 'makerLanguage', 'friendRelation', 'friendHierarchy',
     'friendPairWearSel', 'friendPairCountSel', // covered by flows / need friend context
     // English prompt output intentionally diverged from the frozen baseline
-    // (post-freeze i18n fix); EN regression coverage lives in the layer-2
-    // golden scenarios, so these two stay out of the baseline-anchored sweep
+    // (post-freeze i18n fix), so these two stay out of the baseline-anchored
+    // sweep; EN-prompt regression coverage lives in the layer-2 plang=English
+    // golden matrix (verify/layer2-behavior.mjs)
     'initialPromptLanguage', 'manualPromptLanguage']);
   for (const s of inv.selects) {
     const key = s.id ?? `fixed:${s.fixed}`;
