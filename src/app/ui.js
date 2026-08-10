@@ -110,7 +110,7 @@ import {
           }
         }
         rows.push([L.sock,`${displayValue('sockBrand',ST.current.sockBrand)}・${displayValue('sockType',ST.current.sockType)}・${displayValue('sockColor',ST.current.sockColor)}`,'sockType']);
-        rows.push([LT('アクセサリー（平日）','Accessories (Work)','配饰（工作日）'), ((ST.current.accessories||[]).map(a=>displayValue('accessory',a)).join('・')||displayValue('accessory','なし'))+accWorkNote(ST.current), 'accessoriesEdit']);
+        rows.push([LT('アクセサリー（平日）','Accessories (Work)','配饰（工作日）'), ((ST.current.accessories||[]).map(a=>displayValue('accessory',a)).join('・')||displayValue('accessory','なし'))+(accWorkNote(ST.current) ? LT('（勤務中は外す）','(removed while on duty)','（工作时摘下）') : ''), 'accessoriesEdit']);
         if(ST.current.holidayOutfitType){
           rows.push([L.holidayOutfit,`${displayValue('outfitBrand',ST.current.holidayOutfitBrand)}・${displayValue('outfitType',ST.current.holidayOutfitType)}${ST.current.holidayGapSuit?'⚡':''}`,'holidayOutfitType']);
           rows.push([LT('上着（休日）','Casual Outer','外套（休息日）'), `${ST.current.holidayOuterBrand?`${displayValue('outfitBrand',ST.current.holidayOuterBrand)}・`:''}${displayValue('holidayJacket',ST.current.holidayJacket||'指定なし')}`, 'holidayJacket']);

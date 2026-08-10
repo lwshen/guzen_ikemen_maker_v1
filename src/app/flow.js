@@ -26,7 +26,7 @@ import {
 } from './generate.js';
 import {
   LT,
-  T, cardEffectByRarity, cardWearDescription, displayOptionLabel, displayValue, mbtiDescription, mbtiDisplay, promptTargetGuide,
+  T, cardEffectByRarity, cardWearDescription, displayOptionLabel, displayValue, mbtiDescription, mbtiDisplay, promptTargetGuide, promptValue,
   suggestCardRarity,
 } from './i18n.js';
 import {
@@ -445,13 +445,13 @@ import {
     const scene = groupSceneBySetting(group.setting, lead.eraYear, english);
     const memberBlock = (m,i) => {
       if(english){
-        return `[Member ${i+1} (${displayValue('groupPosition', m.groupPosition) || m.groupPosition})] ${m.name}, ${m.age} years old, ${m.height}, ${m.bodyType}. Face type: ${m.facePreset}. Hair: ${m.hairColor} ${m.hairStyle}. Outfit: ${m.outfitBrand} ${m.outfitType} (top: ${m.top}, bottom: ${m.bottom}, shoes: ${m.shoes}).`;
+        return `[Member ${i+1} (${promptValue(m.groupPosition) || m.groupPosition})] ${m.name}, ${m.age} years old, ${m.height}, ${m.bodyType}. Face type: ${m.facePreset}. Hair: ${m.hairColor} ${m.hairStyle}. Outfit: ${m.outfitBrand} ${m.outfitType} (top: ${m.top}, bottom: ${m.bottom}, shoes: ${m.shoes}).`;
       }
       return `【メンバー${i+1}（${m.groupPosition}）】${m.name}、${m.age}歳、身長${m.height}、${m.bodyType}。顔立ちは${m.facePreset}、髪は${m.hairColor}の${m.hairStyle}。服装は${m.outfitBrand}の${m.outfitType}（トップスは${m.top}、ボトムスは${m.bottom}、靴は${m.shoes}）。`;
     };
     if(english){
       return `Generate one group photo-style image of the following ${ms.length} adult men. All of them are adults aged 18 or older. Keep the image non-sexual, wholesome, and like a natural everyday snapshot of close friends.
-Group setting: ${displayValue('groupSetting', group.setting) || group.setting}. Era setting: ${lead.eraYear || '2026'} CE. ${eraStyleNote(lead, true)}
+Group setting: ${promptValue(group.setting) || group.setting}. Era setting: ${lead.eraYear || '2026'} CE. ${eraStyleNote(lead, true)}
 
 ${ms.map(memberBlock).join('\n')}
 
@@ -478,7 +478,7 @@ ${promptTargetGuide(lead, false)}`;
   }
 
   function groupMemberIntro(m, i, english){
-    if(english) return `[Member ${i+1} (${displayValue('groupPosition', m.groupPosition) || m.groupPosition})] ${m.name}, ${m.age} years old, ${m.nationality} / ${m.ethnicity}. Face type: ${m.facePreset} (${m.ageAppearance}). Face line: ${m.faceLine}. Eyes: ${m.eyes} (tear bags: ${m.tearBags}). Nose: ${m.nose}. Mouth: ${m.mouth}. Skin: ${m.skin}. Hair: ${m.hairColor} ${m.hairStyle}. Facial hair: ${m.facialHair}. ${m.glasses && m.glasses!=='なし' ? `Wears ${displayValue('glasses', m.glasses)}. ` : ''}Height ${m.height}, weight ${m.weight}, body type ${bodyTypeDesc(m.bodyType, true)}, foot size ${m.footSize}, foot shape ${m.footShape}. Overall body hair: ${m.bodyHairOverall}.`;
+    if(english) return `[Member ${i+1} (${promptValue(m.groupPosition) || m.groupPosition})] ${m.name}, ${m.age} years old, ${m.nationality} / ${m.ethnicity}. Face type: ${m.facePreset} (${m.ageAppearance}). Face line: ${m.faceLine}. Eyes: ${m.eyes} (tear bags: ${m.tearBags}). Nose: ${m.nose}. Mouth: ${m.mouth}. Skin: ${m.skin}. Hair: ${m.hairColor} ${m.hairStyle}. Facial hair: ${m.facialHair}. ${m.glasses && m.glasses!=='なし' ? `Wears ${promptValue(m.glasses)}. ` : ''}Height ${m.height}, weight ${m.weight}, body type ${bodyTypeDesc(m.bodyType, true)}, foot size ${m.footSize}, foot shape ${m.footShape}. Overall body hair: ${m.bodyHairOverall}.`;
     return `【メンバー${i+1}（${m.groupPosition}）】${m.name}、${m.age}歳、${m.nationality}・${m.ethnicity}。顔立ちは${m.facePreset}で年齢感は${m.ageAppearance}。フェイスラインは${m.faceLine}。目は${m.eyes}（涙袋は${m.tearBags}）。鼻は${m.nose}。口元は${m.mouth}。肌は${m.skin}。髪は${m.hairColor}の${m.hairStyle}。ひげは${m.facialHair}。${m.glasses && m.glasses!=='なし' ? `眼鏡は${m.glasses}。` : ''}身長${m.height}、体重${m.weight}、体型は${bodyTypeDesc(m.bodyType, false)}、足のサイズ${m.footSize}、足の形は${m.footShape}。体毛の全体傾向は${m.bodyHairOverall}。`;
   }
 
@@ -523,7 +523,7 @@ ${promptTargetGuide(lead, false)}`;
       ? `[Member ${i+1}] ${m.name}: ${f(m,'OutfitBrand','outfitBrand')} ${f(m,'OutfitType','outfitType')} — outerwear: ${f(m,'Jacket','jacket') || 'none'}, top: ${f(m,'Top','top')}, bottom: ${f(m,'Bottom','bottom')}, shoes: ${f(m,'Shoes','shoes')}, socks: ${f(m,'SockBrand','sockBrand')} ${f(m,'SockType','sockType')} (${f(m,'SockColor','sockColor')}).`
       : `【メンバー${i+1}】${m.name}：${f(m,'OutfitBrand','outfitBrand')}の${f(m,'OutfitType','outfitType')}。上着は${f(m,'Jacket','jacket') || 'なし'}、トップスは${f(m,'Top','top')}、ボトムスは${f(m,'Bottom','bottom')}、靴は${f(m,'Shoes','shoes')}、靴下は${f(m,'SockBrand','sockBrand')}の${f(m,'SockType','sockType')}（${f(m,'SockColor','sockColor')}）。`;
     if(english){
-      return `Generate one image of the same ${n} adult men standing together, each wearing his ${mode==='holiday' ? 'casual' : 'work'} suggested outfit. Keep each member's face, body proportions, height impression, and hairstyle identical to his main profile. Group setting: ${displayValue('groupSetting', group.setting) || group.setting}. Era setting: ${lead.eraYear || '2026'} CE. ${eraStyleNote(lead, true)}
+      return `Generate one image of the same ${n} adult men standing together, each wearing his ${mode==='holiday' ? 'casual' : 'work'} suggested outfit. Keep each member's face, body proportions, height impression, and hairstyle identical to his main profile. Group setting: ${promptValue(group.setting) || group.setting}. Era setting: ${lead.eraYear || '2026'} CE. ${eraStyleNote(lead, true)}
 
 ${ms.map(line).join('\n')}
 
@@ -547,7 +547,7 @@ ${promptTargetGuide(lead, false)}`;
       : (lead.cardWearMode !== 'ボクサーパンツのみ' ? '各メンバーはそれぞれの提案服装を着用する。' : '各メンバーはそれぞれ指定された下着のみを着用し、非性的で体型確認用のキャラクターカードとして自然に見せる。指定された下着の種類と形状を正確に守る。');
     const rarity = lead.cardRarity && lead.cardRarity !== 'おすすめ自動' ? lead.cardRarity : 'SR';
     if(english){
-      return `Present the same ${n} adult men together on ONE original trading-card-style group card, without copying any existing official card design. Put the logo text "GuzenIkemenMakerCARD" clearly on the card as an original brand logo. Card style: ${displayValue('cardStyle', lead.cardStyle)}. Rarity label: ${rarity}. Color theme: ${displayValue('cardTheme', lead.cardTheme)}. Layout: ${displayValue('cardLayout', lead.cardLayout)}. Group setting: ${displayValue('groupSetting', group.setting) || group.setting}. ${wear}
+      return `Present the same ${n} adult men together on ONE original trading-card-style group card, without copying any existing official card design. Put the logo text "GuzenIkemenMakerCARD" clearly on the card as an original brand logo. Card style: ${promptValue(lead.cardStyle)}. Rarity label: ${rarity}. Color theme: ${promptValue(lead.cardTheme)}. Layout: ${promptValue(lead.cardLayout)}. Group setting: ${promptValue(group.setting) || group.setting}. ${wear}
 ${buildGroupDistinctionBlock(ms, true)}
 Give each member a small readable info panel (name, height, MBTI, position in the group). Express the height and build differences accurately, use a memorable group-card composition, and keep everyone clearly the same person as his individual profile. All members are adults aged 18 or older; keep the card non-sexual.
 ${promptTargetGuide(lead, true)}`;
@@ -577,7 +577,7 @@ ${promptTargetGuide(lead, false)}`;
 
   function buildCardInstructionOnly(c, english=false){
     const rarity = c.cardRarity && c.cardRarity !== 'おすすめ自動' ? c.cardRarity : 'SR';
-    if(english) return `Present him as ONE original trading-card-style image, without copying any existing official card design. Put the logo text "GuzenIkemenMakerCARD" clearly on the card as an original brand logo. Card style: ${displayValue('cardStyle', c.cardStyle)}. Rarity label: ${rarity} (${cardEffectByRarity(c.cardRarity || 'R')}). Color theme: ${displayValue('cardTheme', c.cardTheme)}. Layout: ${displayValue('cardLayout', c.cardLayout)}. ${cardWearDescription(c, true)} Add a small readable info panel (name, height, MBTI). Style the card's frame, typography, and print texture like printed goods from around ${c.eraYear || '2026'}. Keep the card tasteful and non-sexual.`;
+    if(english) return `Present him as ONE original trading-card-style image, without copying any existing official card design. Put the logo text "GuzenIkemenMakerCARD" clearly on the card as an original brand logo. Card style: ${promptValue(c.cardStyle)}. Rarity label: ${rarity} (${cardEffectByRarity(c.cardRarity || 'R')}). Color theme: ${promptValue(c.cardTheme)}. Layout: ${promptValue(c.cardLayout)}. ${cardWearDescription(c, true)} Add a small readable info panel (name, height, MBTI). Style the card's frame, typography, and print texture like printed goods from around ${c.eraYear || '2026'}. Keep the card tasteful and non-sexual.`;
     return `オリジナルトレーディングカード風の1枚として構成する。実在カードや公式カードの模倣ではなく、独自の架空カードとして仕上げる。カード内に「GuzenIkemenMakerCARD」のロゴ文字をオリジナルブランドロゴとしてはっきり入れる。カードスタイルは${c.cardStyle}、レアリティ表示は${rarity}（${cardEffectByRarity(c.cardRarity || 'R')}）、配色テーマは${c.cardTheme}、レイアウトは${c.cardLayout}。${cardWearDescription(c, false)}小さな情報欄（名前・身長・MBTI）を付ける。カードのデザイン様式（枠・書体・印刷質感）も${eraLabel(c.eraYear)}頃の印刷物風にする。品があり非性的なカードにする。`;
   }
 
@@ -592,9 +592,9 @@ ${promptTargetGuide(lead, false)}`;
     const fw = c.footWidth || calcFootWidth(c);
     if(english){
       return `[OUTPUT FORMAT] Create one 16:9 "handoff reference sheet". Panels: full body front / full body side / face front / face side / face front with teeth visible (an "eee" expression, mouth stretched wide sideways to show the upper and lower rows of teeth, dental-reference style — in every other panel teeth appear only as naturally visible when smiling) / bare feet front view / soles (shown by the person himself sitting and presenting his own feet toward the viewer — never as detached, disembodied soles) / an enlarged full-sole view (the same feet as the person panels, detailed enough that the skin ridges of the soles, creases, and arch contours are readable, always oriented toes-up, as a matter-of-fact non-sexual reference enlargement). Every panel must show exactly the same person.${soleDetailLine(c, true)}
-[INFO PANEL] (clean readable typography; list ONLY these items) Name "${nameKana(c)}" / Photo year: ${c.eraYear || '2026'} / Born: ${(Number(c.eraYear)||2026)-(Number(c.age)||25)} (age ${c.age}) / Height ${c.height}, Weight ${c.weight} / Body type "${displayValue('bodyType', c.bodyType)}" / Physique guide "about ${headCount(c)} heads tall" / Foot size ${c.footSize} / Foot width "${fw}". Keep all text crisp and unbroken.
-[PERSON] Photo year: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} ${c.age} years old, ${c.nationality}, ${c.ethnicity}. ${facePresetPhrase(c, true)} ${eyeAreaLine(c, true)} Nose: ${c.nose}. Base expression: ${c.mouth}.${smileLine(c,true)}${faceExtraLine(c, true)} Facial symmetry: ${displayValue('faceAsym', c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)} Hair: ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}.
-[PHYSIQUE] ${physiqueSpec(c, true, true)} Hip shape: ${displayValue('hipShape', c.hipShape || '標準的な丸みの臀部')} (a neutral body-reference note; never emphasized or staged).${muscleLine(c, true)}${trainingLine(c, true)}${bodyRealismLine(c, true)}
+[INFO PANEL] (clean readable typography; list ONLY these items) Name "${nameKana(c)}" / Photo year: ${c.eraYear || '2026'} / Born: ${(Number(c.eraYear)||2026)-(Number(c.age)||25)} (age ${c.age}) / Height ${c.height}, Weight ${c.weight} / Body type "${promptValue(c.bodyType)}" / Physique guide "about ${headCount(c)} heads tall" / Foot size ${c.footSize} / Foot width "${fw}". Keep all text crisp and unbroken.
+[PERSON] Photo year: ${c.eraYear || '2026'} CE. ${eraStyleNote(c, true)} ${c.age} years old, ${c.nationality}, ${c.ethnicity}. ${facePresetPhrase(c, true)} ${eyeAreaLine(c, true)} Nose: ${c.nose}. Base expression: ${c.mouth}.${smileLine(c,true)}${faceExtraLine(c, true)} Facial symmetry: ${promptValue(c.faceAsym || 'ほぼ対称（ごく自然な左右差）')}.${realismSpec(c, true)} ${teethLine(c, true)} Hair: ${c.hairColor} ${c.hairStyle}. Facial hair: ${c.facialHair}.
+[PHYSIQUE] ${physiqueSpec(c, true, true)} Hip shape: ${promptValue(c.hipShape || '標準的な丸みの臀部')} (a neutral body-reference note; never emphasized or staged).${muscleLine(c, true)}${trainingLine(c, true)}${bodyRealismLine(c, true)}
 [FEET] Foot shape: ${c.footShape}; ${footWidthDesc(c, true)}.${footFeatureLine(c, true, true)} In the barefoot panels, render toes with correct counts and joints; show exactly one pair of soles belonging to him only.
 [OUTFIT IN SHEET] Underwear (${underwearDesc(c, 'en')}) only, as a neutral body-reference presentation in the flat, matter-of-fact tone of clothing-catalog product photos — no sexual staging, emphasis, or posing. No outerwear, tops, bottoms, shoes, or socks.
 [PURPOSE] This sheet is used to hand the character over to another chat or session as a reference image.
@@ -623,7 +623,7 @@ ${promptTargetGuide(c, false)}`;
     const c2 = Object.assign({}, c, {outputType: dt});
     let core;
     if(dt === 'トレーディングカード') core = buildCardInstructionOnly(c, english);
-    else core = refSheetInstruction(c2, english) || (english ? `Create the output as: ${displayValue('outputType', dt) || dt}.` : `${dt}として構成する。`);
+    else core = refSheetInstruction(c2, english) || (english ? `Create the output as: ${promptValue(dt) || dt}.` : `${dt}として構成する。`);
     const avoid = english
       ? 'Avoid: changing him into a different person, averaging his features, altering his body type or face from the reference image, broken text, or any sexual expression.'
       : '避けること：別人化、特徴の平均化、参照画像と異なる体型・顔立ちへの変更、文字崩れ、性的表現。';

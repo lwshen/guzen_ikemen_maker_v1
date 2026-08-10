@@ -35,6 +35,12 @@ import {
   const VALUE_I18N = { en: valueTranslations, zh: valueTranslationsZh };
   const SCENE_I18N = { en: sceneTranslations, zh: sceneTranslationsZh };
 
+  // uiLang-INDEPENDENT English lookup for prompt text. Prompt content must
+  // depend only on the prompt language, never on ST.uiLang — displayValue
+  // reads ST.uiLang, so calling it inside an english prompt branch leaks the
+  // UI language (zh fragments in English prompts). Use this there instead.
+  function promptValue(v){ return valueTranslations[String(v)] ?? v; }
+
   // language pick helper for inline UI strings: LT(ja, en, zh); omit zh to fall
   // back to Japanese. Args evaluate eagerly - literals only, never calls that
   // consume randomness (would shift the seeded PRNG sequence).
@@ -190,8 +196,8 @@ import {
     if(fields.weight) parts.push(english ? `Weight: ${c.weight}` : `体重：${c.weight}`);
     if(fields.footSize) parts.push(english ? `Foot Size: ${c.footSize}` : `足のサイズ：${c.footSize}`);
     if(fields.mbti) parts.push(english ? `MBTI: ${c.mbti} (${mbtiDescription(c.mbti, 'en')})` : `MBTI：${c.mbti}（${mbtiDescription(c.mbti, 'ja')}）`);
-    if(fields.nationality) parts.push(english ? `Nationality: ${displayValue('nationality',c.nationality)}` : `国籍：${c.nationality}`);
-    if(fields.role) parts.push(english ? `Occupation: ${displayValue('role',c.role)}` : `職業：${c.role}`);
+    if(fields.nationality) parts.push(english ? `Nationality: ${promptValue(c.nationality)}` : `国籍：${c.nationality}`);
+    if(fields.role) parts.push(english ? `Occupation: ${promptValue(c.role)}` : `職業：${c.role}`);
     return parts.join(english ? ' / ' : '｜');
   }
 
@@ -289,8 +295,8 @@ import {
       const map = cardFieldLabelMap[key];
       if(map) el.textContent = LT(map.ja, map.en, map.zh);
     });
-    const i=document.getElementById('initialCardFieldsLabel'); if(i) i.textContent = ST.uiLang==='en' ? 'Card information fields' : 'カード内表示項目';
-    const m=document.getElementById('manualCardFieldsLabel'); if(m) m.textContent = ST.uiLang==='en' ? 'Card information fields' : 'カード内表示項目';
+    const i=document.getElementById('initialCardFieldsLabel'); if(i) i.textContent = LT('カード内表示項目', 'Card information fields', '卡片内显示项目');
+    const m=document.getElementById('manualCardFieldsLabel'); if(m) m.textContent = LT('カード内表示項目', 'Card information fields', '卡片内显示项目');
   }
 
   function cardPoseGuide(c, english=false){
@@ -335,10 +341,10 @@ import {
     const rarityText = c.cardRarity && c.cardRarity!=='おすすめ自動' ? c.cardRarity : suggestCardRarity(c);
     const effect = cardEffectByRarity(rarityText);
     const rarityReasonJa = `レアリティは、体型・顔立ち・雰囲気・MBTI・足サイズ・体毛・服装などの項目の組み合わせから「${rarityText}」を提案する。必要に応じてユーザーが変更できる。装飾効果はレアリティに準じて「${effect}」にする。`;
-    const rarityReasonEn = `Suggest the rarity label "${rarityText}" based on the combination of body type, face type, vibe, MBTI, foot size, body hair, and outfit. The user can edit the rarity. The decorative effect should follow the rarity and be "${displayValue('cardEffect',effect)}".`;
+    const rarityReasonEn = `Suggest the rarity label "${rarityText}" based on the combination of body type, face type, vibe, MBTI, foot size, body hair, and outfit. The user can edit the rarity. The decorative effect should follow the rarity and be "${promptValue(effect)}".`;
     if(english){
       const rareExtra = ['SSR','UR','Secret','Legendary'].includes(rarityText) ? ' Add a premium finish appropriate to the rarity, while keeping the character and all text readable.' : '';
-      return `Present the result as a high-quality original trading-card-style character design inspired by the visual polish of popular collectible trading cards, without copying any existing official card design. Put the logo text "GuzenIkemenMakerCARD" clearly on the card as an original brand logo. Card style: ${displayValue('cardStyle',c.cardStyle)}. Rarity label: ${rarityText}. Color theme: ${displayValue('cardTheme',c.cardTheme)}. Layout: ${displayValue('cardLayout',c.cardLayout)}. Decorative effect: ${displayValue('cardEffect',effect)}. ${rarityReasonEn} Include readable information panels or stat tags for: ${labels || 'name, profile, MBTI, and role'}. Use premium card framing, strong typography, clean icon-like accents, and a memorable collectible-card composition.${rareExtra}`;
+      return `Present the result as a high-quality original trading-card-style character design inspired by the visual polish of popular collectible trading cards, without copying any existing official card design. Put the logo text "GuzenIkemenMakerCARD" clearly on the card as an original brand logo. Card style: ${promptValue(c.cardStyle)}. Rarity label: ${rarityText}. Color theme: ${promptValue(c.cardTheme)}. Layout: ${promptValue(c.cardLayout)}. Decorative effect: ${promptValue(effect)}. ${rarityReasonEn} Include readable information panels or stat tags for: ${labels || 'name, profile, MBTI, and role'}. Use premium card framing, strong typography, clean icon-like accents, and a memorable collectible-card composition.${rareExtra}`;
     }
     const rareExtra = ['SSR','UR','Secret','Legendary'].includes(rarityText) ? '高レアリティにふさわしい高級感、光沢感、特別感を加える。ただし人物や文字の視認性は損なわない。' : '';
     return `人気トレーディングカードのようにデザイン性を高めた、オリジナルのトレーディングカード風キャラクターデザインとして構成する。ただし実在カードや公式カードの模倣ではなく、独自の架空キャラクターカードとして仕上げる。カード内に「GuzenIkemenMakerCARD」のロゴ文字を、オリジナルブランドロゴとしてはっきり入れる。カードスタイルは${c.cardStyle}、レアリティ表示は${rarityText}、配色テーマは${c.cardTheme}、レイアウトは${c.cardLayout}、装飾効果は${effect}。${rarityReasonJa}カード枠、情報パネル、ステータス欄、タグ欄を自然に配置し、表示項目は${labels || '氏名、プロフィール、MBTI、役割'}。人物を主役にしつつ、設定資料としての読みやすさとカードとしての見栄えを両立する。${rareExtra}`;
@@ -361,7 +367,7 @@ import {
     }
     if(!enMode) return `${partsJa[0]}。${areasJa.map(([k,v])=>`${k}は${v}`).join('、')}。体毛表現は非性的で、成人男性の自然な身体特徴として描写する。`;
     const areasEn = [['chest hair',c.chestHair],['abdominal hair',c.abdominalHair],['lower abdomen hair',c.lowerAbdomenHair],['arm hair',c.armHair],['shin hair',c.shinHair],['thigh hair',c.thighHair],['armpit hair',c.armpitHair],['hand and finger hair',c.handFingerHair],['foot and toe hair',c.footToeHair],['back hair',c.backHair]];
-    return `Body hair overall is ${displayValue('bodyHairOverall',c.bodyHairOverall)}. ${areasEn.map(([k,v])=>`${k}: ${displayValue('bodyHairLevel',v)}`).join('; ')}. Depict body hair non-sexually as a natural adult male body feature.`;
+    return `Body hair overall is ${promptValue(c.bodyHairOverall)}. ${areasEn.map(([k,v])=>`${k}: ${promptValue(v)}`).join('; ')}. Depict body hair non-sexually as a natural adult male body feature.`;
   }
 
   function setCaptionCheckboxLabels(){
@@ -370,8 +376,8 @@ import {
       const map = captionFieldLabelMap[key];
       if(map) el.textContent = LT(map.ja, map.en, map.zh);
     });
-    const i=document.getElementById('initialCaptionFieldsLabel'); if(i) i.textContent = ST.uiLang==='en' ? 'Image text fields' : '画像内に表示する項目';
-    const m=document.getElementById('manualCaptionFieldsLabel'); if(m) m.textContent = ST.uiLang==='en' ? 'Image text fields' : '画像内に表示する項目';
+    const i=document.getElementById('initialCaptionFieldsLabel'); if(i) i.textContent = LT('画像内に表示する項目', 'Image text fields', '图内显示项目');
+    const m=document.getElementById('manualCaptionFieldsLabel'); if(m) m.textContent = LT('画像内に表示する項目', 'Image text fields', '图内显示项目');
   }
 
   function setUiCardTitles(){
@@ -421,7 +427,10 @@ import {
     document.querySelector('section.panel .section-title .pill').textContent = T('initialPill');
     document.querySelector('section.panel .notice[style*="margin-top:12px"]').textContent = T('initialNotice');
     const slotTitles=document.querySelectorAll('.grid.cols > section.panel .section-title h2'); if(slotTitles[0]) slotTitles[0].textContent=T('slotResult');
-    const statusPill=document.getElementById('statusPill'); if(statusPill && (!statusPill.textContent || ['待機中','Waiting'].includes(statusPill.textContent))) statusPill.textContent=T('waiting');
+    // idle guard derived from the tables so every language (incl. future ones)
+    // is covered — a hardcoded list stranded the zh pill on '待机中' after
+    // switching away from Chinese
+    const statusPill=document.getElementById('statusPill'); if(statusPill && (!statusPill.textContent || Object.values(uiText).some(t=>t.waiting===statusPill.textContent))) statusPill.textContent=T('waiting');
     const sideTitles=document.querySelectorAll('aside .section-title h2'); if(sideTitles[0]) sideTitles[0].textContent=T('rarityTitle'); if(sideTitles[1]) sideTitles[1].textContent=T('modesTitle');
     const rarityNote=document.getElementById('rarityNote'); if(rarityNote && (!ST.current)) rarityNote.textContent=T('rarityNoteIdle');
     document.querySelectorAll('[data-mode]').forEach(b=>{ b.textContent=T('mode_'+b.dataset.mode); });
@@ -494,6 +503,7 @@ export {
   fixedLabel,
   displayValue,
   displayOptionLabel,
+  promptValue,
   renderSelectOptions,
   mbtiDescription,
   mbtiDisplay,
