@@ -590,6 +590,21 @@ diff 以**顶层声明**为粒度自动分类：71 新增 / 49 修改 / 0 删除
 
 **已知局限**：① en 侧 1868 条存量缺口（值 1337 + 场景 531）是有意冻结的债务——英文界面这些值回退显示日文原文，补齐属独立翻译立项；② **双盲区**：两语言**都**没翻译的 ja 值对 7c 不可见（没有任何表知道该键存在），由 L6 运行时扫描兜底——审查即抓到 2 例（`ベンチのある床`/`車内の床`，data-foot.js 地面家族的漏网兄弟，本次已双语补齐）；③ zh 专用单边表（`SPORT_MUSCLE_ZH`/`ERA_LABEL_ZH`/`FOOT_AXIS_LABEL_ZH` 等）的 en 侧是代码内联的 `LT()` 参数或独立函数，无法做静态表比对，同样由 L6 兜底；④ catchphrase/bio-hook 两行的日文回退照旧（§6.1 记账的独立立项）。
 
+## 14. i18next 运行时（2026-08-12，分支 `i18next-runtime`，叠于 §13 之上）
+
+**动机与定位**：应「用框架治理漏翻译」的诉求迁移到 i18next（26.x），但采用**原文即 key**（gettext msgid）模型——日语串既是内部表示也是查表 key，`src/data` 的翻译表**仍是唯一事实源**，i18next 资源在初始化时从表构建。因此 L5 数据钉扎、上游逐行可 diff 性、L7 表奇偶性校验全部原样有效；框架带来的增量是 **dev 模式 saveMissing 落空收集器**（`window.__i18nMissing`，静态清单管全集、运行时埋点管漏网，与 L7 互补）。
+
+**机制**（`src/app/i18n-runtime.js`，仅依赖 i18next + `src/data`，Node 可直接 import）：
+
+- 命名空间 `ui`（uiText 三语）/ `values` / `scenes`（仅 en/zh——ja 即原文，无「ja 译文」概念）；`fallbackLng:'ja'` 只对 `ui` 生效；
+- **配置纪律**：`keySeparator`/`nsSeparator` 关闭（键含 ASCII `16:9`、`×0.5`）；插值与嵌套前后缀钉为 `⁅⁅`/`⁆⁆` 系哨兵（含 `{{ }}`、`$t(` 的译文原样返回，已用敌意串验证）；`returnObjects` 开（`T('rows')` 等返回子表）；`returnEmptyString:false` 对齐旧 `|| v` 语义；`initImmediate:false` 同步初始化不动启动顺序；
+- **两种查法**（对应旧代码两种语义，不可混用）：`valueT`（**精确 `vt[String(v)] ?? v` 语义**——miss 返回**原值**而非串化 key，undefined/0 原样透传，miss 手动进收集器）用于 `promptValue`；`valueRes`/`sceneRes`（getResource 型，missing→undefined）用于 `vt[a] || vt[b] || c` 链和存在性守卫——**空键必须返回 undefined**：`getResource(lng, ns, '')` 会返回整个命名空间对象，穿搭笔记等字段常年传空串，首轮 L2 就靠 30 个 golden diff 抓出了 `[object Object]`（修复后 144/144 恢复逐字节一致）；
+- `i18n.js` 的 `T`/`displayValue`/`displayOptionLabel`/`promptValue`/`sceneDisplay` 改走上述助手；`promptValue` 硬钉 `'en'`（双语言轴纯度不变）；`generate.js`/`prompts.js` 的 prompt 轴内联直查**有意不动**（同一张表，行为等价，Phase 2 再议）。
+
+**验证**：等价性扫描 12,608 断言零失配（全表键 × 三语言 × 新旧两种查法 + 未知键/空键/非字符串输入/分隔符高危键/敌意插值串）；七层全绿，其中 **L2 144 场景（106 日文基线 + 38 golden）逐字节零差异**——迁移忠实性的金标准。四视角对抗审查（i18next API 语义/调用点/构建产物/语言轴）另抓出并已修复：① `valueT` 曾用 t() 实现丢失 `?? v` 语义——`promptValue(undefined)` 返回 truthy 字符串 `'undefined'` 击穿下游 `|| ''`/`|| 'man'` 兜底（旧版导入 JSON 缺 season/role 时英文 prompt 出 "Season: undefined."），改为 getResource + 原值回退；② `saveMissingTo` 默认 `'fallback'` 会把所有 miss 标成 `ja`，改钉 `'current'`；③ dist 曾滞后于源码（嵌套哨兵未入 bundle），已重建。
+
+**已知局限**：① saveMissing 只见**渲染过的**表面（与 L6 同盲区），全集保障仍靠 L7 + 未来的池登记表；② 收集器 dev-only，需人工读取 `window.__i18nMissing` 导出，尚无自动回灌流程；③ 标签映射表（slotLabelMap 等 5 表）与 `LT()` 内联三元未入 i18next（表已被 L7b 全覆盖，收益为零）；④ bundle 增重约 i18next 体积（单文件打包内联，无外部请求，L1 钉扎）。
+
 ## 附录 A — 146 个数据常量基线表（V3.0.0 首次盘点）
 
 | 行号 | 常量                     | 类型    | 条目数 | 内容                                                                                                                                                                 |

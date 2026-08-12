@@ -17,7 +17,8 @@
     "verify": "npm run verify:structure && npm run verify:data && npm run verify:i18n && npm run verify:behavior && npm run verify:visual && npm run verify:en"
   },
   "dependencies": {
-    "astro": "^5.0.0"
+    "astro": "^5.0.0",
+    "i18next": "^26.3.6"
   },
   "devDependencies": {
     "playwright": "^1.62.1"
