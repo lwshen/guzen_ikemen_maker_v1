@@ -2257,3 +2257,20 @@ Object.assign(valueTranslationsZh, {
   '彼女に選んでもらうのが毎回楽しみ': '每次都期待让女朋友帮忙挑',
   '流行は先取りしないと気が済まない': '不抢先追上潮流就不痛快',
 });
+
+// layer 7 parity fixes: values the en table covered but zh missed
+// (foot-focus floor surfaces + video durations), plus two floor surfaces
+// from data-foot.js that BOTH languages had missed (L7's blind spot —
+// found by review, filled in both tables)
+Object.assign(valueTranslationsZh, {
+  '玄関のたたき': '玄关地面',
+  '畳': '榻榻米',
+  'オフィスの床': '办公室地板',
+  '更衣室の床': '更衣室地板',
+  '縁側の木板': '缘廊木地板',
+  'カーペットとこたつ布団': '地毯和暖桌被',
+  '15秒（2.0）': '15秒（2.0）',
+  '30秒（2.5）': '30秒（2.5）',
+  'ベンチのある床': '有长椅的地面',
+  '車内の床': '车厢内地板',
+});

@@ -590,8 +590,8 @@ Object.assign(valueTranslations, {
   '小上がりの飲食店': 'a restaurant with a raised tatami platform',
   '畳の休憩室（職場の仮眠室）': 'a tatami break room (workplace nap room)',
   'こたつのある部屋': 'a room with a kotatsu', 'カーペットとこたつ布団': 'carpet and a kotatsu quilt',
-  '足湯上がりに靴下を履き直した後': 'after putting his socks back on following a footbath',
-  '新幹線の座席（靴を脱いでくつろぐ）': 'a Shinkansen seat (shoes off, relaxing)',
+  '足湯上がりに靴下を履き直した後': 'after putting his socks back on following a footbath', 'ベンチのある床': 'the floor by a bench',
+  '新幹線の座席（靴を脱いでくつろぐ）': 'a Shinkansen seat (shoes off, relaxing)', '車内の床': 'the train-car floor',
   // postures
   '床・座敷にあぐらをかく': 'sitting cross-legged on the floor / tatami',
   '椅子の上であぐらをかく': 'sitting cross-legged on a chair', '足を伸ばして座る': 'sitting with his legs stretched out',
