@@ -65,6 +65,9 @@ const SUBSET_MODE = new Set([
   "cardFieldLabelMap",
   "uiCardTitles",
   "OCC_CAT_LABELS",
+  // 2026-08-13 词库覆盖检查上线：好友上下关系补了基线没有的 '同期'
+  // 翻译（fixedHier 值此前在英/中界面显示日语原文）
+  "FRIEND_HIER_EN",
 ]);
 // post-freeze exports that never existed in the frozen baseline
 const POST_FREEZE_EXPORTS = new Set([
