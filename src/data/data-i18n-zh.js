@@ -182,6 +182,7 @@ const SLOT_ZH = {
   bodyHairOverall: '体毛整体倾向', chestHair: '胸毛', abdominalHair: '腹毛', lowerAbdomenHair: '脐下',
   armHair: '手臂毛', shinHair: '小腿毛', thighHair: '大腿毛', armpitHair: '腋毛',
   handFingerHair: '手背・手指毛', footToeHair: '脚背・脚趾毛', backHair: '背部',
+  skinDetail: '皮肤特征⑴', skinDetail2: '皮肤特征⑵',
   facePreset: '脸型', ageAppearance: '年龄感', faceLine: '脸部轮廓', eyebrow: '眉毛', eyelid: '眼睑',
   eyeShape: '眼形', eyes: '眼神印象', eyelash: '睫毛', tearBags: '卧蚕', nose: '鼻子', mouth: '基本表情',
   lips: '唇形', mouthPos: '嘴的位置', faceSpacing: '五官布局', faceRatio: '五官比例', faceAsym: '面部不对称',
@@ -2273,4 +2274,5 @@ Object.assign(valueTranslationsZh, {
   '30秒（2.5）': '30秒（2.5）',
   'ベンチのある床': '有长椅的地面',
   '車内の床': '车厢内地板',
+  '勤務中': '工作中',
 });
