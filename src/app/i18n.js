@@ -6,7 +6,7 @@ import {
   SCENE_MOD_ZH,
 } from '../data/index.js';
 import {
-  uiT, valueT, valueRes, sceneRes, reportMissingI18n,
+  uiT, valueT, valueRes, sceneRes, reportMissingI18n, tryTemplate,
 } from './i18n-runtime.js';
 import {
   renderFriendPanel,
@@ -91,6 +91,9 @@ import {
     if(key==='sceneIdea') return sceneDisplay(value);
     const tv = valueRes(ST.uiLang, value);
     if(tv) return tv;
+    // 值表查不到的拼装句：试句式表匹配（数字回填、零件递归查表）
+    const tpl = tryTemplate(ST.uiLang, String(value), key);
+    if(tpl !== undefined) return tpl;
     reportMissingI18n(ST.uiLang, 'values', String(value), key);
     return value;
   }
@@ -110,6 +113,9 @@ import {
     if(key==='sceneIdea') return sceneDisplay(value);
     const tv = valueRes(ST.uiLang, value);
     if(tv) return tv;
+    // 值表查不到的拼装句：试句式表匹配（数字回填、零件递归查表）
+    const tpl = tryTemplate(ST.uiLang, String(value), key);
+    if(tpl !== undefined) return tpl;
     reportMissingI18n(ST.uiLang, 'values', String(value), key);
     return value;
   }
