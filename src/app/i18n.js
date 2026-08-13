@@ -68,11 +68,11 @@ import {
       if(raw.startsWith(modJa)){
         const rest = raw.slice(modJa.length);
         const restT = sceneRes(ST.uiLang, rest);
-        if(!restT){ reportMissingI18n(ST.uiLang, 'scenes', rest); return raw; }
+        if(!restT){ reportMissingI18n(ST.uiLang, 'scenes', rest, 'sceneIdea'); return raw; }
         return (ST.uiLang==='zh' ? modZh : '') + restT;
       }
     }
-    reportMissingI18n(ST.uiLang, 'scenes', raw);
+    reportMissingI18n(ST.uiLang, 'scenes', raw, 'sceneIdea');
     return raw;
   }
 
@@ -91,7 +91,7 @@ import {
     if(key==='sceneIdea') return sceneDisplay(value);
     const tv = valueRes(ST.uiLang, value);
     if(tv) return tv;
-    reportMissingI18n(ST.uiLang, 'values', String(value));
+    reportMissingI18n(ST.uiLang, 'values', String(value), key);
     return value;
   }
 
@@ -110,7 +110,7 @@ import {
     if(key==='sceneIdea') return sceneDisplay(value);
     const tv = valueRes(ST.uiLang, value);
     if(tv) return tv;
-    reportMissingI18n(ST.uiLang, 'values', String(value));
+    reportMissingI18n(ST.uiLang, 'values', String(value), key);
     return value;
   }
 

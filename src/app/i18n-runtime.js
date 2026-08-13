@@ -15,18 +15,31 @@ import {
   uiText, valueTranslations, valueTranslationsZh, sceneTranslations, sceneTranslationsZh,
 } from '../data/index.js';
 
-// dev-only missing-key collector (i18next saveMissing + manual reports from
+// missing-translation collector (i18next saveMissing + manual reports from
 // presence-style lookups). Vite statically replaces import.meta.env.DEV; the
 // typeof guard keeps the module loadable in plain Node.
 const DEV = typeof import.meta !== 'undefined' && import.meta.env
   ? !!import.meta.env.DEV
   : false;
+// 运行时开关：网址加 ?i18ndebug 也能开启收集——「运行时漏翻检查」
+// （verify:missing）靠它在构建产物上收割；不带参数时与线上行为完全一致
+const COLLECT = DEV || (typeof location !== 'undefined' && new URLSearchParams(location.search).has('i18ndebug'));
 export const missingI18nKeys = new Set();
-export function reportMissingI18n(lng, ns, key) {
-  if (!DEV || !key) return;
+// 字段级汇总（语言:表:字段名）：拼装句含随机姓名/日期，精确词条跨运行
+// 不稳定；字段名是有限稳定集合，自动检查按它对账。只记录值里真的含
+// 日文（假名或汉字）的落空——MBTI 码、数字这类纯 ASCII 值原样显示
+// 即正确，不算漏翻
+const JA_SCRIPT_RE = /[぀-ゟ゠-ヿ一-鿿]/;
+export const missingI18nFields = new Set();
+export function reportMissingI18n(lng, ns, key, field) {
+  if (!COLLECT || !key) return;
   missingI18nKeys.add(`${lng}:${ns}:${key}`);
+  if (field && JA_SCRIPT_RE.test(key)) missingI18nFields.add(`${lng}:${ns}:${field}`);
 }
-if (DEV && typeof window !== 'undefined') window.__i18nMissing = missingI18nKeys;
+if (COLLECT && typeof window !== 'undefined') {
+  window.__i18nMissing = missingI18nKeys;
+  window.__i18nMissingFields = missingI18nFields;
+}
 
 i18next.init({
   // resources built from the existing tables; ja carries only the ui
@@ -54,7 +67,7 @@ i18next.init({
     prefix: '⁅⁅', suffix: '⁆⁆',
     nestingPrefix: '⁅⁅$', nestingSuffix: '$⁆⁆',
   },
-  saveMissing: DEV,
+  saveMissing: COLLECT,
   saveMissingTo: 'current', // default 'fallback' would label every miss 'ja'
   missingKeyHandler: (lngs, ns, key) => reportMissingI18n(lngs[0], ns, key),
   parseMissingKeyHandler: (key) => key,
@@ -79,7 +92,7 @@ export function valueT(lang, v) {
   if (!key) return v;
   const r = i18next.getResource(lang, 'values', key);
   if (r !== undefined) return r;
-  reportMissingI18n(lang, 'values', key);
+  reportMissingI18n(lang, 'values', key, 'promptValue');
   return v;
 }
 

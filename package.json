@@ -14,7 +14,8 @@
     "verify:options": "node verify/layer2-options-sweep.mjs",
     "verify:en": "node verify/layer6-en-i18n.mjs",
     "verify:i18n": "node verify/layer7-i18n-parity.mjs",
-    "verify": "npm run verify:structure && npm run verify:data && npm run verify:i18n && npm run verify:behavior && npm run verify:visual && npm run verify:en"
+    "verify:missing": "node verify/layer8-runtime-missing.mjs",
+    "verify": "npm run verify:structure && npm run verify:data && npm run verify:i18n && npm run verify:behavior && npm run verify:visual && npm run verify:en && npm run verify:missing"
   },
   "dependencies": {
     "astro": "^5.0.0",
