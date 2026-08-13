@@ -2,9 +2,12 @@
 // Split from the verbatim V3.2.0 baseline (Phase 4 stage B) — bodies unchanged
 // except top-level state rewritten to ST.* (see state.js).
 import {
-  captionFieldLabelMap, cardFieldLabelMap, fixedFieldLabelMap, sceneTranslations, slotLabelMap, uiCardTitles, uiText, valueTranslations,
-  valueTranslationsZh, sceneTranslationsZh, SCENE_MOD_ZH,
+  captionFieldLabelMap, cardFieldLabelMap, fixedFieldLabelMap, slotLabelMap, uiCardTitles, uiText,
+  SCENE_MOD_ZH,
 } from '../data/index.js';
+import {
+  uiT, valueT, valueRes, sceneRes, reportMissingI18n,
+} from './i18n-runtime.js';
 import {
   renderFriendPanel,
 } from './flow.js';
@@ -22,24 +25,21 @@ import {
   renderAll, updateCharCounts, initVideoControls, IDB, renderHistory, refreshThumbs,
 } from './ui.js';
 
-  function T(key){
-    const table = uiText[ST.uiLang] || uiText.ja;
-    return table[key] !== undefined ? table[key] : uiText.ja[key];
-  }
+  function T(key){ return uiT(ST.uiLang, key); }
 
   function slotLabel(key, fallback){ return (slotLabelMap[key]||{})[ST.uiLang] || fallback; }
 
   function fixedLabel(key, fallback){ return (fixedFieldLabelMap[key]||{})[ST.uiLang] || fallback; }
 
-  // per-language value tables; Japanese values ARE the internal representation
-  const VALUE_I18N = { en: valueTranslations, zh: valueTranslationsZh };
-  const SCENE_I18N = { en: sceneTranslations, zh: sceneTranslationsZh };
+  // per-language value/scene tables now live as i18next namespaces (built
+  // from the same src/data tables in i18n-runtime.js); Japanese values remain
+  // the internal representation AND the lookup keys (gettext msgid model)
 
   // uiLang-INDEPENDENT English lookup for prompt text. Prompt content must
   // depend only on the prompt language, never on ST.uiLang — displayValue
   // reads ST.uiLang, so calling it inside an english prompt branch leaks the
   // UI language (zh fragments in English prompts). Use this there instead.
-  function promptValue(v){ return valueTranslations[String(v)] ?? v; }
+  function promptValue(v){ return valueT('en', v); }
 
   // language pick helper for inline UI strings: LT(ja, en, zh); omit zh to fall
   // back to Japanese. Args evaluate eagerly - literals only, never calls that
@@ -61,17 +61,18 @@ import {
   // scenes may carry a weather/time prefix (buildEncounterScene, sceneMods), so
   // look the sentence up with the prefix split off and translated separately
   function sceneDisplay(value){
-    const table = SCENE_I18N[ST.uiLang] || {};
     const raw = String(value);
-    if(table[raw]) return table[raw];
+    const whole = sceneRes(ST.uiLang, raw);
+    if(whole) return whole;
     for(const [modJa, modZh] of Object.entries(SCENE_MOD_ZH)){
       if(raw.startsWith(modJa)){
         const rest = raw.slice(modJa.length);
-        const restT = table[rest];
-        if(!restT) return raw;
+        const restT = sceneRes(ST.uiLang, rest);
+        if(!restT){ reportMissingI18n(ST.uiLang, 'scenes', rest); return raw; }
         return (ST.uiLang==='zh' ? modZh : '') + restT;
       }
     }
+    reportMissingI18n(ST.uiLang, 'scenes', raw);
     return raw;
   }
 
@@ -79,34 +80,38 @@ import {
     if(value===undefined || value===null) return value;
     if(key==='captionMode') return captionModeDisplay(value);
     if(ST.uiLang==='ja') return value;
-    const vt = VALUE_I18N[ST.uiLang] || {};
     // composed values (inner profile joins parts with ／) are not in the table as
     // a whole; translate each part and rejoin so partial coverage still helps
-    if(key==='innerText' && !vt[String(value)] && String(value).includes('／')){
+    if(key==='innerText' && !valueRes(ST.uiLang, value) && String(value).includes('／')){
       const parts = String(value).split('／');
-      if(parts.some(x=>vt[x])) return parts.map(x=>vt[x] || x).join('／');
+      if(parts.some(x=>valueRes(ST.uiLang, x))) return parts.map(x=>valueRes(ST.uiLang, x) || x).join('／');
     }
     if(key==='age') return ST.uiLang==='zh' ? `${value}岁` : `${value} years old`;
     if(key==='eraYear') return ST.uiLang==='zh' ? `${value}年` : `${value} CE`;
     if(key==='sceneIdea') return sceneDisplay(value);
-    return vt[String(value)] || value;
+    const tv = valueRes(ST.uiLang, value);
+    if(tv) return tv;
+    reportMissingI18n(ST.uiLang, 'values', String(value));
+    return value;
   }
 
   function displayOptionLabel(key, value){
     if(key==='captionMode') return captionModeDisplay(value);
     // the ランダム sentinel must never be run through per-key templates
     // (upstream showed 「ランダム歳」/「ランダム years old」 in the fixed-age select)
-    if(String(value)==='ランダム') return ST.uiLang==='ja' ? value : ((VALUE_I18N[ST.uiLang] || {})['ランダム'] || value);
+    if(String(value)==='ランダム') return ST.uiLang==='ja' ? value : (valueRes(ST.uiLang, 'ランダム') || value);
     if(ST.uiLang==='ja'){
       if(key==='age') return `${value}歳`;
       if(key==='eraYear') return eraLabel(value);
       return value;
     }
-    const vt = VALUE_I18N[ST.uiLang] || {};
     if(key==='age') return ST.uiLang==='zh' ? `${value}岁` : `${value} years old`;
     if(key==='eraYear') return ST.uiLang==='zh' ? `${value}年` : `${value} CE`;
     if(key==='sceneIdea') return sceneDisplay(value);
-    return vt[String(value)] || value;
+    const tv = valueRes(ST.uiLang, value);
+    if(tv) return tv;
+    reportMissingI18n(ST.uiLang, 'values', String(value));
+    return value;
   }
 
   // post-freeze fix: these static selects ship hardcoded <option> labels that
@@ -127,8 +132,8 @@ import {
         // relabeling would rewrite the value consumers compare against
         // Japanese literals (snapMode broke this way in EN/ZH) — pin it first
         if(!o.hasAttribute('value')) o.setAttribute('value', o.dataset.ja);
-        const vt = VALUE_I18N[ST.uiLang];
-        o.textContent = vt ? (vt[o.dataset.ja] || vt[o.value] || o.dataset.ja) : o.dataset.ja;
+        o.textContent = ST.uiLang==='ja' ? o.dataset.ja :
+          (valueRes(ST.uiLang, o.dataset.ja) || valueRes(ST.uiLang, o.value) || o.dataset.ja);
       }
     }
   }
