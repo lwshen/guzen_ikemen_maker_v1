@@ -14,6 +14,7 @@ import i18next from 'i18next';
 import {
   uiText, valueTranslations, valueTranslationsZh, sceneTranslations, sceneTranslationsZh,
 } from '../data/index.js';
+import { DISPLAY_TEMPLATES_ZH } from '../data/data-i18n-templates.js';
 
 // missing-translation collector (i18next saveMissing + manual reports from
 // presence-style lookups). Vite statically replaces import.meta.env.DEV; the
@@ -116,4 +117,57 @@ export function sceneRes(lang, k) {
 export function uiT(lang, key) {
   if (!i18next.exists(key, { lng: lang, ns: 'ui' })) return undefined;
   return i18next.t(key, { lng: lang, ns: 'ui' });
+}
+
+// ---------------------------------------------------------------------------
+// 显示时模板匹配：值表查不到的拼装句（存储的是含随机数字/零件的成品日语
+// 串），拿句式表逐条正则匹配——命中后数字变量原样回填、文本变量先查值表
+// 再递归试句式（和历「平成{n}年」就是嵌套句式），零件查不到用原文并上报
+// 收集器（字段因此留在运行时漏翻台账上，直到零件也翻齐）。
+// 生成器一行不改、存储层不动，历史存档同样被翻译。
+const TEMPLATE_TABLES = { zh: DISPLAY_TEMPLATES_ZH };
+const compiledTemplates = {};
+function getCompiled(lang) {
+  if (compiledTemplates[lang]) return compiledTemplates[lang];
+  const table = TEMPLATE_TABLES[lang];
+  if (!table) return (compiledTemplates[lang] = []);
+  // 长句式优先：泛化形状（如 {w}：{w2}）必须排在带后缀的特化形状之后，
+  // 否则特化句式永远匹配不到
+  return (compiledTemplates[lang] = Object.keys(table)
+    .sort((a, b) => b.length - a.length)
+    .map((ja) => {
+    const varNames = [];
+    const src = ja
+      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      .replace(/\\\{(n\d*|w\d*)\\\}/g, (_, name) => {
+        varNames.push(name);
+        return name.startsWith('n') ? '(\\d+)' : '(.+?)';
+      });
+      return { ja, re: new RegExp('^' + src + '$'), varNames };
+    }));
+}
+export function tryTemplate(lang, raw, field, depth = 0) {
+  const table = TEMPLATE_TABLES[lang];
+  if (!table) return undefined;
+  for (const { ja, re, varNames } of getCompiled(lang)) {
+    const m = re.exec(raw);
+    if (!m) continue;
+    let out = table[ja];
+    varNames.forEach((name, i) => {
+      const val = m[i + 1];
+      let filled = val;
+      if (name.startsWith('w')) {
+        const t = i18next.getResource(lang, 'values', val);
+        if (t !== undefined) filled = t;
+        else {
+          const tt = depth < 2 ? tryTemplate(lang, val, field, depth + 1) : undefined;
+          if (tt !== undefined) filled = tt;
+          else reportMissingI18n(lang, 'values', val, field);
+        }
+      }
+      out = out.split(`{${name}}`).join(filled);
+    });
+    return out;
+  }
+  return undefined;
 }
