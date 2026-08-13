@@ -151,7 +151,7 @@ for (const { lang, pattern, what } of CHECKS) {
         // 2. field labels, buttons, headings, pane descriptions, chips, and
         //    profile ROW LABELS (.kv b — values are character data, labels are chrome)
         for (const el of document.querySelectorAll(
-          "label > span, button, h2, h3, .pane-desc, .chip, .flow-step, .dtype-btn, #profileView .kv b, .field > span, .inner-cat, .pill",
+          "label > span, button, h2, h3, .pane-desc, .chip, .flow-step, .dtype-btn, #profileView .kv b, .field > span, .inner-cat, .pill, .slot small",
         )) {
           if (el.id === "makerLanguageLabel") continue; // bilingual by design
           if (el.id === "promptAreaTarget") continue; // shows the prompt-language name (日本語/English) natively by design
