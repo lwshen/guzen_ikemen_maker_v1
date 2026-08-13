@@ -239,7 +239,7 @@ export const FRIEND_HIER_DELTA = {'上司':[6,15],'先輩':[1,5],'同い年':[0,
 export const FRIEND_REL_EN = {'同僚':'Colleague (same occupation)','同期':'Same-cohort colleague (same occupation, ±2 yrs)','同級生':'Classmate (same occupation, same age)','幼なじみ':'Childhood friend','趣味仲間':'Hobby friend','学生時代からの友人':'Friend since school days'};
 
 // index.html:6706
-export const FRIEND_HIER_EN = {'上司':'Boss','先輩':'Senior','同い年':'Same age','後輩':'Junior'};
+export const FRIEND_HIER_EN = {'上司':'Boss','先輩':'Senior','同い年':'Same age','後輩':'Junior','同期':'Same cohort'};
 
 // index.html:6863
 export const IKEMEN_DELTAS = {

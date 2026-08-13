@@ -51,6 +51,7 @@ import {
   FRIEND_HIER_EN,
   FRIEND_HIER_ZH,
 } from "../src/data/index.js";
+import { VALUE_POOLS, SCENE_POOLS, KEY_PAIRS } from "./i18n-pool-registry.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const GAP_FILE = path.join(ROOT, "verify/golden/en-i18n-gap.json");
@@ -222,6 +223,111 @@ for (const lang of LANGS.filter((l) => uiText[l])) {
     }
   };
   walk(uiText[lang], `uiText.${lang}`);
+}
+
+// ---------------------------------------------------------------------------
+// 词库覆盖检查：总清单（i18n-pool-registry.mjs）里每个含日文的值，必须
+// 同时有英文和中文翻译（场景句池对场景表）。两种语言都没翻的词条此前
+// 没有任何表知道它存在（'ベンチのある床' 就是这么漏的）——本检查专堵
+// 这个盲区。键对账部分直接报错；值缺口走欠账台账 pool-gap.json，纪律
+// 与上面的英文欠账台账一致：文件缺失/损坏即报错、只能 --write-baseline
+// 显式重建、有词条补齐后自动收紧并要求提交。
+const POOL_GAP_FILE = path.join(ROOT, "verify/golden/pool-gap.json");
+// 只有含日文字符（假名或汉字）的值才需要翻译；纯 ASCII 值原样显示即正确
+const JA_SCRIPT = /[぀-ゟ゠-ヿ一-鿿]/;
+
+for (const pair of KEY_PAIRS) {
+  let bad = 0;
+  for (const k of pair.keys())
+    for (const msg of pair.check(k)) {
+      fail(`${pair.name}: ${msg}`);
+      bad++;
+    }
+  if (!bad) console.log(`${pair.name}: ${pair.keys().length} 键齐全`);
+}
+
+const poolGapSets = {
+  values_en: new Set(),
+  values_zh: new Set(),
+  scenes_en: new Set(),
+  scenes_zh: new Set(),
+};
+for (const pool of VALUE_POOLS)
+  for (const raw of pool.values()) {
+    const v = String(raw);
+    if (!JA_SCRIPT.test(v)) continue;
+    if (!(v in valueTranslations)) poolGapSets.values_en.add(v);
+    if (!(v in valueTranslationsZh)) poolGapSets.values_zh.add(v);
+  }
+for (const pool of SCENE_POOLS)
+  for (const raw of pool.values()) {
+    const v = String(raw);
+    if (!JA_SCRIPT.test(v)) continue;
+    if (!(v in sceneTranslations)) poolGapSets.scenes_en.add(v);
+    if (!(v in sceneTranslationsZh)) poolGapSets.scenes_zh.add(v);
+  }
+const poolGaps = Object.fromEntries(
+  Object.entries(poolGapSets).map(([k, s]) => [k, [...s].sort()]),
+);
+
+const writePoolBaseline = () =>
+  fs.writeFileSync(
+    POOL_GAP_FILE,
+    JSON.stringify(
+      {
+        note: "词库总清单（i18n-pool-registry.mjs）里尚未翻译的显示值。欠账台账：存量记录在案，新增缺口报错，补齐后自动收紧。重建只能用 --write-baseline。",
+        families: poolGaps,
+      },
+      null,
+      1,
+    ) + "\n",
+  );
+
+if (process.argv.includes("--write-baseline")) {
+  writePoolBaseline();
+  const total = Object.values(poolGaps).reduce((n, a) => n + a.length, 0);
+  console.log(
+    `词库覆盖台账：已重建基线（--write-baseline），${total} 个已知未翻译显示值`,
+  );
+} else if (!fs.existsSync(POOL_GAP_FILE)) {
+  fail(
+    `词库覆盖台账：${path.relative(ROOT, POOL_GAP_FILE)} 缺失——提交它，或确需重建时用 --write-baseline`,
+  );
+} else {
+  let known;
+  try {
+    known = JSON.parse(fs.readFileSync(POOL_GAP_FILE, "utf8")).families;
+    if (!known || typeof known !== "object") throw new Error("缺 families 键");
+  } catch (e) {
+    known = null;
+    fail(
+      `词库覆盖台账：${path.relative(ROOT, POOL_GAP_FILE)} 无法读取（${e.message}）——修复或用 --write-baseline 重建`,
+    );
+  }
+  const beforePool = failures;
+  let poolFixed = 0;
+  for (const [family, gaps] of known ? Object.entries(poolGaps) : []) {
+    const frozen = new Set(known[family] || []);
+    const fresh = gaps.filter((k) => !frozen.has(k));
+    for (const k of fresh.slice(0, 20))
+      fail(`词库覆盖 ${family}: '${k}' 未翻译（新增，不在台账中）`);
+    if (!fresh.length) {
+      const fixed = (known[family] || []).filter(
+        (k) => !gaps.includes(k),
+      ).length;
+      poolFixed += fixed;
+      console.log(
+        `词库覆盖 ${family}: 无新增缺口（台账剩 ${gaps.length}` +
+          (fixed > 0 ? `，${fixed} 条已补齐）` : "）"),
+      );
+    }
+  }
+  if (known && failures === beforePool && poolFixed > 0) {
+    writePoolBaseline();
+    fail(
+      `词库覆盖台账：${poolFixed} 条已补齐——台账已收紧，提交 ${path.relative(ROOT, POOL_GAP_FILE)} 后重跑`,
+    );
+  }
 }
 
 console.log(failures ? `\n${failures} failures` : "");
